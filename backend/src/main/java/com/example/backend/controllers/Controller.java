@@ -14,7 +14,7 @@ public class Controller {
     private String frontend_address;
 
     @CrossOrigin(origins = "${frontend_address}")
-    @GetMapping("/api/health")
+    @GetMapping("/health")
     public ResponseEntity<String> healthCheck() {
         return ResponseEntity.ok("Backend running!");
     }
