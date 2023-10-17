@@ -8,8 +8,8 @@ const Header = () => {
     const [searchTerm, setSearchTerm] = useState('');
 
     const handleSearch = () => {
-        console.log(searchTerm); // Log the search term to the console
-        setSearchTerm(''); // Clear the search bar
+        console.log(searchTerm);
+        setSearchTerm('');
     };
 
     const handleKeyPress = (event: React.KeyboardEvent<HTMLInputElement>) => {
@@ -57,7 +57,7 @@ const Header = () => {
 
                 <div className="flex justify-between gap-4 items-center font-light text-trueGray-800">
                     <NavLink
-                        to={'/'}
+                        to={'/home'}
                         className={({ isActive }) =>
                             isActive ? 'font-bold text-trueIndigo-500' : ''
                         }

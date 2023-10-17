@@ -1,8 +1,16 @@
+import AppPath from '../../components/appPath/AppPath';
+import { AppPathProps } from '../../types';
+
 const PrivacyPolicy = () => {
+    const pageInfo: AppPathProps = {
+        name: 'Privacy and Policy',
+    };
+
     return (
         <>
+            <AppPath pageInfo={pageInfo} />
+
             <div className="flex w-2/3 mx-auto pt-5 justify-between font-lato text-trueGray-800">
-                <p>PRIVACY AND POLICY</p>
                 <div className="w-1/2 max-w-full overflow-hidden pb-24">
                     <p className="text-4xl pt-24 pb-6">Introduction</p>
                     <p className="pb-5 text-trueGray-500">
@@ -119,10 +127,6 @@ const PrivacyPolicy = () => {
                         send you promotional materials if you agree to this
                         privacy policy.
                     </p>
-                </div>
-                <div className="flex gap-4">
-                    <p className="font-light">SHOP /</p>
-                    <p>PRIVACY AND POLICY</p>
                 </div>
             </div>
         </>

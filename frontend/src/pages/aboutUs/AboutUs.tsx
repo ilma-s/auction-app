@@ -1,14 +1,15 @@
+import AppPath from '../../components/appPath/AppPath';
+import { AppPathProps } from '../../types';
+
 const AboutUs = () => {
+    const pageInfo: AppPathProps = {
+        name: 'About Us',
+    };
+
     return (
         <>
-            <div className="flex w-2/3 mx-auto pt-5 justify-between font-lato text-trueGray-800">
-                <p>ABOUT US</p>
-                <div className="flex gap-4">
-                    <p className="font-light">SHOP /</p>
-                    <p>ABOUT US</p>
-                </div>
-            </div>
-
+            <AppPath pageInfo={pageInfo} />
+            
             <div className="flex w-2/3 mx-auto pt-24">
                 <p className="text-4xl pb-4">About Us</p>
             </div>

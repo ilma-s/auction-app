@@ -8,11 +8,11 @@ const Footer = () => {
                 <div className="flex flex-col gap-3">
                     <p className="text-trueGray-500">AUCTION</p>
                     <div className="flex flex-col gap-2 text-trueWhite-800">
-                        <Link to="/shop/about-us">About Us</Link>
-                        <Link to="/shop/terms-and-conditions">
+                        <Link to="/home/about-us">About Us</Link>
+                        <Link to="/home/terms-and-conditions">
                             Terms and Conditions
                         </Link>
-                        <Link to="/shop/privacy-and-policy">
+                        <Link to="/home/privacy-and-policy">
                             Privacy and Policy
                         </Link>
                     </div>

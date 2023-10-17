@@ -13,7 +13,7 @@ const App = () => {
         <div>
             <Routes>
                 <Route
-                    index
+                    path="/home"
                     element={
                         <Suspense fallback={<div>Loading...</div>}>
                             <HomePage />
@@ -30,7 +30,7 @@ const App = () => {
                 />
 
                 <Route
-                    path="/shop/about-us"
+                    path="/home/about-us"
                     element={
                         <Suspense fallback={<div>Loading...</div>}>
                             <AboutUs />
@@ -39,7 +39,7 @@ const App = () => {
                 />
 
                 <Route
-                    path="/shop/terms-and-conditions"
+                    path="/home/terms-and-conditions"
                     element={
                         <Suspense fallback={<div>Loading...</div>}>
                             <TermsAndConditions />
@@ -48,7 +48,7 @@ const App = () => {
                 />
 
                 <Route
-                    path="/shop/privacy-and-policy"
+                    path="/home/privacy-and-policy"
                     element={
                         <Suspense fallback={<div>Loading...</div>}>
                             <PrivacyPolicy />
