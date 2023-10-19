@@ -1,20 +1,26 @@
 package com.example.backend.models;
 
+import jakarta.persistence.*;
 import lombok.Data;
-
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
 
 @Entity
 @Data
 public class Bid {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    private String bidId; //uuid
-    private String bidder;
-    private String product;
+    private String bidId;
     private Double amount;
     private String timestamp;
+
+    @ManyToOne
+    @JoinColumn(name = "bidderId")
+    private AppUser bidder;
+
+    @ManyToOne
+    @JoinColumn(name = "productId")
+    private Product product;
+
+    @OneToOne(mappedBy = "bid") // This indicates a bid can be associated with a single transaction
+    private Transaction transaction;
 }
+

@@ -6,16 +6,19 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.JoinColumn;
 
 @Entity
 @Data
 public class Category {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    private String userId; //uuid
-    private String username;
-    private String email;
-    private String firstName;
-    private String lastName;
-    private Boolean isAdmin;
+    private String categoryId;
+
+    private String name;
+
+    @ManyToOne
+    @JoinColumn(name = "parent_category", referencedColumnName = "categoryId")
+    private Category parentCategory;
 }

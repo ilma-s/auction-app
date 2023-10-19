@@ -9,7 +9,7 @@ import jakarta.persistence.GenerationType;
 
 @Entity
 @Data
-public class User {
+public class AppUser {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private String userId;

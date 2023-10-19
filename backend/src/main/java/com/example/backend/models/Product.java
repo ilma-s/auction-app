@@ -6,6 +6,8 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.JoinColumn;
 
 @Entity
 @Data
@@ -13,7 +15,11 @@ public class Product {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private String productId;
-    private String seller;
+
+    @ManyToOne
+    @JoinColumn(name = "sellerId")
+    private AppUser seller;
+
     private String category;
     private String name;
     private String description;
@@ -23,3 +29,4 @@ public class Product {
     private String status;
     private String endDate;
 }
+
