@@ -1,10 +1,12 @@
 import AppPath from '../../components/appPath/AppPath';
 
+import { TERMS_AND_CONDITIONS } from '../../utils/constants';
+
 const TermsAndConditions = () => {
     return (
         <>
             <div className="flex justify-between w-2/3 mx-auto">
-                <p className="font-normal">Terms and Conditions</p>
+                <p className="font-normal">{TERMS_AND_CONDITIONS}</p>
                 <AppPath />
             </div>
 

@@ -1,11 +1,26 @@
+import { NavLink } from 'react-router-dom';
+import { useState } from 'react';
+import { useSelector } from 'react-redux';
+
 import gavelIcon from './assets/gavel-icon.svg';
 import searchIcon from './assets/search-icon.svg';
 import SocialMediaIcons from '../socialMediaIcons/SocialMediaIcons';
-import { NavLink } from 'react-router-dom';
-import { useState } from 'react';
+
+import {
+    EVENT_KEY,
+    APP_NAME,
+    SEARCH_PLACEHOLDER,
+    HOME,
+    SHOP,
+    MY_ACCOUNT,
+    
+} from '../../utils/constants';
+import { selectName } from '../../app/selectors';
 
 const Header = () => {
     const [searchTerm, setSearchTerm] = useState('');
+
+    const name = useSelector(selectName);
 
     const handleSearch = () => {
         console.log(searchTerm);
@@ -13,7 +28,7 @@ const Header = () => {
     };
 
     const handleKeyPress = (event: React.KeyboardEvent<HTMLInputElement>) => {
-        if (event.key === 'Enter') {
+        if (event.key === EVENT_KEY) {
             handleSearch();
         }
     };
@@ -24,7 +39,7 @@ const Header = () => {
                 <div className="w-2/3 mx-auto flex justify-between pt-3 pb-3">
                     <SocialMediaIcons />
                     <div className="font-lato-bold text-white cursor-not-allowed">
-                        Hi, John Doe
+                        Hi, {name}
                     </div>
                 </div>
             </div>
@@ -33,14 +48,14 @@ const Header = () => {
                 <div className="flex items-center">
                     <img src={gavelIcon} alt="Gavel Icon" className="pb-4" />
                     <p className="leading-none text-2xl text-trueIndigo-500">
-                        AUCTION
+                        {APP_NAME}
                     </p>
                 </div>
 
                 <div className="px-2 py-2 w-1/2 border border-gray-300 flex items-center">
                     <input
                         type="text"
-                        placeholder="Try entering: Shoes"
+                        placeholder={`Try entering: ${SEARCH_PLACEHOLDER}`}
                         className="flex-grow border-none outline-none"
                         value={searchTerm}
                         onChange={(e) => setSearchTerm(e.target.value)}
@@ -62,7 +77,7 @@ const Header = () => {
                             isActive ? 'font-bold text-trueIndigo-500' : ''
                         }
                     >
-                        HOME
+                        {HOME}
                     </NavLink>
                     <NavLink
                         to={'/shop'}
@@ -70,7 +85,7 @@ const Header = () => {
                             isActive ? 'font-bold text-trueIndigo-500' : ''
                         }
                     >
-                        SHOP
+                        {SHOP}
                     </NavLink>
                     <NavLink
                         to={'/my-account'}
@@ -78,7 +93,7 @@ const Header = () => {
                             isActive ? 'font-bold text-trueIndigo-500' : ''
                         }
                     >
-                        MY ACCOUNT
+                        {MY_ACCOUNT}
                     </NavLink>
                 </div>
             </div>

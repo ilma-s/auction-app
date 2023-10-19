@@ -10,7 +10,7 @@ const AppPath = () => {
     return (
         <div className="flex gap-4 font-lato text-trueGray-800">
             <p className="font-light pr-2">
-                {capitalizeUrlFragments(pathnameSegments[1])}
+                {capitalizeUrlFragments(mappedPaths[pathnameSegments[1]] || pathnameSegments[1])}
             </p>
             <img src={arrowIcon} alt="Arrow Icon" className="pr-2" />
             <p className="font-bold text-trueIndigo-500">
@@ -19,5 +19,10 @@ const AppPath = () => {
         </div>
     );
 };
+
+
+export const mappedPaths: any = {
+    item: 'Single Product'
+}
 
 export default AppPath;

@@ -1,5 +1,7 @@
-import React from 'react';
 import { createRoot } from 'react-dom/client';
+import { Provider } from 'react-redux';
+import { store } from './app/store.ts';
+
 import './index.css';
 import AppWrapper from './AppWrapper.tsx';
 
@@ -9,9 +11,9 @@ if (root) {
     const reactRoot = createRoot(root);
 
     reactRoot.render(
-        <React.StrictMode>
+        <Provider store={store}>
             <AppWrapper />
-        </React.StrictMode>,
+        </Provider>,
     );
 } else {
     console.error("Element with ID 'root' not found in the document.");
