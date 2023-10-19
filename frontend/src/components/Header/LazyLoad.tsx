@@ -1,11 +1,11 @@
 import { lazy, Suspense } from 'react';
 
-const HeaderComponent = lazy(() => import('../Header'));
+const HeaderComponent = lazy(() => import('./Header'));
 
-const AppPath = () => (
+const Header = () => (
     <Suspense fallback={<div>Loading...</div>}>
         <HeaderComponent />
     </Suspense>
 );
 
-export default AppPath;
+export default Header;

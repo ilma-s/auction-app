@@ -1,11 +1,11 @@
 import { lazy, Suspense } from 'react';
 
-const TermsAndConditionsComponent = lazy(() => import('../TermsAndConditions'));
+const TermsAndConditionsComponent = lazy(() => import('./TermsAndConditions'));
 
-const AppPath = () => (
+const TermsAndConditions = () => (
     <Suspense fallback={<div>Loading...</div>}>
         <TermsAndConditionsComponent />
     </Suspense>
 );
 
-export default AppPath;
+export default TermsAndConditions;

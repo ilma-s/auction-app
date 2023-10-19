@@ -1,11 +1,11 @@
 import { lazy, Suspense } from 'react';
 
-const HealthCheckComponent = lazy(() => import('../HealthCheck'));
+const HealthCheckComponent = lazy(() => import('./HealthCheck'));
 
-const AppPath = () => (
+const HealthCheck = () => (
     <Suspense fallback={<div>Loading...</div>}>
         <HealthCheckComponent />
     </Suspense>
 );
 
-export default AppPath;
+export default HealthCheck;

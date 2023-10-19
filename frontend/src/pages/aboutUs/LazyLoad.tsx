@@ -1,11 +1,11 @@
 import { lazy, Suspense } from 'react';
 
-const AboutUsComponent = lazy(() => import('../AboutUs'));
+const AboutUsComponent = lazy(() => import('./AboutUs'));
 
-const AppPath = () => (
+const AboutUs = () => (
     <Suspense fallback={<div>Loading...</div>}>
         <AboutUsComponent />
     </Suspense>
 );
 
-export default AppPath;
+export default AboutUs;

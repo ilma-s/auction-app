@@ -1,10 +1,10 @@
 import { Route, Routes } from 'react-router-dom';
 
-import HomePage from '../pages/homePage/lazyLoad/HomePage';
-import AboutUs from '../pages/aboutUs/lazyLoad/AboutUs';
-import TermsAndConditions from '../pages/termsAndConditions/lazyLoad/TermsAndConditions';
-import PrivacyPolicy from '../pages/privacyPolicy/lazyLoad/PrivacyPolicy';
-import HealthCheck from '../pages/healthCheck/lazyLoad/HealthCheck';
+import HomePage from '../pages/homePage/LazyLoad';
+import AboutUs from '../pages/aboutUs/LazyLoad';
+import TermsAndConditions from '../pages/termsAndConditions/LazyLoad';
+import PrivacyPolicy from '../pages/privacyPolicy/LazyLoad';
+import HealthCheck from '../pages/healthCheck/LazyLoad';
 
 
 const App = () => {
