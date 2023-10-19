@@ -1,18 +1,16 @@
 import AppPath from '../../components/appPath/AppPath';
-import { AppPathProps } from '../../types';
 
 const PrivacyPolicy = () => {
-    const pageInfo: AppPathProps = {
-        name: 'Privacy and Policy',
-    };
-
     return (
         <>
-            <AppPath pageInfo={pageInfo} />
+            <div className="flex justify-between w-2/3 mx-auto">
+                <p className="font-normal">Privacy and Policy</p>
+                <AppPath />
+            </div>
 
-            <div className="flex w-2/3 mx-auto pt-5 justify-between font-lato text-trueGray-800">
+            <div className="flex w-2/3 mx-auto pt-3 justify-center font-lato text-trueGray-800">
                 <div className="w-1/2 max-w-full overflow-hidden pb-24">
-                    <p className="text-4xl pt-24 pb-6">Introduction</p>
+                    <p className="text-4xl pt-20 pb-6">Introduction</p>
                     <p className="pb-5 text-trueGray-500">
                         This privacy policy ("policy") will help you understand
                         how AuctionApp ("us", "we", "our") uses and protects the

@@ -1,19 +1,21 @@
-import ArrowIcon from './assets/arrow-icon.svg';
-import { AppPathProps } from '../../types';
+import { useLocation } from 'react-router-dom';
 
-type Props = {
-    pageInfo: AppPathProps;
-};
+import arrowIcon from './assets/arrow-icon.svg';
+import { capitalizeUrlFragments } from '../../helpers/capitalizeUrlFragment';
 
-const AppPath = ({ pageInfo }: Props) => {
+const AppPath = () => {
+    const location = useLocation();
+    const pathnameSegments = location.pathname.split('/');
+
     return (
-        <div className="flex w-2/3 mx-auto pt-5 justify-between font-lato text-trueGray-800">
-            <p className="font-bold">{pageInfo.name}</p>
-            <div className="flex gap-4">
-                <p className="font-light pr-2">Home</p>
-                <img src={ArrowIcon} alt="Arrow Icon" className="pr-2" />
-                <p className="font-bold text-trueIndigo-500">{pageInfo.name}</p>
-            </div>
+        <div className="flex gap-4 font-lato text-trueGray-800">
+            <p className="font-light pr-2">
+                {capitalizeUrlFragments(pathnameSegments[1])}
+            </p>
+            <img src={arrowIcon} alt="Arrow Icon" className="pr-2" />
+            <p className="font-bold text-trueIndigo-500">
+                {capitalizeUrlFragments(pathnameSegments[2])}
+            </p>
         </div>
     );
 };

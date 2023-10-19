@@ -1,18 +1,17 @@
 import AppPath from '../../components/appPath/AppPath';
-import { AppPathProps } from '../../types';
 
 const TermsAndConditions = () => {
-    const pageInfo: AppPathProps = {
-        name: 'Terms and Conditions',
-    };
-
     return (
         <>
-            <AppPath pageInfo={pageInfo} />
-            <div className="flex w-2/3 mx-auto pt-5 justify-between font-lato text-trueGray-800">
+            <div className="flex justify-between w-2/3 mx-auto">
+                <p className="font-normal">Terms and Conditions</p>
+                <AppPath />
+            </div>
+
+            <div className="flex w-2/3 mx-auto pt-3 justify-center font-lato text-trueGray-800">
                 <div className="w-1/2 max-w-full overflow-hidden pb-24">
                     <div>
-                        <p className="text-4xl pt-24 pb-6">Introduction</p>
+                        <p className="text-4xl pt-20 pb-6">Introduction</p>
 
                         <p className="pb-2 text-trueGray-500">
                             These Website Standard Terms and Conditions written

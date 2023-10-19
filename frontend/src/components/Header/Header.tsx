@@ -1,5 +1,5 @@
-import GavelIcon from './assets/gavel-icon.svg';
-import SearchIcon from './assets/search-icon.svg';
+import gavelIcon from './assets/gavel-icon.svg';
+import searchIcon from './assets/search-icon.svg';
 import SocialMediaIcons from '../socialMediaIcons/SocialMediaIcons';
 import { NavLink } from 'react-router-dom';
 import { useState } from 'react';
@@ -31,7 +31,7 @@ const Header = () => {
 
             <div className="w-2/3 mx-auto flex pt-4 pb-4 justify-between items-center font-lato font-light">
                 <div className="flex items-center">
-                    <img src={GavelIcon} alt="Gavel Icon" className="pb-4" />
+                    <img src={gavelIcon} alt="Gavel Icon" className="pb-4" />
                     <p className="leading-none text-2xl text-trueIndigo-500">
                         AUCTION
                     </p>
@@ -51,7 +51,7 @@ const Header = () => {
                         className="pr-2"
                         onClick={handleSearch}
                     >
-                        <img src={SearchIcon} alt="Search" />
+                        <img src={searchIcon} alt="Search" />
                     </button>
                 </div>
 
