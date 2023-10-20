@@ -9,7 +9,6 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @CrossOrigin(origins = "${frontend_address}")
 public class Controller {
-
     @Value("${frontend_address}")
     private String frontend_address;
 
