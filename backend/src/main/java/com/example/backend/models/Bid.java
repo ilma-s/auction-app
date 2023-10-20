@@ -20,7 +20,8 @@ public class Bid {
     @JoinColumn(name = "productId")
     private Product product;
 
-    @OneToOne(mappedBy = "bid") // This indicates a bid can be associated with a single transaction
-    private Transaction transaction;
+    @OneToOne(mappedBy = "bid", cascade = CascadeType.ALL, orphanRemoval = true)
+    private Transaction transaction_id;
 }
+
 
