@@ -1,6 +1,7 @@
 package com.example.backend.models;
 
 import jakarta.persistence.*;
+import java.sql.Timestamp;
 import lombok.Data;
 
 @Entity
@@ -10,7 +11,7 @@ public class Bid {
     @GeneratedValue(strategy = GenerationType.AUTO)
     private String bidId;
     private Double amount;
-    private String timestamp;
+    private Timestamp timestamp;
 
     @ManyToOne
     @JoinColumn(name = "bidderId")

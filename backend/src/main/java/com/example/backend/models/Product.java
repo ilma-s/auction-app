@@ -20,7 +20,6 @@ public class Product {
     @JoinColumn(name = "sellerId")
     private AppUser seller;
 
-    private String category;
     private String name;
     private String description;
     private Double startingPrice;
