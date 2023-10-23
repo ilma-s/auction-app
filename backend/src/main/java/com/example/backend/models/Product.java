@@ -8,6 +8,7 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.JoinColumn;
+import java.util.Date;
 
 @Entity
 @Data
@@ -24,8 +25,8 @@ public class Product {
     private String description;
     private Double startingPrice;
     private Double currentPrice;
-    private String startDate;
+    private Date  startDate;
     private String status;
-    private String endDate;
+    private Date  endDate;
 }
 
