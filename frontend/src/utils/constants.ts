@@ -22,6 +22,16 @@ export const CONTACT_EMAIL = 'support@auction.com';
 
 export const CONTACT_NUMBER = '+123-797-567-2535';
 
+export const CATEGORIES = 'CATEGORIES';
+
+export const ALL_CATEGORIES = 'All Categories';
+
+export const BID_NOW = 'BID NOW';
+
+export const NEW_ARRIVALS = 'New Arrivals';
+
+export const LAST_CHANCE = 'Last Chance';
+
 export const SMALL_WORDS: string[] = [
     'and',
     'the',

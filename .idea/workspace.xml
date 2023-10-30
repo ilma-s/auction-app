@@ -5,11 +5,64 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="2be264a5-064b-4494-97c9-f2c79edb6f94" name="Changes" comment="">
-      <change beforePath="$PROJECT_DIR$/.idea/.gitignore" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/auction-app.iml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/modules.xml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend/.gitkeep" beforeDir="false" />
+      <change afterPath="$PROJECT_DIR$/frontend/package-lock.json" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/frontend/postcss.config.js" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/frontend/src/AppWrapper.tsx" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/frontend/src/LazyLoadedComponents.tsx" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/frontend/src/app/App.tsx" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/frontend/src/app/selectors.ts" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/frontend/src/app/store.ts" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/frontend/src/components/Header/Header.tsx" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/frontend/src/components/Header/LazyLoad.tsx" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/frontend/src/components/Header/assets/gavel-icon.svg" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/frontend/src/components/Header/assets/search-icon.svg" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/frontend/src/components/appPath/AppPath.tsx" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/frontend/src/components/appPath/assets/arrow-icon.svg" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/frontend/src/components/footer/Footer.tsx" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/frontend/src/components/footer/LazyLoad.tsx" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/frontend/src/components/socialMediaIcons/SocialMediaIcons.tsx" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/frontend/src/components/socialMediaIcons/assets/facebook-icon.svg" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/frontend/src/components/socialMediaIcons/assets/instagram-icon.svg" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/frontend/src/components/socialMediaIcons/assets/twitter-icon.svg" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/frontend/src/helpers/capitalizeUrlFragment.ts" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/frontend/src/pages/aboutUs/AboutUs.tsx" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/frontend/src/pages/aboutUs/LazyLoad.tsx" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/frontend/src/pages/aboutUs/assets/about-us-1.jpg" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/frontend/src/pages/aboutUs/assets/about-us-2.jpg" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/frontend/src/pages/aboutUs/assets/about-us-3.jpg" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/frontend/src/pages/healthCheck/LazyLoad.tsx" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/frontend/src/pages/homePage/HomePage.tsx" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/frontend/src/pages/homePage/LazyLoad.tsx" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/frontend/src/pages/privacyPolicy/LazyLoad.tsx" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/frontend/src/pages/privacyPolicy/PrivacyPolicy.tsx" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/frontend/src/pages/termsAndConditions/LazyLoad.tsx" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/frontend/src/pages/termsAndConditions/TermsAndConditions.tsx" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/frontend/src/tailwind.css" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/frontend/src/utils/constants.ts" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/frontend/tailwind.config.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/.gitignore" beforeDir="false" afterPath="$PROJECT_DIR$/backend/.gitignore" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/.mvn/wrapper/maven-wrapper.properties" beforeDir="false" afterPath="$PROJECT_DIR$/backend/.mvn/wrapper/maven-wrapper.properties" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/mvnw" beforeDir="false" afterPath="$PROJECT_DIR$/backend/mvnw" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/mvnw.cmd" beforeDir="false" afterPath="$PROJECT_DIR$/backend/mvnw.cmd" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/pom.xml" beforeDir="false" afterPath="$PROJECT_DIR$/backend/pom.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/src/main/java/com/example/backend/BackendApplication.java" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/main/java/com/example/backend/BackendApplication.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/src/main/resources/application.properties" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/main/resources/application.properties" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/src/test/java/com/example/backend/BackendApplicationTests.java" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/test/java/com/example/backend/BackendApplicationTests.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/.eslintrc.cjs" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/.eslintrc.cjs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/.gitignore" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/.gitignore" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/.prettierrc" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/.prettierrc" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/README.md" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/README.md" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/index.html" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/index.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/package.json" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/package.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/src/App.tsx" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/src/index.css" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/index.css" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/src/main.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/main.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/src/vite-env.d.ts" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/vite-env.d.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/tsconfig.json" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/tsconfig.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/tsconfig.node.json" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/tsconfig.node.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/vite.config.ts" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/vite.config.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/yarn.lock" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/yarn.lock" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -31,25 +84,25 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent"><![CDATA[{
-  "keyToString": {
-    "RunOnceActivity.OpenProjectViewOnStart": "true",
-    "RunOnceActivity.ShowReadmeOnStart": "true",
-    "SHARE_PROJECT_CONFIGURATION_FILES": "true",
-    "WebServerToolWindowFactoryState": "false",
-    "git-widget-placeholder": "create-bootstrap-app",
-    "last_opened_file_path": "C:/Users/ilma2/OneDrive/Desktop/auction-app",
-    "node.js.detected.package.eslint": "true",
-    "node.js.detected.package.tslint": "true",
-    "node.js.selected.package.eslint": "(autodetect)",
-    "node.js.selected.package.tslint": "(autodetect)",
-    "nodejs_package_manager_path": "npm",
-    "project.structure.last.edited": "Modules",
-    "project.structure.proportion": "0.0",
-    "project.structure.side.proportion": "0.0",
-    "vue.rearranger.settings.migration": "true"
+  <component name="PropertiesComponent">{
+  &quot;keyToString&quot;: {
+    &quot;RunOnceActivity.OpenProjectViewOnStart&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
+    &quot;SHARE_PROJECT_CONFIGURATION_FILES&quot;: &quot;true&quot;,
+    &quot;WebServerToolWindowFactoryState&quot;: &quot;false&quot;,
+    &quot;git-widget-placeholder&quot;: &quot;Merging seed-database&quot;,
+    &quot;last_opened_file_path&quot;: &quot;C:/Users/ilma2/OneDrive/Desktop/auction-app&quot;,
+    &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
+    &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
+    &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
+    &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;,
+    &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,
+    &quot;project.structure.last.edited&quot;: &quot;Modules&quot;,
+    &quot;project.structure.proportion&quot;: &quot;0.0&quot;,
+    &quot;project.structure.side.proportion&quot;: &quot;0.0&quot;,
+    &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
   }
-}]]></component>
+}</component>
   <component name="RecentsManager">
     <key name="CopyFile.RECENT_KEYS">
       <recent name="C:\Users\ilma2\OneDrive\Desktop\auction-app\frontend\src\assets" />
@@ -72,6 +125,7 @@
       <workItem from="1697035763590" duration="89000" />
       <workItem from="1697036080147" duration="146000" />
       <workItem from="1697036376951" duration="48000" />
+      <workItem from="1698247726338" duration="39000" />
     </task>
     <servers />
   </component>
