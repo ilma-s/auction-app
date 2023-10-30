@@ -1,14 +1,11 @@
 package com.example.backend.models;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import jakarta.persistence.*;
 import lombok.Data;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.ManyToOne;
-import jakarta.persistence.JoinColumn;
-import java.util.Date;
+import java.sql.Timestamp;
 
 @Entity
 @Data
@@ -18,15 +15,54 @@ public class Product {
     private String productId;
 
     @ManyToOne
-    @JoinColumn(name = "sellerId")
-    private AppUser seller;
+    @JoinColumn(name = "seller_id")
+    private AppUser sellerId;
 
     private String name;
     private String description;
     private Double startingPrice;
     private Double currentPrice;
-    private Date  startDate;
+    private Timestamp startDate;
+    private Timestamp endDate;
     private String status;
-    private Date  endDate;
+
+    public Product(String productId, AppUser sellerId, String name, String description, Double startingPrice, Double currentPrice, Timestamp startDate, Timestamp endDate, String status) {
+        this.productId = productId;
+        this.sellerId = sellerId;
+        this.name = name;
+        this.description = description;
+        this.startingPrice = startingPrice;
+        this.currentPrice = currentPrice;
+        this.startDate = startDate;
+        this.endDate = endDate;
+        this.status = status;
+    }
+
+    @JsonCreator
+    public static Product fromJson(
+            @JsonProperty("productId") String productId,
+            @JsonProperty("sellerId") AppUser sellerId,
+            @JsonProperty("name") String name,
+            @JsonProperty("description") String description,
+            @JsonProperty("startingPrice") Double startingPrice,
+            @JsonProperty("currentPrice") Double currentPrice,
+            @JsonProperty("startDate") Timestamp startDate,
+            @JsonProperty("endDate") Timestamp endDate,
+            @JsonProperty("status") String status) {
+
+        return new Product(productId, sellerId, name, description, startingPrice, currentPrice, startDate, endDate, status);
+    }
+
+    public Product() {
+        this.productId = null;
+        this.sellerId = null;
+        this.name = null;
+        this.description = null;
+        this.startingPrice = null;
+        this.currentPrice = null;
+        this.startDate = null;
+        this.endDate = null;
+        this.status = null;
+    }
 }
 

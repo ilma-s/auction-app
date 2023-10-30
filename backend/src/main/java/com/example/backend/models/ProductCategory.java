@@ -17,10 +17,10 @@ public class ProductCategory {
     private String id;
 
     @ManyToOne
-    @JoinColumn(name = "category", referencedColumnName = "categoryId")
-    private Category category;
+    @JoinColumn(name = "category_id", referencedColumnName = "categoryId")
+    private Category categoryId;
 
     @ManyToOne
-    @JoinColumn(name = "product", referencedColumnName = "productId")
-    private Product product;
+    @JoinColumn(name = "product_id", referencedColumnName = "productId")
+    private Product productId;
 }

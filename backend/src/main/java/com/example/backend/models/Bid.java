@@ -14,15 +14,15 @@ public class Bid {
     private Timestamp timestamp;
 
     @ManyToOne
-    @JoinColumn(name = "bidderId")
-    private AppUser bidder;
+    @JoinColumn(name = "bidder_id")
+    private AppUser bidder_id;
 
     @ManyToOne
-    @JoinColumn(name = "productId")
-    private Product product;
+    @JoinColumn(name = "product_id")
+    private Product productId;
 
-    @OneToOne(mappedBy = "bid", cascade = CascadeType.ALL, orphanRemoval = true)
-    private Transaction transaction_id;
+    @OneToOne(mappedBy = "bidId", cascade = CascadeType.ALL, orphanRemoval = true)
+    private Transaction transactionId;
 }
 
 

@@ -17,10 +17,10 @@ public class Wishlist {
     private String id;
 
     @ManyToOne
-    @JoinColumn(name = "userId")
-    private AppUser user;
+    @JoinColumn(name = "user_id")
+    private AppUser userId;
 
     @ManyToOne
-    @JoinColumn(name = "productId")
-    private Product product;
+    @JoinColumn(name = "product_id")
+    private Product productId;
 }

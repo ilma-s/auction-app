@@ -19,6 +19,6 @@ public class Category {
     private String name;
 
     @ManyToOne
-    @JoinColumn(name = "parent_category", referencedColumnName = "categoryId")
-    private Category parentCategory;
+    @JoinColumn(name = "parent_category_id", referencedColumnName = "categoryId")
+    private Category parentCategoryId;
 }

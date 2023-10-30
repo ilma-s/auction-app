@@ -10,10 +10,10 @@ VALUES
     ('8', 'henry.martin', 'henry.martin@example.com', 'Henry', 'Martin', false),
     ('9', 'ivy.clark', 'ivy.clark@example.com', 'Ivy', 'Clark', false),
     ('10', 'jack.hall', 'jack.hall@example.com', 'Jack', 'Hall', false)
-    ON CONFLICT (user_id) DO NOTHING;
+ON CONFLICT (user_id) DO NOTHING;
 
 
-INSERT INTO category (category_id, name, parent_category)
+INSERT INTO category (category_id, name, parent_category_id)
 VALUES
     ('1', 'Electronics', null),
     ('2', 'Laptops', 1),
@@ -47,16 +47,16 @@ ALTER TABLE product
 
 INSERT INTO product (product_id, seller_id, name, description, starting_price, current_price, start_date, status, end_date)
 VALUES
-    ('1', 1, 'Dell XPS 15 Laptop', 'This powerful laptop offers excellent performance and a stunning 4K display. Ideal for both work and entertainment, it''s a premium choice for professionals and enthusiasts. With its high-resolution screen, you can enjoy crystal-clear visuals and immerse yourself in your favorite content. The laptop is powered by a state-of-the-art processor, ensuring smooth multitasking and seamless performance. Whether you''re crunching numbers or playing the latest games, the Dell XPS 15 will exceed your expectations. It''s more than just a computer; it''s a gateway to productivity and enjoyment.', 1499.99, 1499.99, '2023-10-24 15:00:00', 'AVAILABLE', '2023-12-14 15:00:00'),
-    ('2', 2, 'HP Spectre x360', 'A versatile 2-in-1 laptop with a sleek design and impressive battery life. It''s perfect for those who value both style and functionality. The Spectre x360 can effortlessly transform from a laptop to a tablet, offering you the flexibility you need. Its long-lasting battery ensures that you can work, stream, and create for hours on end without worrying about recharging. With its cutting-edge technology and stunning display, this laptop is your ticket to a world of possibilities. Get ready to experience the future of computing with the HP Spectre x360.', 1299.99, 1299.99, '2023-10-20 16:00:00', 'AVAILABLE', '2023-12-20 00:00:00'),
-    ('3', 3, 'Adidas Men’s Hooded Sweatshirt', 'Stay warm and stylish with this branded Adidas hooded sweatshirt. Perfect for casual outings and chilly days. This sweatshirt is more than just an article of clothing; it''s a symbol of comfort and fashion. The soft, high-quality fabric keeps you cozy and warm, making it a reliable companion during the colder months. With its iconic Adidas logo and timeless design, it''s a versatile addition to your wardrobe. Whether you''re running errands or catching up with friends, this hooded sweatshirt will keep you looking great and feeling comfortable.', 69.99, 69.99, '2023-10-10 17:00:00', 'AVAILABLE', '2023-12-30 17:00:00'),
+    ('1', 1, 'Dell XPS 15 Laptop', 'This powerful laptop offers excellent performance and a stunning 4K display. Ideal for both work and entertainment, it''s a premium choice for professionals and enthusiasts. With its high-resolution screen, you can enjoy crystal-clear visuals and immerse yourself in your favorite content. The laptop is powered by a state-of-the-art processor, ensuring smooth multitasking and seamless performance. Whether you''re crunching numbers or playing the latest games, the Dell XPS 15 will exceed your expectations. It''s more than just a computer; it''s a gateway to productivity and enjoyment.', 1499.99, 1500.99, '2023-10-24 15:00:00', 'AVAILABLE', '2023-12-14 15:00:00'),
+    ('2', 2, 'HP Spectre x360', 'A versatile 2-in-1 laptop with a sleek design and impressive battery life. It''s perfect for those who value both style and functionality. The Spectre x360 can effortlessly transform from a laptop to a tablet, offering you the flexibility you need. Its long-lasting battery ensures that you can work, stream, and create for hours on end without worrying about recharging. With its cutting-edge technology and stunning display, this laptop is your ticket to a world of possibilities. Get ready to experience the future of computing with the HP Spectre x360.', 1299.99, 1300.99, '2023-10-20 16:00:00', 'AVAILABLE', '2023-12-20 00:00:00'),
+    ('3', 3, 'Adidas Men’s Hooded Sweatshirt', 'Stay warm and stylish with this branded Adidas hooded sweatshirt. Perfect for casual outings and chilly days. This sweatshirt is more than just an article of clothing; it''s a symbol of comfort and fashion. The soft, high-quality fabric keeps you cozy and warm, making it a reliable companion during the colder months. With its iconic Adidas logo and timeless design, it''s a versatile addition to your wardrobe. Whether you''re running errands or catching up with friends, this hooded sweatshirt will keep you looking great and feeling comfortable.', 69.99, 70.99, '2023-10-10 17:00:00', 'AVAILABLE', '2023-12-30 17:00:00'),
     ('4', 4, 'Nike Air Zoom Pegasus 38', 'Designed for runners, these shoes offer exceptional comfort, support, and responsiveness. Whether you''re a beginner or a pro, they''ll help you go the distance. The Nike Air Zoom Pegasus 38 is more than just a pair of sneakers; it''s a tool for athletes looking to excel in their sport. These shoes provide superior cushioning to reduce impact during your runs, and the exceptional grip ensures you maintain control over various terrains. Whether you''re training for a marathon or simply going for a jog, these sneakers are your ticket to improved performance and comfort.', 119.99, 119.99, '2023-10-04 00:00:00', 'AVAILABLE', '2023-12-04 00:00:00'),
     ('5', 5, 'Tiffany & Co. Diamond Necklace', 'Elegant and luxurious, this Tiffany & Co. diamond necklace is a statement piece that adds a touch of sophistication to any outfit. This necklace is more than just a piece of jewelry; it''s a symbol of elegance and prestige. The exquisite diamonds and timeless design make it a piece that will never go out of style. Whether you''re attending a gala, a wedding, or a special event, this diamond necklace will make you the center of attention and leave a lasting impression.', 4999.99, 4999.99, '2023-10-05 00:00:00', 'AVAILABLE', '2023-12-30 00:00:00'),
-    ('6', 6, 'Samsung Galaxy S22 Ultra', 'The flagship smartphone with a stunning display, powerful camera system, and lightning-fast performance. It''s the ultimate choice for tech enthusiasts. The Samsung Galaxy S22 Ultra is more than just a phone; it''s a pocket-sized powerhouse. Its incredible display showcases vibrant colors and crystal-clear details, making your content come to life. With a cutting-edge camera system, you can capture professional-quality photos and videos. Whether you''re a photography enthusiast, a gaming aficionado, or a multitasking pro, this smartphone will revolutionize your digital experience.', 1199.99, 1199.99, '2023-10-06 09:00:00', 'AVAILABLE', '2023-12-16 09:00:00'),
-    ('7', 7, 'ASUS ROG Zephyrus G15', 'A gaming laptop with top-tier specifications, high refresh rate display, and advanced cooling. Dominate your opponents with this gaming powerhouse. The ASUS ROG Zephyrus G15 is more than just a laptop; it''s a portal to the gaming world. With top-tier specs, you''ll have the power to run the most demanding games without a hitch. The high refresh rate display ensures you see every frame with precision, and the advanced cooling system keeps your laptop running at peak performance. Whether you''re a professional gamer or a casual player, the Zephyrus G15 guarantees that you have the upper hand in the virtual arena.', 1699.99, 1699.99, '2023-10-07 00:00:00', 'AVAILABLE', '2023-12-25 00:00:00'),
-    ('8', 8, 'Jimmy Choo Women’s High Heel Shoes', 'Elevate your style with these elegant Jimmy Choo high heel shoes. They''re perfect for formal events and special occasions. These high heel shoes are more than just footwear; they''re a statement of sophistication and glamour. The exquisite craftsmanship and timeless design make them the perfect complement to your formal outfit. Whether you''re attending a wedding, a gala, or a special dinner, these Jimmy Choo shoes will make you stand out and showcase your refined taste.', 199.99, 199.99, '2023-10-08 10:00:00', 'AVAILABLE', '2023-12-18 10:00:00'),
-    ('9', 9, 'Under Armour Curry 8 Basketball Shoes', 'Endorsed by NBA star Stephen Curry, these shoes offer exceptional traction, cushioning, and support for basketball players. Elevate your game with these kicks. The Under Armour Curry 8 Basketball Shoes are more than just sneakers; they''re your ticket to becoming a basketball legend. With outstanding traction, cushioning, and support, you''ll be able to perform your best on the court. Whether you''re a professional athlete or a dedicated enthusiast, these kicks will make sure you reach your highest potential and dominate the game.', 149.99, 149.99, '2023-11-09 00:00:00', 'AVAILABLE', '2023-12-19 00:00:00'),
-    ('10', 10, 'Ray-Ban Aviator Sunglasses', 'A timeless pair of aviator sunglasses that provide both UV protection and a stylish look. They''re a must-have for sunny days and fashion-forward individuals. The Ray-Ban Aviator Sunglasses are more than just eyewear; they''re a statement of style and protection. With their timeless design and UV protection, they keep your eyes safe from the sun while keeping you in vogue. Whether you''re at the beach, on a road trip, or simply enjoying the outdoors, these shades will keep you looking cool and protected.', 129.99, 129.99, '2023-10-01 18:00:00', 'AVAILABLE', '2023-12-30 18:00:00'),
+    ('6', 6, 'Samsung Galaxy S22 Ultra', 'The flagship smartphone with a stunning display, powerful camera system, and lightning-fast performance. It''s the ultimate choice for tech enthusiasts. The Samsung Galaxy S22 Ultra is more than just a phone; it''s a pocket-sized powerhouse. Its incredible display showcases vibrant colors and crystal-clear details, making your content come to life. With a cutting-edge camera system, you can capture professional-quality photos and videos. Whether you''re a photography enthusiast, a gaming aficionado, or a multitasking pro, this smartphone will revolutionize your digital experience.', 1199.99, 1200.99, '2023-10-06 09:00:00', 'AVAILABLE', '2023-12-16 09:00:00'),
+    ('7', 7, 'ASUS ROG Zephyrus G15', 'A gaming laptop with top-tier specifications, high refresh rate display, and advanced cooling. Dominate your opponents with this gaming powerhouse. The ASUS ROG Zephyrus G15 is more than just a laptop; it''s a portal to the gaming world. With top-tier specs, you''ll have the power to run the most demanding games without a hitch. The high refresh rate display ensures you see every frame with precision, and the advanced cooling system keeps your laptop running at peak performance. Whether you''re a professional gamer or a casual player, the Zephyrus G15 guarantees that you have the upper hand in the virtual arena.', 1699.99, 1700.99, '2023-10-07 00:00:00', 'AVAILABLE', '2023-12-25 00:00:00'),
+    ('8', 8, 'Jimmy Choo Women’s High Heel Shoes', 'Elevate your style with these elegant Jimmy Choo high heel shoes. They''re perfect for formal events and special occasions. These high heel shoes are more than just footwear; they''re a statement of sophistication and glamour. The exquisite craftsmanship and timeless design make them the perfect complement to your formal outfit. Whether you''re attending a wedding, a gala, or a special dinner, these Jimmy Choo shoes will make you stand out and showcase your refined taste.', 199.99, 200.99, '2023-10-08 10:00:00', 'AVAILABLE', '2023-12-18 10:00:00'),
+    ('9', 9, 'Under Armour Curry 8 Basketball Shoes', 'Endorsed by NBA star Stephen Curry, these shoes offer exceptional traction, cushioning, and support for basketball players. Elevate your game with these kicks. The Under Armour Curry 8 Basketball Shoes are more than just sneakers; they''re your ticket to becoming a basketball legend. With outstanding traction, cushioning, and support, you''ll be able to perform your best on the court. Whether you''re a professional athlete or a dedicated enthusiast, these kicks will make sure you reach your highest potential and dominate the game.', 149.99, 150.99, '2023-11-09 00:00:00', 'AVAILABLE', '2023-12-19 00:00:00'),
+    ('10', 10, 'Ray-Ban Aviator Sunglasses', 'A timeless pair of aviator sunglasses that provide both UV protection and a stylish look. They''re a must-have for sunny days and fashion-forward individuals. The Ray-Ban Aviator Sunglasses are more than just eyewear; they''re a statement of style and protection. With their timeless design and UV protection, they keep your eyes safe from the sun while keeping you in vogue. Whether you''re at the beach, on a road trip, or simply enjoying the outdoors, these shades will keep you looking cool and protected.', 129.99, 130.99, '2023-10-01 18:00:00', 'AVAILABLE', '2023-12-30 18:00:00'),
     ('11', 1, 'Sony 65-Inch 4K Smart TV', 'Experience stunning visuals with this 65-inch Sony 4K Smart TV. It offers exceptional picture quality and smart features for an immersive entertainment experience. The Sony 65-Inch 4K Smart TV is more than just a television; it''s a window to a world of breathtaking entertainment. With exceptional picture quality and smart features, it provides an immersive experience for your favorite content. Whether you''re streaming, gaming, or watching your favorite shows, this TV guarantees that every detail is crystal clear and vibrant.', 999.99, 999.99, '2023-10-20 12:00:00', 'AVAILABLE', '2023-12-20 12:00:00'),
     ('12', 2, 'Apple iPhone 15 Pro', 'The latest iPhone with a Pro camera system, faster A15 Bionic chip, and a Super Retina XDR display. It''s the ultimate smartphone for Apple enthusiasts. The Apple iPhone 15 Pro is more than just a phone; it''s a piece of technological art. With a Pro camera system that captures breathtaking photos, a faster A15 Bionic chip, and a Super Retina XDR display, it''s the ultimate smartphone for Apple enthusiasts. Whether you''re a photography enthusiast, a power user, or simply in love with Apple''s design philosophy, the iPhone 15 Pro exceeds expectations in every way.', 1099.99, 1099.99, '2023-10-12 13:00:00', 'AVAILABLE', '2023-12-22 13:00:00'),
     ('13', 3, 'Gucci Leather Wallet', 'A luxurious Gucci leather wallet that combines style and functionality. Keep your essentials organized in style. The Gucci Leather Wallet is more than just a wallet; it''s a luxurious accessory that combines style and functionality. Crafted with precision and featuring the iconic Gucci design, this wallet keeps your essentials organized in the most stylish way possible. Whether you''re headed to a business meeting or a social gathering, it''s the perfect complement to your outfit and a symbol of your exquisite taste.', 299.99, 299.99, '2023-10-08 00:00:00', 'AVAILABLE', '2023-12-28 00:00:00'),
@@ -67,29 +67,29 @@ VALUES
     ('18', 8, 'Prada Women’s Handbag', 'Elevate your style with a luxurious Prada handbag. It''s a fashionable accessory that complements any outfit. The Prada Women’s Handbag is more than just a bag; it''s a fashionable accessory that complements any outfit and adds a touch of elegance. Crafted with precision and featuring the iconic Prada design, this handbag is the epitome of luxury and style. Whether you''re attending a social event or a formal gathering, it''s the perfect accessory to make a statement and showcase your exquisite taste.', 699.99, 699.99, '2023-10-02 00:00:00', 'AVAILABLE', '2023-12-27 00:00:00'),
     ('19', 9, 'Nike Air Force 1 Sneakers', 'Classic Nike Air Force 1 sneakers that provide timeless style and comfort. They''re a favorite for streetwear enthusiasts. The Nike Air Force 1 Sneakers are more than just shoes; they''re a symbol of timeless style and comfort. Whether you''re a streetwear enthusiast or simply looking for a pair of sneakers that will keep you comfortable throughout the day, the Air Force 1s are a favorite choice. Elevate your style with these iconic and reliable kicks.', 89.99, 89.99, '2023-10-15 15:00:00', 'AVAILABLE', '2023-12-25 15:00:00'),
     ('20', 10, 'Ray-Ban Wayfarer Sunglasses', 'Iconic Ray-Ban Wayfarer sunglasses that offer a stylish and timeless look. They''re perfect for sunny days and retro fashion lovers. The Ray-Ban Wayfarer Sunglasses are more than just shades; they''re an iconic statement of fashion and a timeless accessory for sunny days and retro fashion lovers. Whether you''re at the beach, driving, or simply strolling around town, these sunglasses will keep you looking cool, and their classic design never goes out of style.', 129.99, 129.99, '2023-10-20 20:00:00', 'AVAILABLE', '2023-12-10 20:00:00')
-    ON CONFLICT (product_id) DO NOTHING;
+ON CONFLICT (product_id) DO NOTHING;
 
 
 INSERT INTO bid (bid_id, amount, timestamp, bidder_id, product_id)
 VALUES
-    ('1', 220.00, '2023-01-06 08:30:45', 1, 1),
-    ('2', 350.00, '2023-01-07 14:15:20', 2, 2),
-    ('3', 160.00, '2023-01-08 10:05:30', 3, 3),
-    ('4', 260.00, '2023-01-09 17:45:10', 4, 1),
-    ('5', 180.00, '2023-01-10 11:20:55', 5, 3),
-    ('6', 420.00, '2023-01-11 09:40:30', 6, 6),
-    ('7', 510.00, '2023-01-12 16:55:15', 7, 7),
-    ('8', 320.00, '2023-01-13 13:10:25', 8, 8),
-    ('9', 400.00, '2023-01-14 19:25:30', 9, 9),
-    ('10', 290.00, '2023-01-15 10:35:50', 10, 10)
-    ON CONFLICT (bid_id) DO NOTHING;
+    ('1', 1500.99, '2023-01-06 08:30:45', 1, 1),
+    ('2', 1300.99, '2023-01-07 14:15:20', 2, 2),
+    ('3', 70.99, '2023-01-08 10:05:30', 3, 3),
+    ('4', 1510.99, '2023-01-09 17:45:10', 4, 1),
+    ('5', 75.99, '2023-01-10 11:20:55', 5, 3),
+    ('6', 1200.99, '2023-01-11 09:40:30', 6, 6),
+    ('7', 1700.99, '2023-01-12 16:55:15', 7, 7),
+    ('8', 200.99, '2023-01-13 13:10:25', 8, 8),
+    ('9', 150.99, '2023-01-14 19:25:30', 9, 9),
+    ('10', 130.99, '2023-01-15 10:35:50', 10, 10)
+ON CONFLICT (bid_id) DO NOTHING;
 
 
 ALTER TABLE image
     ALTER COLUMN image_url TYPE TEXT;
 
 
-INSERT INTO image (image_id, image_url, product)
+INSERT INTO image (image_id, image_url, product_id)
 VALUES
     ('1', 'https://i.dell.com/is/image/DellContent/content/dam/ss2/product-images/dell-client-products/notebooks/xps-notebooks/xps-15-9530/media-gallery/touch-black/notebook-xps-15-9530-t-black-gallery-5.psd?fmt=pjpg&pscan=auto&scl=1&wid=3481&hei=2067&qlt=100,1&resMode=sharp2&size=3481,2067&chrss=full&imwidth=5000', 1),
     ('2', 'https://cpuinfotech.ba/wp-content/uploads/2021/11/251A2EA_200819123826674.jpg', 2),
@@ -134,10 +134,10 @@ VALUES
     ('36', 'https://assets.sunglasshut.com/is/image/LuxotticaRetail/805289126577__STD__shad__bk.png?impolicy=SGH_bgtransparent', 20),
     ('37', 'https://assets.sunglasshut.com/is/image/LuxotticaRetail/805289126577__STD__shad__cfr.png?impolicy=SGH_bgtransparent', 20)
 
-    ON CONFLICT (image_id) DO NOTHING;
+ON CONFLICT (image_id) DO NOTHING;
 
 
-INSERT INTO product_category (id, category, product)
+INSERT INTO product_category (id, category_id, product_id)
 VALUES
     ('1', 2, 1),
     ('2', 2, 2),
@@ -161,7 +161,7 @@ VALUES
     ('19', 11, 19),
     ('20', 6, 20)
 
-    ON CONFLICT (id) DO NOTHING;
+ON CONFLICT (id) DO NOTHING;
 
 
 INSERT INTO transaction (transaction_id, timestamp, status, bid_id)
@@ -175,9 +175,7 @@ VALUES
     ('7', '2023-01-12 14:55:00', 'Success', 9),
     ('8', '2023-01-13 15:10:00', 'Success', 10)
 
-    ON CONFLICT (transaction_id) DO NOTHING;
-
-
+ON CONFLICT (transaction_id) DO NOTHING;
 
 INSERT INTO wishlist (id, user_id, product_id)
 VALUES
@@ -192,5 +190,5 @@ VALUES
     ('9', 9, 2),
     ('10', 10, 3)
 
-    ON CONFLICT (id) DO NOTHING;
+ON CONFLICT (id) DO NOTHING;
 
