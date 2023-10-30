@@ -21,7 +21,7 @@ public class Bid {
     @JoinColumn(name = "product_id")
     private Product product;
 
-    @OneToOne(mappedBy = "bidId", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToOne(mappedBy = "bid", cascade = CascadeType.ALL, orphanRemoval = true)
     private Transaction transaction;
 }
 

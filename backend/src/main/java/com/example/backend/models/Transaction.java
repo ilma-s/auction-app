@@ -15,6 +15,6 @@ public class Transaction {
     private String status;
 
     @OneToOne
-    @JoinColumn(name = "bid_id", referencedColumnName = "bidId")
+    @JoinColumn(name = "bid_id")
     private Bid bid;
 }
