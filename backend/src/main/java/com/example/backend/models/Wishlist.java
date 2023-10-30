@@ -18,9 +18,9 @@ public class Wishlist {
 
     @ManyToOne
     @JoinColumn(name = "user_id")
-    private AppUser userId;
+    private AppUser user;
 
     @ManyToOne
     @JoinColumn(name = "product_id")
-    private Product productId;
+    private Product product;
 }

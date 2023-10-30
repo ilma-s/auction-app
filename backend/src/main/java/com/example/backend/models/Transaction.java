@@ -16,5 +16,5 @@ public class Transaction {
 
     @OneToOne
     @JoinColumn(name = "bid_id", referencedColumnName = "bidId")
-    private Bid bidId;
+    private Bid bid;
 }

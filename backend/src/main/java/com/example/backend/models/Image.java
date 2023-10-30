@@ -1,5 +1,7 @@
 package com.example.backend.models;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 import lombok.Data;
 
@@ -12,7 +14,8 @@ public class Image {
     private String imageUrl;
 
     @ManyToOne
-    @JoinColumn(name = "product_id", referencedColumnName = "productId")
-    private Product productId;
+    @JsonIgnoreProperties("images")
+    @JoinColumn(name = "product_id", nullable = false)
+    private Product product;
 
 }

@@ -18,9 +18,9 @@ public class ProductCategory {
 
     @ManyToOne
     @JoinColumn(name = "category_id", referencedColumnName = "categoryId")
-    private Category categoryId;
+    private Category category;
 
     @ManyToOne
     @JoinColumn(name = "product_id", referencedColumnName = "productId")
-    private Product productId;
+    private Product product;
 }
