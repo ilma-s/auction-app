@@ -11,14 +11,16 @@ import jakarta.persistence.JoinColumn;
 
 @Entity
 @Data
-public class Category {
+public class Wishlist {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    private String categoryId;
-
-    private String name;
+    private String id;
 
     @ManyToOne
-    @JoinColumn(name = "parent_category_id", referencedColumnName = "categoryId")
-    private Category parentCategory;
+    @JoinColumn(name = "user_id")
+    private AppUser user;
+
+    @ManyToOne
+    @JoinColumn(name = "product_id")
+    private Product product;
 }

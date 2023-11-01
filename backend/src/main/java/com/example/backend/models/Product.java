@@ -17,8 +17,8 @@ public class Product {
     private String productId;
 
     @ManyToOne
-    @JoinColumn(name = "seller_id")
-    private AppUser sellerId;
+    @JoinColumn(name = "seller")
+    private AppUser seller;
 
     private String name;
     private String description;
@@ -31,44 +31,5 @@ public class Product {
     @OneToMany(mappedBy = "product")
     @JsonIgnoreProperties("product")
     private List<Image> images;
-
-    public Product(String productId, AppUser sellerId, String name, String description, Double startingPrice, Double currentPrice, Timestamp startDate, Timestamp endDate, String status) {
-        this.productId = productId;
-        this.sellerId = sellerId;
-        this.name = name;
-        this.description = description;
-        this.startingPrice = startingPrice;
-        this.currentPrice = currentPrice;
-        this.startDate = startDate;
-        this.endDate = endDate;
-        this.status = status;
-    }
-
-    @JsonCreator
-    public static Product fromJson(
-            @JsonProperty("productId") String productId,
-            @JsonProperty("sellerId") AppUser sellerId,
-            @JsonProperty("name") String name,
-            @JsonProperty("description") String description,
-            @JsonProperty("startingPrice") Double startingPrice,
-            @JsonProperty("currentPrice") Double currentPrice,
-            @JsonProperty("startDate") Timestamp startDate,
-            @JsonProperty("endDate") Timestamp endDate,
-            @JsonProperty("status") String status) {
-
-        return new Product(productId, sellerId, name, description, startingPrice, currentPrice, startDate, endDate, status);
-    }
-
-    public Product() {
-        this.productId = null;
-        this.sellerId = null;
-        this.name = null;
-        this.description = null;
-        this.startingPrice = null;
-        this.currentPrice = null;
-        this.startDate = null;
-        this.endDate = null;
-        this.status = null;
-    }
 }
 
