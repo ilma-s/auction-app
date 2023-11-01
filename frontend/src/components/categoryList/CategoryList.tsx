@@ -3,8 +3,8 @@ import { useState, useEffect } from 'react';
 import { fetchCategories } from '../../helpers/apiFunctions';
 
 import {
-    CATEGORIES,
-    ALL_CATEGORIES
+    CATEGORIES_STRING,
+    ALL_CATEGORIES_STRING
 } from '../../utils/constants';
 
 import { Category } from '../../types';
@@ -21,7 +21,7 @@ const CategoryList = () => {
     return (
         <div className="w-60 cursor-not-allowed">
             <div className="font-normal text-trueIndigo-500 pb-8 pl-3">
-                {CATEGORIES}
+                {CATEGORIES_STRING}
             </div>
 
             <div className="pb-32 text-trueGray-800 font-normal w-56">
@@ -35,7 +35,7 @@ const CategoryList = () => {
                 ))}
 
                 <div className="flex items-center h-12 border-b-2 border-true-gray-300 pl-3">
-                    {ALL_CATEGORIES}
+                    {ALL_CATEGORIES_STRING}
                 </div>
             </div>
         </div>

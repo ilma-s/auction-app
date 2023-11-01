@@ -1,12 +1,12 @@
 import AppPath from '../../components/appPath/AppPath';
 
-import { PRIVACY_AND_POLICY } from '../../utils/constants';
+import { PRIVACY_AND_POLICY_STRING } from '../../utils/constants';
 
 const PrivacyPolicy = () => {
     return (
         <>
             <div className="flex justify-between w-2/3 mx-auto">
-                <p className="font-normal">{PRIVACY_AND_POLICY}</p>
+                <p className="font-normal">{PRIVACY_AND_POLICY_STRING}</p>
                 <AppPath />
             </div>
 

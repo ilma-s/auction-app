@@ -1,36 +1,40 @@
-export const EVENT_KEY = 'Enter';
+export const BACKEND_URL_STRING = 'http://localhost:8080';
 
-export const APP_NAME = 'AUCTION';
+export const EVENT_KEY_STRING = 'Enter';
 
-export const SEARCH_PLACEHOLDER = 'Shoes';
+export const APP_NAME_STRING = 'AUCTION';
 
-export const HOME = 'HOME';
+export const SEARCH_PLACEHOLDER_STRING = 'Shoes';
 
-export const SHOP = 'SHOP';
+export const HOME_STRING = 'HOME';
 
-export const MY_ACCOUNT = 'MY ACCOUNT';
+export const SHOP_STRING = 'SHOP';
 
-export const ABOUT_US = 'About Us';
+export const MY_ACCOUNT_STRING = 'MY ACCOUNT';
 
-export const TERMS_AND_CONDITIONS = 'Terms and Conditions';
+export const ABOUT_US_STRING = 'About Us';
 
-export const PRIVACY_AND_POLICY = 'Privacy and Policy';
+export const TERMS_AND_CONDITIONS_STRING = 'Terms and Conditions';
 
-export const GET_IN_TOUCH = 'GET IN TOUCH';
+export const PRIVACY_AND_POLICY_STRING = 'Privacy and Policy';
 
-export const CONTACT_EMAIL = 'support@auction.com';
+export const GET_IN_TOUCH_STRING = 'GET IN TOUCH';
 
-export const CONTACT_NUMBER = '+123-797-567-2535';
+export const CONTACT_EMAIL_STRING = 'support@auction.com';
 
-export const CATEGORIES = 'CATEGORIES';
+export const CONTACT_NUMBER_STRING = '+123-797-567-2535';
 
-export const ALL_CATEGORIES = 'All Categories';
+export const CATEGORIES_STRING = 'CATEGORIES';
 
-export const BID_NOW = 'BID NOW';
+export const ALL_CATEGORIES_STRING = 'All Categories';
 
-export const NEW_ARRIVALS = 'New Arrivals';
+export const BID_NOW_STRING = 'BID NOW';
 
-export const LAST_CHANCE = 'Last Chance';
+export const NEW_ARRIVALS_STRING = 'New Arrivals';
+
+export const LAST_CHANCE_STRING = 'Last Chance';
+
+export const RELATED_PRODUCTS_STRING = 'Related Products';
 
 export const SMALL_WORDS: string[] = [
     'and',

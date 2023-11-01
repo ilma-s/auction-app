@@ -3,9 +3,9 @@ import { useState, useEffect } from 'react';
 import { Product } from '../../types';
 
 import {
-    BID_NOW,
-    NEW_ARRIVALS,
-    LAST_CHANCE,
+    BID_NOW_STRING,
+    NEW_ARRIVALS_STRING,
+    LAST_CHANCE_STRING,
 } from '../../utils/constants';
 
 import {
@@ -21,10 +21,8 @@ import CategoryList from '../../components/categoryList/CategoryList';
 const HomePage = () => {
     const [closestProduct, setClosestProduct] = useState<Product | null>(null);
 
-    console.log("IMAGE URL: " , closestProduct?.images[0]?.imageUrl);
-
     const [selectedSection, setSelectedSection] =
-        useState<string>(NEW_ARRIVALS);
+        useState<string>(NEW_ARRIVALS_STRING);
 
     const [products, setProducts] = useState<Product[]>([]);
 
@@ -34,8 +32,6 @@ const HomePage = () => {
 
     useEffect(() => {
         fetchProducts(selectedSection).then((data) => setProducts(data));
-
-        console.log(products);
     }, [selectedSection]);
 
     const navigate = useNavigate();
@@ -70,7 +66,7 @@ const HomePage = () => {
                             </div>
                         )}
 
-                        <div className="font-bold pt-8 cursor-not-allowed">{BID_NOW}</div>
+                        <div className="font-bold pt-8 cursor-not-allowed">{BID_NOW_STRING}</div>
                     </div>
 
                     <div className="w-1/2 cursor-not-allowed">
@@ -93,20 +89,20 @@ const HomePage = () => {
             <div>
                 <div className="flex gap-16 w-2/3 mx-auto flex font-lato h-12 border-b-2 border-true-gray-300">
                     <button
-                        onClick={() => setSelectedSection(NEW_ARRIVALS)}
+                        onClick={() => setSelectedSection(NEW_ARRIVALS_STRING)}
                         className={
-                            selectedSection === NEW_ARRIVALS ? 'font-bold' : ''
+                            selectedSection === NEW_ARRIVALS_STRING ? 'font-bold' : ''
                         }
                     >
-                        {NEW_ARRIVALS}
+                        {NEW_ARRIVALS_STRING}
                     </button>
                     <button
-                        onClick={() => setSelectedSection(LAST_CHANCE)}
+                        onClick={() => setSelectedSection(LAST_CHANCE_STRING)}
                         className={
-                            selectedSection === LAST_CHANCE ? 'font-bold' : ''
+                            selectedSection === LAST_CHANCE_STRING ? 'font-bold' : ''
                         }
                     >
-                        {LAST_CHANCE}
+                        {LAST_CHANCE_STRING}
                     </button>
                 </div>
 
