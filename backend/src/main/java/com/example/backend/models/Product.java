@@ -17,7 +17,7 @@ public class Product {
     private String productId;
 
     @ManyToOne
-    @JoinColumn(name = "seller")
+    @JoinColumn(name = "seller_id")
     private AppUser seller;
 
     private String name;
