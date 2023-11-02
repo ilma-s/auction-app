@@ -8,15 +8,11 @@ import {
     LAST_CHANCE_STRING,
 } from '../../utils/constants';
 
-import {
-    fetchClosestProduct,
-    fetchProducts,
-} from '../../helpers/apiFunctions';
+import ProductUtils from '../../utils/entities/ProductUtils';
 
 import ProductList from '../../components/productList/LazyLoad';
 import { useNavigate } from 'react-router-dom';
 import CategoryList from '../../components/categoryList/CategoryList';
-
 
 const HomePage = () => {
     const [closestProduct, setClosestProduct] = useState<Product | null>(null);
@@ -27,11 +23,15 @@ const HomePage = () => {
     const [products, setProducts] = useState<Product[]>([]);
 
     useEffect(() => {
-        fetchClosestProduct().then((data) => setClosestProduct(data));
+        ProductUtils.fetchClosestProduct().then((data) =>
+            setClosestProduct(data),
+        );
     }, []);
 
     useEffect(() => {
-        fetchProducts(selectedSection).then((data) => setProducts(data));
+        ProductUtils.fetchProducts(selectedSection).then((data) =>
+            setProducts(data),
+        );
     }, [selectedSection]);
 
     const navigate = useNavigate();
@@ -66,7 +66,9 @@ const HomePage = () => {
                             </div>
                         )}
 
-                        <div className="font-bold pt-8 cursor-not-allowed">{BID_NOW_STRING}</div>
+                        <div className="font-bold pt-8 cursor-not-allowed">
+                            {BID_NOW_STRING}
+                        </div>
                     </div>
 
                     <div className="w-1/2 cursor-not-allowed">
@@ -91,7 +93,9 @@ const HomePage = () => {
                     <button
                         onClick={() => setSelectedSection(NEW_ARRIVALS_STRING)}
                         className={
-                            selectedSection === NEW_ARRIVALS_STRING ? 'font-bold' : ''
+                            selectedSection === NEW_ARRIVALS_STRING
+                                ? 'font-bold'
+                                : ''
                         }
                     >
                         {NEW_ARRIVALS_STRING}
@@ -99,7 +103,9 @@ const HomePage = () => {
                     <button
                         onClick={() => setSelectedSection(LAST_CHANCE_STRING)}
                         className={
-                            selectedSection === LAST_CHANCE_STRING ? 'font-bold' : ''
+                            selectedSection === LAST_CHANCE_STRING
+                                ? 'font-bold'
+                                : ''
                         }
                     >
                         {LAST_CHANCE_STRING}

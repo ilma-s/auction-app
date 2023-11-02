@@ -1,10 +1,10 @@
 import { useState, useEffect } from 'react';
 
-import { fetchCategories } from '../../helpers/apiFunctions';
+import CategoryUtils from '../../utils/entities/CategoryUtils';
 
 import {
     CATEGORIES_STRING,
-    ALL_CATEGORIES_STRING
+    ALL_CATEGORIES_STRING,
 } from '../../utils/constants';
 
 import { Category } from '../../types';
@@ -13,10 +13,8 @@ const CategoryList = () => {
     const [categories, setCategories] = useState<Category[]>([]);
 
     useEffect(() => {
-        fetchCategories().then((data) => setCategories(data));
-
+        CategoryUtils.fetchCategories().then((data) => setCategories(data));
     }, []);
-
 
     return (
         <div className="w-60 cursor-not-allowed">

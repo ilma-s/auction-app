@@ -32,9 +32,15 @@ export const BID_NOW_STRING = 'BID NOW';
 
 export const NEW_ARRIVALS_STRING = 'New Arrivals';
 
+export const NEW_ARRIVALS_URL_STRING = 'new-arrivals';
+
 export const LAST_CHANCE_STRING = 'Last Chance';
 
+export const LAST_CHANCE_URL_STRING = 'last-chance';
+
 export const RELATED_PRODUCTS_STRING = 'Related Products';
+
+export const RELATED_PRODUCTS_URL_STRING = 'related-products';
 
 export const SMALL_WORDS: string[] = [
     'and',
