@@ -1,17 +1,17 @@
 import AppPath from '../../components/appPath/AppPath';
 
-import { ABOUT_US } from '../../utils/constants';
+import { ABOUT_US_STRING } from '../../utils/constants';
 
 const AboutUs = () => {
     return (
         <>
             <div className="flex justify-between w-2/3 mx-auto">
-                <p className="font-normal">{ABOUT_US}</p>
+                <p className="font-normal">{ABOUT_US_STRING}</p>
                 <AppPath />
             </div>
 
             <div className="flex w-2/3 mx-auto pt-24">
-                <p className="text-4xl pb-4">{ABOUT_US}</p>
+                <p className="text-4xl pb-4">{ABOUT_US_STRING}</p>
             </div>
 
             <div className="flex w-2/3 mx-auto justify-between gap-2 pb-24">

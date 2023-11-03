@@ -7,12 +7,12 @@ import searchIcon from './assets/search-icon.svg';
 import SocialMediaIcons from '../socialMediaIcons/SocialMediaIcons';
 
 import {
-    EVENT_KEY,
-    APP_NAME,
-    SEARCH_PLACEHOLDER,
-    HOME,
-    SHOP,
-    MY_ACCOUNT,
+    EVENT_KEY_STRING,
+    APP_NAME_STRING,
+    SEARCH_PLACEHOLDER_STRING,
+    HOME_STRING,
+    SHOP_STRING,
+    MY_ACCOUNT_STRING,
     
 } from '../../utils/constants';
 import { selectName } from '../../app/selectors';
@@ -28,7 +28,7 @@ const Header = () => {
     };
 
     const handleKeyPress = (event: React.KeyboardEvent<HTMLInputElement>) => {
-        if (event.key === EVENT_KEY) {
+        if (event.key === EVENT_KEY_STRING) {
             handleSearch();
         }
     };
@@ -48,14 +48,14 @@ const Header = () => {
                 <div className="flex items-center">
                     <img src={gavelIcon} alt="Gavel Icon" className="pb-4" />
                     <p className="leading-none text-2xl text-trueIndigo-500">
-                        {APP_NAME}
+                        {APP_NAME_STRING}
                     </p>
                 </div>
 
                 <div className="px-2 py-2 w-1/2 border border-gray-300 flex items-center">
                     <input
                         type="text"
-                        placeholder={`Try entering: ${SEARCH_PLACEHOLDER}`}
+                        placeholder={`Try entering: ${SEARCH_PLACEHOLDER_STRING}`}
                         className="flex-grow border-none outline-none"
                         value={searchTerm}
                         onChange={(e) => setSearchTerm(e.target.value)}
@@ -77,7 +77,7 @@ const Header = () => {
                             isActive ? 'font-bold text-trueIndigo-500' : ''
                         }
                     >
-                        {HOME}
+                        {HOME_STRING}
                     </NavLink>
                     <NavLink
                         to={'/shop'}
@@ -85,7 +85,7 @@ const Header = () => {
                             isActive ? 'font-bold text-trueIndigo-500' : ''
                         }
                     >
-                        {SHOP}
+                        {SHOP_STRING}
                     </NavLink>
                     <NavLink
                         to={'/my-account'}
@@ -93,7 +93,7 @@ const Header = () => {
                             isActive ? 'font-bold text-trueIndigo-500' : ''
                         }
                     >
-                        {MY_ACCOUNT}
+                        {MY_ACCOUNT_STRING}
                     </NavLink>
                 </div>
             </div>

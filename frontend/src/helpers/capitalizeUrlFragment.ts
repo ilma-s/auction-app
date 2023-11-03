@@ -1,7 +1,7 @@
 import { SMALL_WORDS } from '../utils/constants';
 
 export const capitalizeUrlFragments = (input: string) => {
-    const words: string[] = input.split('-');
+    const words: string[] = input.split(/[-\s]+/);
 
     const result: string[] = words.map((word, index) => {
         const lowercased: string = word.toLowerCase();

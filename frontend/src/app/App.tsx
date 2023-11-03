@@ -6,7 +6,6 @@ import TermsAndConditions from '../pages/termsAndConditions/LazyLoad';
 import PrivacyPolicy from '../pages/privacyPolicy/LazyLoad';
 import HealthCheck from '../pages/healthCheck/LazyLoad';
 
-
 const App = () => {
   return (
     <div>
