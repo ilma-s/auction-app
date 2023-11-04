@@ -6,6 +6,7 @@ import com.example.backend.repositories.ProductRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import java.util.Date;
 import java.util.HashMap;
@@ -46,7 +47,7 @@ public class ProductService {
         return ResponseEntity.ok(result);
     }
 
-    public ResponseEntity<Product> findProduct(String productId) {
+    public ResponseEntity<Product> findProduct(@RequestParam("product_id") String productId) {
         Product result = productRepository.findProduct(productId);
         if (result != null) {
             return ResponseEntity.ok(result);
@@ -55,9 +56,9 @@ public class ProductService {
         }
     }
 
-    public ResponseEntity<Map<String, Object>> getProductInfo(String productId) {
-        Product product = productRepository.findProduct(productId);
 
+    public ResponseEntity<Map<String, Object>> getBidInfo(@RequestParam("product_id") String productId) {
+        Product product = productRepository.findProduct(productId);
         if (product == null) {
             return ResponseEntity.notFound().build();
         }
@@ -83,4 +84,5 @@ public class ProductService {
 
         return ResponseEntity.ok(combinedInfo);
     }
+
 }

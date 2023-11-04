@@ -34,7 +34,7 @@ public class Controller {
 
     @GetMapping("/categories")
     public ResponseEntity<List<Category>> getAllCategories() {
-        List<Category> categories = categoryService.getAllCategories();
+        List<Category> categories = categoryService.findCategories();
         return ResponseEntity.ok(categories);
     }
 
@@ -58,13 +58,13 @@ public class Controller {
         return productService.findLastChanceProducts();
     }
 
-    @GetMapping("/item/{id}")
-    public ResponseEntity<Product> findProduct(@PathVariable String id) {
-        return productService.findProduct(id);
+    @GetMapping("/shop/item")
+    public ResponseEntity<Product> findProduct(@RequestParam("product_id") String productId) {
+        return productService.findProduct(productId);
     }
 
-    @GetMapping(value = "/bid-info/{id}", produces = "application/json")
-    public ResponseEntity<Map<String, Object>> getProductInfo(@PathVariable String id) {
-        return productService.getProductInfo(id);
+    @GetMapping(value = "/bid-info", produces = "application/json")
+    public ResponseEntity<Map<String, Object>> getBidInfo(@RequestParam("product_id") String productId) {
+        return productService.getBidInfo(productId);
     }
 }
