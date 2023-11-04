@@ -16,17 +16,15 @@ const AppPath = () => {
     const pathElements = remainingSegments.map((segment, index) => (
         <div key={index} className="flex gap-4 font-lato text-trueGray-800">
             <img src={arrowIcon} alt="Arrow Icon" className="pr-2" />
-            <Link to={segment}>
-                <p className="font-bold text-trueIndigo-500">
-                    {capitalizeUrlFragments(mappedPaths[segment] || segment)}
-                </p>
-            </Link>
+            <p className="font-bold text-trueIndigo-500">
+                {capitalizeUrlFragments(mappedPaths[segment] || segment)}
+            </p>
         </div>
     ));
 
     return (
         <div className="flex gap-4 font-lato text-trueGray-800">
-            <Link to={firstSegmentPath}>
+            <Link to={`/${firstSegmentPath}`}>
                 <p className="font-light pr-2">
                     {capitalizeUrlFragments(firstSegmentPath)}
                 </p>

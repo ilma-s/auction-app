@@ -9,7 +9,6 @@ import java.util.List;
 import java.util.Date;
 
 public interface ProductRepository extends JpaRepository<Product, String> {
-
     @Query("SELECT p FROM Product p " +
             "WHERE p.endDate >= :currentDate " +
             "ORDER BY p.endDate ASC " +

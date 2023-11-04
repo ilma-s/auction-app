@@ -1,18 +1,14 @@
-import { useNavigate } from "react-router-dom";
+import { useNavigate } from 'react-router-dom';
 
-import { Product } from "../../types";
+import { Product } from '../../types';
 
-interface ProductListProps {
-    products: Product[];
-}
-
-const ProductList = ({ products }: ProductListProps) => {
+const ProductList = ({ products }: { products: Product[] }) => {
     const navigate = useNavigate();
 
     const handleProductClick = (productId: string) => {
         navigate(`/shop/item/${productId}`);
     };
-    
+
     return (
         <>
             <div className="w-2/3 mx-auto pt-12 pb-20">
@@ -20,13 +16,13 @@ const ProductList = ({ products }: ProductListProps) => {
                     {products.map((product) => (
                         <div
                             key={product.name}
-                            className="w-64 h-80 relative cursor-not-allowed transition-transform h-96 ease-in hover:scale-110 hover:border hover:p-4 hover:rounded-md hover:shadow-md"
+                            className="w-64 h-80 relative cursor-pointer transition-transform h-96 ease-in hover:scale-110 hover:border hover:p-4 hover:rounded-md hover:shadow-md"
                             onClick={() =>
                                 handleProductClick(product.productId)
                             }
                         >
                             <img
-                                src={product.images[0]?.imageUrl}
+                                src={product.images[0].imageUrl}
                                 alt={product.name}
                                 className="w-34 h-64 object-cover"
                             />

@@ -52,7 +52,7 @@ const HomePage = () => {
                                 onClick={() =>
                                     handleProductClick(closestProduct.productId)
                                 }
-                                className="cursor-not-allowed"
+                                className="cursor-pointer"
                             >
                                 <p className="font-bold">
                                     {closestProduct.name}
@@ -71,7 +71,7 @@ const HomePage = () => {
                         </div>
                     </div>
 
-                    <div className="w-1/2 cursor-not-allowed">
+                    <div className="w-1/2 cursor-pointer">
                         {closestProduct ? (
                             <img
                                 src={closestProduct.images[0].imageUrl}
@@ -79,7 +79,7 @@ const HomePage = () => {
                                 onClick={() =>
                                     handleProductClick(closestProduct.productId)
                                 }
-                                className="cursor-not-allowed"
+                                className="cursor-pointer w-1/2"
                             />
                         ) : (
                             <p>No product found</p>
