@@ -40,6 +40,15 @@ class BidUtils {
 
         return `Enter $${price} or higher`;
     }
+
+    static getNextBidValue(bidInformation: BidInformation, product: Product,): string {
+        const price =
+            bidInformation.numberOfBids === 0
+                ? product?.startingPrice + 1
+                : bidInformation.highestBid + 1;
+
+        return `Enter $${price} or higher`;
+    }
 }
 
 export default BidUtils;
