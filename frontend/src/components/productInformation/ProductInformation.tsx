@@ -9,6 +9,7 @@ import {
 } from '../../utils/constants';
 import { Product, BidInformation } from '../../types';
 import { selectName } from '../../app/selectors';
+import BidUtils from '../../utils/entities/BidUtils';
 
 interface Props {
     product: Product;
@@ -25,13 +26,7 @@ const ProductDetails = ({ product, bidInformation }: Props) => {
                 <input
                     type="text"
                     className="pl-8 pr-8 pt-3 pb-3 w-72 border-2 border-trueGray-300 focus:outline-none"
-                    placeholder={
-                        bidInformation.numberOfBids === 0
-                            ? `Enter $${product?.startingPrice + 1} or higher`
-                            : `Enter $${
-                                  bidInformation.highestBid + 1
-                              } or higher`
-                    }
+                    placeholder={BidUtils.getNextBidValue(bidInformation, product)}
                 />
             </div>
             <div className="pt-2 pb-2 pl-3 pr-3 font-bold cursor-not-allowed">

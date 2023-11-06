@@ -1,5 +1,5 @@
 import { fetchData } from '../../helpers/apiFunctions';
-import { BidInformation } from '../../types';
+import { BidInformation, Product } from '../../types';
 
 class BidUtils {
     static async getBidInformation(productId: string): Promise<BidInformation> {
@@ -30,6 +30,15 @@ class BidUtils {
             }
             return `${seconds} seconds`;
         }
+    }
+
+    static getNextBidValue(bidInformation: BidInformation, product: Product,): string {
+        const price =
+            bidInformation.numberOfBids === 0
+                ? product?.startingPrice + 1
+                : bidInformation.highestBid + 1;
+
+        return `Enter $${price} or higher`;
     }
 }
 

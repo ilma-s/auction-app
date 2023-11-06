@@ -1,10 +1,10 @@
 package com.example.backend.controllers;
 
+import com.example.backend.dtos.BidInfoResponse;
 import com.example.backend.models.Category;
 import com.example.backend.models.Product;
 import com.example.backend.services.CategoryService;
 import com.example.backend.services.ProductService;
-import com.fasterxml.jackson.core.JsonProcessingException;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -63,8 +63,8 @@ public class Controller {
         return productService.findProduct(id);
     }
 
-    @GetMapping(value = "/bid-info/{id}", produces = "application/json")
-    public ResponseEntity<Map<String, Object>> getProductInfo(@PathVariable String id) {
-        return productService.getProductInfo(id);
+    @GetMapping(value = "/bid-info", produces = "application/json")
+    public ResponseEntity<BidInfoResponse> getBidInfo(@RequestParam("product_id") String productId) {
+        return productService.getBidInfo(productId);
     }
 }

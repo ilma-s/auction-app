@@ -1,14 +1,15 @@
 package com.example.backend.services;
 
+import com.example.backend.dtos.BidInfoResponse;
 import com.example.backend.models.Product;
 import com.example.backend.repositories.BidRepository;
 import com.example.backend.repositories.ProductRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import java.util.Date;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -55,7 +56,8 @@ public class ProductService {
         }
     }
 
-    public ResponseEntity<Map<String, Object>> getProductInfo(String productId) {
+
+    public ResponseEntity<BidInfoResponse> getBidInfo(@RequestParam("product_id") String productId) {
         Product product = productRepository.findProduct(productId);
 
         if (product == null) {
@@ -65,7 +67,7 @@ public class ProductService {
         Double highestBid = bidRepository.findHighestBidByProduct(productId);
         Integer numberOfBids = bidRepository.findTotalBidsByProduct(productId);
 
-        // calculate time left
+        // Calculate time left
         Date currentDate = new Date();
         long timeLeftMillis = product.getEndDate().getTime() - currentDate.getTime();
         long timeLeftSeconds = timeLeftMillis / 1000;
@@ -75,12 +77,8 @@ public class ProductService {
                 (timeLeftSeconds % 3600) / 60,
                 timeLeftSeconds % 60);
 
-        // combine product info and calculated data
-        Map<String, Object> combinedInfo = new HashMap<>();
-        combinedInfo.put("highestBid", highestBid);
-        combinedInfo.put("numberOfBids", numberOfBids);
-        combinedInfo.put("timeLeft", timeLeft);
+        BidInfoResponse response = new BidInfoResponse(highestBid, numberOfBids, timeLeft);
 
-        return ResponseEntity.ok(combinedInfo);
+        return ResponseEntity.ok(response);
     }
 }
