@@ -1,5 +1,6 @@
 package com.example.backend.controllers;
 
+import com.example.backend.dtos.BidInfoResponse;
 import com.example.backend.models.Category;
 import com.example.backend.models.Product;
 import com.example.backend.services.CategoryService;
@@ -64,7 +65,7 @@ public class Controller {
     }
 
     @GetMapping(value = "/bid-info", produces = "application/json")
-    public ResponseEntity<Map<String, Object>> getBidInfo(@RequestParam("product_id") String productId) {
+    public ResponseEntity<BidInfoResponse> getBidInfo(@RequestParam("product_id") String productId) {
         return productService.getBidInfo(productId);
     }
 }

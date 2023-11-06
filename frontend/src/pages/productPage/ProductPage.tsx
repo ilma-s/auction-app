@@ -1,12 +1,9 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useRef } from 'react';
 import { useLocation } from 'react-router-dom';
 import ProductUtils from '../../utils/entities/ProductUtils';
 import AppPath from '../../components/appPath/AppPath';
-
 import ProductInformation from '../../components/productInformation/ProductInformation';
-
 import { Product, BidInformation } from '../../types';
-
 import BidUtils from '../../utils/entities/BidUtils';
 
 const ProductPage = () => {
@@ -25,6 +22,8 @@ const ProductPage = () => {
     const searchParams = new URLSearchParams(location.search);
     const productId = searchParams.get('product_id');
 
+    const imageContainerRef = useRef<HTMLDivElement | null>(null);
+
     useEffect(() => {
         if (productId) {
             ProductUtils.fetchProduct(productId).then((data) => {
@@ -40,10 +39,6 @@ const ProductPage = () => {
             });
         }
     }, [productId]);
-
-    const imageContainerStyles = {
-        outline: 'none',
-    };
 
     const handleImageClick = (imageIndex: number) => {
         setSelectedImage(imageIndex);
@@ -74,6 +69,35 @@ const ProductPage = () => {
         };
     }, [product, isImageContainerFocused, isImageClicked]);
 
+    useEffect(() => {
+        const handleClick = () => {
+            setIsImageContainerFocused(true);
+        };
+
+        const handleBlur = () => {
+            setIsImageContainerFocused(false);
+            setIsImageClicked(false);
+        };
+
+        if (imageContainerRef.current) {
+            imageContainerRef.current.addEventListener('click', handleClick);
+            imageContainerRef.current.addEventListener('blur', handleBlur);
+        }
+
+        return () => {
+            if (imageContainerRef.current) {
+                imageContainerRef.current.removeEventListener(
+                    'click',
+                    handleClick,
+                );
+                imageContainerRef.current.removeEventListener(
+                    'blur',
+                    handleBlur,
+                );
+            }
+        };
+    }, []);
+
     return (
         <>
             <div className="w-2/3 mx-auto pt-12 flex justify-between font-lato">
@@ -92,19 +116,16 @@ const ProductPage = () => {
             <div className="flex w-2/3 h-2/3 mx-auto pt-12 gap-16">
                 <div
                     className="flex flex-col w-1/2"
-                    style={imageContainerStyles}
+                    ref={imageContainerRef}
                     tabIndex={0}
-                    onFocus={() => setIsImageContainerFocused(true)}
-                    onBlur={() => setIsImageContainerFocused(false)}
+                    style={{
+                        outline: 'none',
+                    }}
                 >
                     <div
-                        className="overflow-hidden"
+                        className="overflow-hidden w-full flex items-center justify-center"
                         style={{
-                            width: '100%',
                             height: '450px',
-                            display: 'flex',
-                            justifyContent: 'center',
-                            alignItems: 'center',
                         }}
                     >
                         {product && (
@@ -112,10 +133,7 @@ const ProductPage = () => {
                                 <img
                                     src={product.images[selectedImage].imageUrl}
                                     alt={product.name}
-                                    style={{
-                                        maxWidth: '100%',
-                                        maxHeight: '100%',
-                                    }}
+                                    className="max-w-full max-h-full"
                                 />
                             </>
                         )}
