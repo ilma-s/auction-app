@@ -27,7 +27,7 @@ class ProductUtils {
     }
 
     static async fetchProduct(productId: string) {
-        return fetchData(`item/${productId}`);
+        return fetchData('shop/item', { product_id: productId });
     }
 }
 

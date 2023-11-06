@@ -6,13 +6,13 @@ const ProductList = ({ products }: { products: Product[] }) => {
     const navigate = useNavigate();
 
     const handleProductClick = (productId: string) => {
-        navigate(`/shop/item/${productId}`);
+        navigate(`/shop/item?product_id=${productId}`);
     };
 
     return (
         <>
             <div className="w-2/3 mx-auto pt-12 pb-20">
-                <div className="grid grid-cols-4 gap-28">
+                <div className="grid grid-cols-4 gap-x-28 gap-y-8">
                     {products.map((product) => (
                         <div
                             key={product.name}
@@ -24,9 +24,9 @@ const ProductList = ({ products }: { products: Product[] }) => {
                             <img
                                 src={product.images[0].imageUrl}
                                 alt={product.name}
-                                className="w-34 h-64 object-cover"
+                                className="w-34 h-64 object-contain"
                             />
-                            <p className="font-bold text-lg mb-2">
+                            <p className="font-bold text-lg mb-2 pt-3">
                                 {product.name}
                             </p>
                             <div className="flex gap-1">

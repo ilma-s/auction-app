@@ -22,8 +22,8 @@ const ProductPage = () => {
     });
 
     const location = useLocation();
-    const pathnameSegments = location.pathname.split('/');
-    const productId = pathnameSegments[pathnameSegments.length - 1];
+    const searchParams = new URLSearchParams(location.search);
+    const productId = searchParams.get('product_id');
 
     useEffect(() => {
         if (productId) {
