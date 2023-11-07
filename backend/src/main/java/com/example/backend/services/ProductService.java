@@ -5,14 +5,15 @@ import com.example.backend.models.Product;
 import com.example.backend.repositories.BidRepository;
 import com.example.backend.repositories.ProductRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import java.util.Date;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 @Service
 public class ProductService {
@@ -82,4 +83,8 @@ public class ProductService {
         return ResponseEntity.ok(response);
     }
 
+    public Page<Product> getAllProductsPaged(int limit, int page) {
+        Pageable pageable = PageRequest.of(page, limit);
+        return productRepository.getAllProductsPaged(pageable);
+    }
 }

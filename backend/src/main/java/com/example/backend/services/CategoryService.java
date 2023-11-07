@@ -19,4 +19,8 @@ public class CategoryService {
     public List<Category> findCategories() {
         return categoryRepository.findNamesByParentCategoryIsNull();
     }
+
+    public List<Object[]> findSubcategoriesWithItemCount(String categoryId) {
+        return categoryRepository.findSubcategoriesWithItemCount(categoryId);
+    }
 }

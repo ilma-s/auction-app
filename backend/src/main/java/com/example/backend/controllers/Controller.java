@@ -3,13 +3,16 @@ package com.example.backend.controllers;
 import com.example.backend.dtos.BidInfoResponse;
 import com.example.backend.models.Category;
 import com.example.backend.models.Product;
+import com.example.backend.repositories.ProductRepository;
 import com.example.backend.services.CategoryService;
 import com.example.backend.services.ProductService;
-import com.fasterxml.jackson.core.JsonProcessingException;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -19,13 +22,16 @@ public class Controller {
 
     private final CategoryService categoryService;
     private final ProductService productService;
+    private final ProductRepository productRepository; // Inject ProductRepository
 
     @Value("${frontend_address}")
     private String frontend_address;
 
-    public Controller(CategoryService categoryService, ProductService productService) {
+    @Autowired
+    public Controller(CategoryService categoryService, ProductService productService, ProductRepository productRepository) {
         this.categoryService = categoryService;
         this.productService = productService;
+        this.productRepository = productRepository; // Initialize ProductRepository
     }
 
     @GetMapping("/health")
@@ -37,6 +43,12 @@ public class Controller {
     public ResponseEntity<List<Category>> getAllCategories() {
         List<Category> categories = categoryService.findCategories();
         return ResponseEntity.ok(categories);
+    }
+
+    @GetMapping("/subcategories/{categoryId}")
+    public ResponseEntity<List<Object[]>> getSubcategoriesWithItemCount(@PathVariable String categoryId) {
+        List<Object[]> subcategoriesWithItemCount = categoryService.findSubcategoriesWithItemCount(categoryId);
+        return ResponseEntity.ok(subcategoriesWithItemCount);
     }
 
     @GetMapping("/products")
@@ -68,4 +80,28 @@ public class Controller {
     public ResponseEntity<BidInfoResponse> getBidInfo(@RequestParam("product_id") String productId) {
         return productService.getBidInfo(productId);
     }
+
+    @GetMapping("/all-products")
+    public ResponseEntity<Map<String, Object>> getAllProductsPaged(
+            @RequestParam("limit") int limit,
+            @RequestParam("offset") int offset) {
+        int page = offset / limit; // Calculate the page number
+        Page<Product> productsPage = productService.getAllProductsPaged(limit, page);
+
+        Map<String, Object> response = new HashMap<>();
+        response.put("products", productsPage.getContent());
+        response.put("totalProducts", productsPage.getTotalElements());
+
+        return ResponseEntity.ok(response);
+    }
+
+    @PostMapping("/search")
+    public ResponseEntity<List<Product>> searchProducts(@RequestBody Map<String, String> requestBody) {
+        String searchTerm = requestBody.get("searchTerm");
+
+        List<Product> searchResults = productRepository.searchProducts(searchTerm.toLowerCase());
+
+        return ResponseEntity.ok(searchResults);
+    }
+
 }
