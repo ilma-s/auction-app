@@ -8,6 +8,7 @@ import {
 } from '../constants';
 
 import { fetchData } from '../../helpers/apiFunctions';
+import { Product } from '../../types';
 
 class ProductUtils {
     static async fetchClosestProduct() {
@@ -24,6 +25,29 @@ class ProductUtils {
         const endpoint = endpoints[selectedSection];
 
         return fetchData(endpoint);
+    }
+
+    static async fetchLimitedProducts(productsToLoad: number, offset: number) {
+        try {
+            const response = await fetchData('all-products', {
+                limit: productsToLoad.toString(),
+                offset: offset.toString(),
+            });
+            console.log(productsToLoad.toString());
+            console.log(offset.toString());
+
+            if (response && Array.isArray(response.products)) {
+                console.log(response);
+                return response;
+            } else {
+                throw new Error(
+                    'Failed to fetch products or invalid response format',
+                );
+            }
+        } catch (error) {
+            console.error('Error fetching products', error);
+            throw error;
+        }
     }
 
     static async fetchProduct(productId: string) {

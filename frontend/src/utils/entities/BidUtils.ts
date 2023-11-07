@@ -18,22 +18,18 @@ class BidUtils {
                 const weeks = Math.floor(days / 7);
                 const remainingDays = days % 7;
                 return `${weeks} weeks, ${remainingDays} days`;
-            } else if (days > 0) {
-                // Check if there are days
-                if (hoursPart) {
-                    const [hours, minutes, seconds] = hoursPart
-                        .split(':')
-                        .map(Number);
-                    return `${days} days, ${hours} hours, ${minutes} minutes, ${seconds} seconds`;
-                } else {
-                    return `${days} days`;
-                }
             }
-        } else if (hoursPart) {
+            return `${days} days`;
+        } else {
             const [hours, minutes, seconds] = hoursPart.split(':').map(Number);
-            return `${hours} hours, ${minutes} minutes, ${seconds} seconds`;
+            if (hours > 0) {
+                return `${hours} hours, ${minutes} minutes, ${seconds} seconds`;
+            }
+            if (minutes > 0) {
+                return `${minutes} minutes, ${seconds} seconds`;
+            }
+            return `${seconds} seconds`;
         }
-        return 'Less than a second'; // input not recognized
     }
 
     static getNextBidValue(bidInformation: BidInformation, product: Product,): string {

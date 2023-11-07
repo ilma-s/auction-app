@@ -17,7 +17,7 @@ const CategoryList = () => {
     }, []);
 
     return (
-        <div className="w-60 cursor-not-allowed">
+        <div className="w-60 cursor-pointer">
             <div className="font-normal text-trueIndigo-500 pb-8 pl-3">
                 {CATEGORIES_STRING}
             </div>

@@ -1,13 +1,10 @@
-import { NavLink } from 'react-router-dom';
+import { NavLink, useNavigate } from 'react-router-dom'; // Import useNavigate
 import { useState } from 'react';
 import { useSelector } from 'react-redux';
-
 import gavelIcon from './assets/gavel-icon.svg';
 import searchIcon from './assets/search-icon.svg';
 import SocialMediaIcons from '../socialMediaIcons/SocialMediaIcons';
-
 import {
-    EVENT_KEY_STRING,
     APP_NAME_STRING,
     SEARCH_PLACEHOLDER_STRING,
     HOME_STRING,
@@ -18,18 +15,27 @@ import { selectName } from '../../app/selectors';
 
 const Header = () => {
     const [searchTerm, setSearchTerm] = useState('');
-
     const name = useSelector(selectName);
+    const navigate = useNavigate(); 
 
     const handleSearch = () => {
-        console.log(searchTerm);
-        setSearchTerm('');
-    };
+        fetch('/search', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ searchTerm }),
+        })
+            .then((response) => response.json())
+            .then((data) => {
+                console.log('Search results:', data);
+                setSearchTerm('');
 
-    const handleKeyPress = (event: React.KeyboardEvent<HTMLInputElement>) => {
-        if (event.key === EVENT_KEY_STRING) {
-            handleSearch();
-        }
+                navigate('/shop', { state: { searchResults: data } });
+            })
+            .catch((error) => {
+                console.error('Search request failed:', error);
+            });
     };
 
     return (
@@ -64,10 +70,10 @@ const Header = () => {
                         className="flex-grow border-none outline-none"
                         value={searchTerm}
                         onChange={(e) => setSearchTerm(e.target.value)}
-                        onKeyPress={handleKeyPress}
                     />
+
                     <button
-                        type="button"
+                        type="submit"
                         className="pr-2"
                         onClick={handleSearch}
                     >

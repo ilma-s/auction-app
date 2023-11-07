@@ -5,7 +5,7 @@ import {
     NUMBER_OF_BIDS,
     TIME_LEFT,
     PLACE_BID,
-    DETAILS,
+    DETAILS_STRING,
 } from '../../utils/constants';
 import { Product, BidInformation } from '../../types';
 import { selectName } from '../../app/selectors';
@@ -17,7 +17,7 @@ interface Props {
 }
 
 const ProductDetails = ({ product, bidInformation }: Props) => {
-    const [selectedSection, setSelectedSection] = useState<string>(DETAILS);
+    const [selectedSection, setSelectedSection] = useState<string>(DETAILS_STRING);
 
     const name = useSelector(selectName);
     const renderBidInput = name !== 'John Doe' && (
@@ -26,7 +26,10 @@ const ProductDetails = ({ product, bidInformation }: Props) => {
                 <input
                     type="text"
                     className="pl-8 pr-8 pt-3 pb-3 w-72 border-2 border-trueGray-300 focus:outline-none"
-                    placeholder={BidUtils.getNextBidValue(bidInformation, product)}
+                    placeholder={BidUtils.getNextBidValue(
+                        bidInformation,
+                        product,
+                    )}
                 />
             </div>
             <div className="pt-2 pb-2 pl-3 pr-3 font-bold cursor-not-allowed">
@@ -74,14 +77,14 @@ const ProductDetails = ({ product, bidInformation }: Props) => {
             <div className="pt-16 pb-16">
                 <div className="flex gap-16 h-12 border-b-2 border-true-gray-300">
                     <button
-                        onClick={() => setSelectedSection(DETAILS)}
+                        onClick={() => setSelectedSection(DETAILS_STRING)}
                         className={
-                            selectedSection === DETAILS
+                            selectedSection === DETAILS_STRING
                                 ? 'pl-5 font-bold text-trueIndigo-500'
                                 : 'text-trueGray-800'
                         }
                     >
-                        {DETAILS}
+                        {DETAILS_STRING}
                     </button>
                 </div>
                 <div className="text-trueGray-500 pt-5">
