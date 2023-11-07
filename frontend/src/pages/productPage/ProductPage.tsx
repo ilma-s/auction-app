@@ -24,8 +24,6 @@ const ProductPage = () => {
 
     const imageContainerRef = useRef<HTMLDivElement | null>(null);
 
-    const imageContainerRef = useRef<HTMLDivElement | null>(null);
-
     useEffect(() => {
         if (productId) {
             ProductUtils.fetchProduct(productId).then((data) => {
