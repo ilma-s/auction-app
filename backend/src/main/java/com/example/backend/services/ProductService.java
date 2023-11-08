@@ -10,6 +10,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -18,10 +19,14 @@ public class ProductService {
     private final ProductRepository productRepository;
     private final BidRepository bidRepository;
 
+    private final BidRepository bidRepository;
+
 
     @Autowired
     public ProductService(ProductRepository productRepository, BidRepository bidRepository) {
+    public ProductService(ProductRepository productRepository, BidRepository bidRepository) {
         this.productRepository = productRepository;
+        this.bidRepository = bidRepository;
         this.bidRepository = bidRepository;
     }
     public ResponseEntity<List<Product>> getAllProducts() {
@@ -47,7 +52,7 @@ public class ProductService {
         return ResponseEntity.ok(result);
     }
 
-    public ResponseEntity<Product> findProduct(String productId) {
+    public ResponseEntity<Product> findProduct(@RequestParam("product_id") String productId) {
         Product result = productRepository.findProduct(productId);
         if (result != null) {
             return ResponseEntity.ok(result);

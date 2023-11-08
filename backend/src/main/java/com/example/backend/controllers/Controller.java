@@ -5,11 +5,13 @@ import com.example.backend.models.Category;
 import com.example.backend.models.Product;
 import com.example.backend.services.CategoryService;
 import com.example.backend.services.ProductService;
+import com.fasterxml.jackson.core.JsonProcessingException;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Map;
 
 @RestController
@@ -34,7 +36,7 @@ public class Controller {
 
     @GetMapping("/categories")
     public ResponseEntity<List<Category>> getAllCategories() {
-        List<Category> categories = categoryService.getAllCategories();
+        List<Category> categories = categoryService.findCategories();
         return ResponseEntity.ok(categories);
     }
 

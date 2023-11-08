@@ -13,7 +13,6 @@ import {
     HOME_STRING,
     SHOP_STRING,
     MY_ACCOUNT_STRING,
-    
 } from '../../utils/constants';
 import { selectName } from '../../app/selectors';
 
@@ -45,12 +44,18 @@ const Header = () => {
             </div>
 
             <div className="w-2/3 mx-auto flex pt-4 pb-4 justify-between items-center font-lato font-light">
-                <div className="flex items-center">
-                    <img src={gavelIcon} alt="Gavel Icon" className="pb-4" />
-                    <p className="leading-none text-2xl text-trueIndigo-500">
-                        {APP_NAME_STRING}
-                    </p>
-                </div>
+                <NavLink to={'/home'}>
+                    <div className="flex items-center">
+                        <img
+                            src={gavelIcon}
+                            alt="Gavel Icon"
+                            className="pb-4"
+                        />
+                        <p className="leading-none text-2xl text-trueIndigo-500">
+                            {APP_NAME_STRING}
+                        </p>
+                    </div>
+                </NavLink>
 
                 <div className="px-2 py-2 w-1/2 border border-gray-300 flex items-center">
                     <input

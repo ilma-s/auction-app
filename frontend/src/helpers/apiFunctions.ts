@@ -1,10 +1,17 @@
-import {
-    BACKEND_URL_STRING,
-} from '../utils/constants';
+import { BACKEND_URL_STRING } from '../utils/constants';
 
-export async function fetchData(endpoint: string): Promise<any> {
+export async function fetchData(
+    endpoint: string,
+    queryParams: Record<string, string> = {},
+): Promise<any> {
     try {
-        const response = await fetch(`${BACKEND_URL_STRING}/${endpoint}`);
+        const url = new URL(`${BACKEND_URL_STRING}/${endpoint}`);
+
+        Object.keys(queryParams).forEach((key) => {
+            url.searchParams.append(key, queryParams[key]);
+        });
+
+        const response = await fetch(url.toString());
         const data = await response.json();
         return data;
     } catch (error) {

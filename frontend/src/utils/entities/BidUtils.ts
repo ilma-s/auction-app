@@ -1,9 +1,9 @@
 import { fetchData } from '../../helpers/apiFunctions';
-import { BidInformation, Product } from '../../types';
+import { BidInformation } from '../../types';
 
 class BidUtils {
     static async getBidInformation(productId: string): Promise<BidInformation> {
-        const data = await fetchData(`bid-info/${productId}`);
+        const data = await fetchData('bid-info', { product_id: productId });
         data.timeLeft = BidUtils.convertTimeLeft(data.timeLeft) as string;
         return data;
     }
@@ -18,27 +18,22 @@ class BidUtils {
                 const weeks = Math.floor(days / 7);
                 const remainingDays = days % 7;
                 return `${weeks} weeks, ${remainingDays} days`;
+            } else if (days > 0) {
+                // Check if there are days
+                if (hoursPart) {
+                    const [hours, minutes, seconds] = hoursPart
+                        .split(':')
+                        .map(Number);
+                    return `${days} days, ${hours} hours, ${minutes} minutes, ${seconds} seconds`;
+                } else {
+                    return `${days} days`;
+                }
             }
-            return `${days} days`;
-        } else {
+        } else if (hoursPart) {
             const [hours, minutes, seconds] = hoursPart.split(':').map(Number);
-            if (hours > 0) {
-                return `${hours} hours, ${minutes} minutes, ${seconds} seconds`;
-            }
-            if (minutes > 0) {
-                return `${minutes} minutes, ${seconds} seconds`;
-            }
-            return `${seconds} seconds`;
+            return `${hours} hours, ${minutes} minutes, ${seconds} seconds`;
         }
-    }
-
-    static getNextBidValue(bidInformation: BidInformation, product: Product,): string {
-        const price =
-            bidInformation.numberOfBids === 0
-                ? product?.startingPrice + 1
-                : bidInformation.highestBid + 1;
-
-        return `Enter $${price} or higher`;
+        return 'Less than a second'; // input not recognized
     }
 }
 
