@@ -9,6 +9,10 @@ import { PRODUCT_CATEGORIES_STRING } from '../../utils/constants';
 
 import { Category } from '../../types';
 
+interface FilterCategoryListProps {
+    selectedCategory: string | null;
+}
+
 // define types for subcategory data
 type SubcategoryData = [string, string, number];
 
@@ -36,7 +40,7 @@ const transformSubcategoriesWithItemCount = (
     return subcategoriesArray;
 };
 
-const FilterCategoryList = () => {
+const FilterCategoryList = ({ selectedCategory }: FilterCategoryListProps) => {
     const [categories, setCategories] = useState<Category[]>([]);
     const [expandedCategories, setExpandedCategories] = useState<string[]>([]);
     const [subcategories, setSubcategories] = useState<{

@@ -37,7 +37,7 @@ const HomePage = () => {
     const navigate = useNavigate();
 
     const handleProductClick = (productId: string) => {
-        navigate(`/shop/item?product_id=${productId}`);
+        navigate(`/shop/item/${productId}`);
     };
 
     return (

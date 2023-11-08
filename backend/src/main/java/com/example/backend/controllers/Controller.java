@@ -95,13 +95,11 @@ public class Controller {
         return ResponseEntity.ok(response);
     }
 
-    @PostMapping("/search")
-    public ResponseEntity<List<Product>> searchProducts(@RequestBody Map<String, String> requestBody) {
-        String searchTerm = requestBody.get("searchTerm");
-
+    @GetMapping("/search")
+    public ResponseEntity<List<Product>> searchProducts(@RequestParam("searchTerm") String searchTerm) {
         List<Product> searchResults = productRepository.searchProducts(searchTerm.toLowerCase());
-
         return ResponseEntity.ok(searchResults);
     }
+
 
 }

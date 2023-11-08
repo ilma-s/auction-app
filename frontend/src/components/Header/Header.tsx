@@ -1,5 +1,5 @@
-import { NavLink, useNavigate } from 'react-router-dom'; // Import useNavigate
-import { useState } from 'react';
+import { NavLink, useLocation, useNavigate } from 'react-router-dom';
+import { useState, useEffect } from 'react';
 import { useSelector } from 'react-redux';
 import gavelIcon from './assets/gavel-icon.svg';
 import searchIcon from './assets/search-icon.svg';
@@ -15,28 +15,55 @@ import { selectName } from '../../app/selectors';
 
 const Header = () => {
     const [searchTerm, setSearchTerm] = useState('');
+    const [searchResults, setSearchResults] = useState([]);
     const name = useSelector(selectName);
-    const navigate = useNavigate(); 
+
+    const navigate = useNavigate();
+    const location = useLocation();
 
     const handleSearch = () => {
-        fetch('/search', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({ searchTerm }),
+        if (searchTerm.trim() === '') {
+            return;
+        }
+
+        fetch(`http://localhost:8080/search?searchTerm=${searchTerm}`, {
+            method: 'GET',
         })
-            .then((response) => response.json())
+            .then((response) => {
+                if (!response.ok) {
+                    throw new Error('Search request failed');
+                }
+                return response.json();
+            })
             .then((data) => {
                 console.log('Search results:', data);
-                setSearchTerm('');
-
-                navigate('/shop', { state: { searchResults: data } });
+                setSearchResults(data);
+                navigate(`/shop?searchTerm=${searchTerm}`, {
+                    state: { searchResults: data },
+                });
             })
             .catch((error) => {
                 console.error('Search request failed:', error);
             });
     };
+
+    useEffect(() => {
+        const handleKeyPress = (e: KeyboardEvent) => {
+            if (e.key === 'Enter') {
+                handleSearch();
+            }
+        };
+
+        document.addEventListener('keypress', handleKeyPress);
+
+        return () => {
+            document.removeEventListener('keypress', handleKeyPress);
+        };
+    }, [searchTerm]);
+
+    useEffect(() => {
+        setSearchTerm('');
+    }, [location.pathname])
 
     return (
         <div className="flex flex-col">
@@ -71,7 +98,6 @@ const Header = () => {
                         value={searchTerm}
                         onChange={(e) => setSearchTerm(e.target.value)}
                     />
-
                     <button
                         type="submit"
                         className="pr-2"

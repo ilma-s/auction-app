@@ -38,10 +38,10 @@ public interface ProductRepository extends JpaRepository<Product, String> {
 
 
     @Query("SELECT DISTINCT p FROM Product p " +
-            "LEFT JOIN p.categories c " +
+            "JOIN ProductCategory pc ON p.productId = pc.product.productId " +
             "WHERE lower(p.name) LIKE %:searchTerm% " +
             "OR lower(p.description) LIKE %:searchTerm% " +
-            "OR lower(c.name) LIKE %:searchTerm%")
+            "OR lower(pc.category.name) LIKE %:searchTerm%")
     List<Product> searchProducts(@Param("searchTerm") String searchTerm);
 
 }

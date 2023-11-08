@@ -1,13 +1,10 @@
 package com.example.backend.models;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import jakarta.persistence.*;
 import lombok.Data;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.ManyToOne;
-import jakarta.persistence.JoinColumn;
+import java.util.List;
 
 @Entity
 @Data
@@ -21,4 +18,9 @@ public class Category {
     @ManyToOne
     @JoinColumn(name = "parent_category_id", referencedColumnName = "categoryId")
     private Category parentCategory;
+
+    @OneToMany(mappedBy = "category")
+    @JsonIgnoreProperties("category")
+    private List<ProductCategory> productCategories;
+
 }

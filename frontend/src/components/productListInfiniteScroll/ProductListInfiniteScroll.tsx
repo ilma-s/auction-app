@@ -3,12 +3,17 @@ import ProductUtils from '../../utils/entities/ProductUtils';
 import { Product } from '../../types';
 import { useNavigate } from 'react-router-dom';
 
+import bidIcon from './assets/bid-icon.svg';
+import favoriteIcon from './assets/favorite-icon.svg';
+
 const ProductListInfiniteScroll = ({
     searchResults,
 }: {
     searchResults?: Product[];
 }) => {
     const navigate = useNavigate();
+
+    console.log('in plis: ', searchResults);
 
     const handleProductClick = (productId: string) => {
         navigate(`/shop/item?product_id=${productId}`);
@@ -28,26 +33,27 @@ const ProductListInfiniteScroll = ({
             setIsLoading(true);
 
             try {
-                // check if search results are available, and if not, fetch more products
-                const response = searchResults
-                    ? { products: searchResults }
-                    : await ProductUtils.fetchLimitedProducts(
-                          productsToLoad,
-                          (currentPage - 1) * productsToLoad,
-                      );
-
-                if (
-                    Array.isArray(response.products) &&
-                    response.products.length > 0
-                ) {
-                    setAllProducts((prevAllProducts) => [
-                        ...prevAllProducts,
-                        ...response.products,
-                    ]);
-
-                    setCurrentPage(currentPage + 1);
+                if (searchResults && searchResults.length > 0) {
+                    setAllProducts(searchResults);
                 } else {
-                    setHasMoreProducts(false);
+                    const response = await ProductUtils.fetchLimitedProducts(
+                        productsToLoad,
+                        (currentPage - 1) * productsToLoad,
+                    );
+
+                    if (
+                        Array.isArray(response.products) &&
+                        response.products.length > 0
+                    ) {
+                        setAllProducts((prevAllProducts) => [
+                            ...prevAllProducts,
+                            ...response.products,
+                        ]);
+
+                        setCurrentPage(currentPage + 1);
+                    } else {
+                        setHasMoreProducts(false);
+                    }
                 }
             } catch (error) {
                 console.error('Error fetching products', error);
@@ -59,7 +65,7 @@ const ProductListInfiniteScroll = ({
 
     useEffect(() => {
         fetchMoreProducts();
-    }, []);
+    }, [searchResults]);
 
     useEffect(() => {
         const handleScroll = () => {
@@ -96,11 +102,50 @@ const ProductListInfiniteScroll = ({
                                 handleProductClick(product.productId)
                             }
                         >
-                            <img
-                                src={product.images[0].imageUrl}
-                                alt={product.name}
-                                className="w-34 h-64 object-contain hover:bg-trueIndigo-500 hover:opacity-30"
-                            />
+                            <div className="group relative">
+                                <img
+                                    src={product.images[0].imageUrl}
+                                    alt={product.name}
+                                    className="w-34 h-64 object-contain"
+                                />
+                                <div className="group-overlay absolute inset-0 bg-trueIndigo-500/50 flex justify-center items-center transition-opacity duration-300 opacity-0 group-hover:opacity-100">
+                                    <div className="text-white flex justify-center items-center gap-3">
+                                        <div
+                                            className="flex gap-1 bg-white cursor-not-allowed"
+                                            onClick={(e) => {
+                                                e.stopPropagation();
+                                            }}
+                                        >
+                                            <div className="text-black">
+                                                Wishlist
+                                            </div>
+                                            <img
+                                                src={favoriteIcon}
+                                                alt="Favorite"
+                                                width="25"
+                                                height="25"
+                                            />
+                                        </div>
+                                        <div
+                                            className="flex gap-1 bg-white cursor-not-allowed"
+                                            onClick={(e) => {
+                                                e.stopPropagation();
+                                            }}
+                                        >
+                                            <div className="text-black">
+                                                Bid
+                                            </div>
+                                            <img
+                                                src={bidIcon}
+                                                alt="Bid"
+                                                width="25"
+                                                height="25"
+                                            />
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
                             <p className="font-bold text-lg mb-2 pt-3">
                                 {product.name}
                             </p>
