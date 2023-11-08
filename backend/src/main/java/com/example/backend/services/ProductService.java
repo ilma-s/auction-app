@@ -19,10 +19,14 @@ public class ProductService {
     private final ProductRepository productRepository;
     private final BidRepository bidRepository;
 
+    private final BidRepository bidRepository;
+
 
     @Autowired
     public ProductService(ProductRepository productRepository, BidRepository bidRepository) {
+    public ProductService(ProductRepository productRepository, BidRepository bidRepository) {
         this.productRepository = productRepository;
+        this.bidRepository = bidRepository;
         this.bidRepository = bidRepository;
     }
     public ResponseEntity<List<Product>> getAllProducts() {
@@ -60,6 +64,7 @@ public class ProductService {
 
     public ResponseEntity<BidInfoResponse> getBidInfo(@RequestParam("product_id") String productId) {
         Product product = productRepository.findProduct(productId);
+
         if (product == null) {
             return ResponseEntity.notFound().build();
         }
@@ -81,5 +86,4 @@ public class ProductService {
 
         return ResponseEntity.ok(response);
     }
-
 }

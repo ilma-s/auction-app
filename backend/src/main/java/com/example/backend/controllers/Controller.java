@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Map;
 
 @RestController
 @CrossOrigin(origins = "${frontend_address}")
@@ -59,9 +60,9 @@ public class Controller {
         return productService.findLastChanceProducts();
     }
 
-    @GetMapping("/shop/item")
-    public ResponseEntity<Product> findProduct(@RequestParam("product_id") String productId) {
-        return productService.findProduct(productId);
+    @GetMapping("/item/{id}")
+    public ResponseEntity<Product> findProduct(@PathVariable String id) {
+        return productService.findProduct(id);
     }
 
     @GetMapping(value = "/bid-info", produces = "application/json")
