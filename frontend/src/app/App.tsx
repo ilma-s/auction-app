@@ -8,7 +8,6 @@ import HealthCheck from '../pages/healthCheck/LazyLoad';
 import ProductPage from '../pages/productPage/ProductPage';
 import ShopPage from '../pages/shopPage/LazyLoad';
 
-
 const App = () => {
     return (
         <div>
@@ -26,6 +25,7 @@ const App = () => {
                 <Route path="/api/health" element={<HealthCheck />} />
                 <Route path="/shop/item/" element={<ProductPage />} />
                 <Route path="/shop" element={<ShopPage />} />
+                <Route path="/shop/:categoryName" element={<ShopPage />} />
             </Routes>
         </div>
     );

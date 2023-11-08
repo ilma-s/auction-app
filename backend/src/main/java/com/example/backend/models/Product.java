@@ -30,4 +30,7 @@ public class Product {
     @JsonIgnoreProperties("product")
     private List<Image> images;
 
+    @OneToMany(mappedBy = "product")
+    @JsonIgnoreProperties("product")
+    private List<ProductCategory> categories;
 }

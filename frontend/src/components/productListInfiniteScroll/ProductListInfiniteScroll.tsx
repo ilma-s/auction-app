@@ -1,4 +1,3 @@
-import React from 'react';
 import { useState, useEffect, useCallback, useRef } from 'react';
 import ProductUtils from '../../utils/entities/ProductUtils';
 import { Product } from '../../types';
@@ -9,8 +8,10 @@ import LoadingSpinner from '../loadingSpinner/LoadingSpinner';
 
 const ProductListInfiniteScroll = ({
     searchResults,
+    selectedCategory, // Add selectedCategory as a prop
 }: {
     searchResults?: Product[];
+    selectedCategory: string | null; // Make sure it's passed as a prop
 }) => {
     const navigate = useNavigate();
 
@@ -44,9 +45,16 @@ const ProductListInfiniteScroll = ({
                         Array.isArray(response.products) &&
                         response.products.length > 0
                     ) {
+                        // Filter products based on the selected category
+                        const filteredProducts =
+                            await ProductUtils.filterProductsByCategories(
+                                response.products,
+                                selectedCategory || '',
+                            );
+
                         setAllProducts((prevAllProducts) => [
                             ...prevAllProducts,
-                            ...response.products,
+                            ...filteredProducts,
                         ]);
 
                         setCurrentPage(currentPage + 1);
@@ -60,15 +68,17 @@ const ProductListInfiniteScroll = ({
                 setIsLoading(false);
             }
         }
-    }, [currentPage, isLoading, hasMoreProducts, searchResults]);
+    }, [
+        currentPage,
+        isLoading,
+        hasMoreProducts,
+        searchResults,
+        selectedCategory,
+    ]);
 
     useEffect(() => {
         fetchMoreProducts();
-
-        return () => {
-            setAllProducts([]);
-        };
-    }, [searchResults]);
+    }, [searchResults, selectedCategory, fetchMoreProducts]);
 
     useEffect(() => {
         const handleScroll = () => {

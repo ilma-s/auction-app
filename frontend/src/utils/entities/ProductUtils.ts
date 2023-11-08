@@ -9,6 +9,7 @@ import {
 
 import { fetchData } from '../../helpers/apiFunctions';
 import { Product } from '../../types';
+import CategoryUtils from './CategoryUtils';
 
 class ProductUtils {
     static async fetchClosestProduct() {
@@ -52,6 +53,37 @@ class ProductUtils {
 
     static async fetchProduct(productId: string) {
         return fetchData('shop/item', { product_id: productId });
+    }
+
+    static async filterProductsByCategories(
+        products: Product[],
+        selectedCategory: string,
+    ) {
+        const subcategories = await CategoryUtils.fetchSubcategories(
+            selectedCategory,
+        );
+        const subcategoryNames = subcategories.map(
+            (subcategory: [string, string, number]) => subcategory[1],
+        );
+
+        const filteredProducts = products.filter((product) => {
+
+            const matchedCategory = product.categories.some(
+                (productCategory) => {
+                    const categoryMatched =
+                        productCategory.name === selectedCategory ||
+                        subcategoryNames.includes(
+                            productCategory.category?.name,
+                        );
+
+                    return categoryMatched;
+                },
+            );
+
+            return matchedCategory;
+        });
+
+        return filteredProducts;
     }
 }
 

@@ -1,5 +1,6 @@
 package com.example.backend.models;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import lombok.Data;
 
 import jakarta.persistence.Entity;
@@ -22,5 +23,6 @@ public class ProductCategory {
 
     @ManyToOne
     @JoinColumn(name = "product_id", referencedColumnName = "productId")
+    @JsonIgnoreProperties("categories")
     private Product product;
 }

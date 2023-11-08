@@ -8,6 +8,14 @@ export interface Product {
     startDate: Date;
     endDate: Date;
     status: string;
+    categories: Category[];
+}
+
+export interface Category {
+    categoryId: string;
+    name: string;
+    parentCategory?: Category;
+    category?: Category;
 }
 
 export interface Image {
@@ -24,13 +32,8 @@ export interface Seller {
     isAdmin: boolean;
 }
 
-export interface Category {
-    categoryId: string;
-    name: string;
-};
-
 export interface BidInformation {
     highestBid: number;
     numberOfBids: number;
     timeLeft: string;
-};
+}

@@ -29,6 +29,7 @@ const ProductPage = () => {
         if (productId) {
             ProductUtils.fetchProduct(productId).then((data) => {
                 setProduct(data);
+                console.log(data);
             });
         }
     }, [productId]);

@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 
 import CategoryUtils from '../../utils/entities/CategoryUtils';
 
@@ -16,6 +17,12 @@ const CategoryList = () => {
         CategoryUtils.fetchCategories().then((data) => setCategories(data));
     }, []);
 
+    const navigate = useNavigate();
+
+    const handleClick = (category: Category) => {
+        navigate(`/shop?category=${category.categoryId}`);
+    };
+
     return (
         <div className="w-60 cursor-pointer">
             <div className="font-normal text-trueIndigo-500 pb-8 pl-3">
@@ -27,6 +34,7 @@ const CategoryList = () => {
                     <div
                         key={category.categoryId}
                         className="flex h-12 border-b-2 border-true-gray-300 items-center pl-3"
+                        onClick={() => handleClick(category)}
                     >
                         {category.name}
                     </div>

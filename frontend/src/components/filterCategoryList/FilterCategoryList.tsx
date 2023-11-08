@@ -41,6 +41,8 @@ const transformSubcategoriesWithItemCount = (
 };
 
 const FilterCategoryList = ({ selectedCategory }: FilterCategoryListProps) => {
+    console.log('selectedCategory::::: ', selectedCategory);
+
     const [categories, setCategories] = useState<Category[]>([]);
     const [expandedCategories, setExpandedCategories] = useState<string[]>([]);
     const [subcategories, setSubcategories] = useState<{
@@ -56,6 +58,18 @@ const FilterCategoryList = ({ selectedCategory }: FilterCategoryListProps) => {
     useEffect(() => {
         CategoryUtils.fetchCategories().then((data) => setCategories(data));
     }, []);
+
+    // expand the selected category when the user navigates to it
+    useEffect(() => {
+        if (selectedCategory) {
+            const matchingCategory = categories.find(
+                (category) => category.categoryId === selectedCategory,
+            );
+            if (matchingCategory) {
+                toggleCategoryExpansion(matchingCategory.categoryId);
+            }
+        }
+    }, [selectedCategory, categories]);
 
     const toggleCategoryExpansion = (categoryId: string) => {
         if (expandedCategories.includes(categoryId)) {
@@ -117,7 +131,7 @@ const FilterCategoryList = ({ selectedCategory }: FilterCategoryListProps) => {
     };
 
     return (
-        <div className="w-60 border-2 pl-6 pr-6 h-fit">
+        <div className="w-60 border-2 pl-6 pr-6 h-fit mb-12">
             <div className="font-normal text-trueIndigo-500 pb-8 pt-3">
                 {PRODUCT_CATEGORIES_STRING}
             </div>

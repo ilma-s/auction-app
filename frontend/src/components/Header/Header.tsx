@@ -19,7 +19,6 @@ const Header = () => {
     const name = useSelector(selectName);
 
     const navigate = useNavigate();
-    const location = useLocation();
 
     const handleSearch = () => {
         if (searchTerm.trim() === '') {
