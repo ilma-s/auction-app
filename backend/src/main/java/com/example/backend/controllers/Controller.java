@@ -1,5 +1,6 @@
 package com.example.backend.controllers;
 
+import com.example.backend.dtos.BidInfoResponse;
 import com.example.backend.models.Category;
 import com.example.backend.models.Product;
 import com.example.backend.services.CategoryService;
@@ -9,6 +10,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @CrossOrigin(origins = "${frontend_address}")
@@ -54,5 +56,15 @@ public class Controller {
     @GetMapping("/last-chance")
     public ResponseEntity<List<Product>> getLastChanceProducts() {
         return productService.findLastChanceProducts();
+    }
+
+    @GetMapping("/item/{id}")
+    public ResponseEntity<Product> findProduct(@PathVariable String id) {
+        return productService.findProduct(id);
+    }
+
+    @GetMapping(value = "/bid-info", produces = "application/json")
+    public ResponseEntity<BidInfoResponse> getBidInfo(@RequestParam("product_id") String productId) {
+        return productService.getBidInfo(productId);
     }
 }

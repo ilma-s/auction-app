@@ -25,6 +25,10 @@ class ProductUtils {
 
         return fetchData(endpoint);
     }
+
+    static async fetchProduct(productId: string) {
+        return fetchData(`item/${productId}`);
+    }
 }
 
 export default ProductUtils;

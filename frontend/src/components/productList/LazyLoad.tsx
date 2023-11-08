@@ -2,14 +2,9 @@ import { lazy, Suspense } from 'react';
 
 import { Product } from '../../types';
 
-interface ProductListProps {
-    products: Product[];
-}
-
 const ProductListComponent = lazy(() => import('./ProductList'));
 
-const ProductList = ({ products }: ProductListProps) => {
-
+const ProductList = ({ products }: { products: Product[] }) => {
     return (
         <Suspense fallback={<div>Loading...</div>}>
             <ProductListComponent products={products} />

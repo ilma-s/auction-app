@@ -42,6 +42,16 @@ export const RELATED_PRODUCTS_STRING = 'Related Products';
 
 export const RELATED_PRODUCTS_URL_STRING = 'related-products';
 
+export const HIGHEST_BID = 'Highest Bid';
+
+export const NUMBER_OF_BIDS = 'Number of Bids';
+
+export const TIME_LEFT = 'Time Left';
+
+export const PLACE_BID = 'PLACE BID';
+
+export const DETAILS = 'Details';
+
 export const SMALL_WORDS: string[] = [
     'and',
     'the',
