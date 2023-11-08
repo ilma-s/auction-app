@@ -1,9 +1,16 @@
 import { lazy, Suspense } from 'react';
+import LoadingSpinner from '../../components/loadingSpinner/LoadingSpinner';
 
 const ShopPageComponent = lazy(() => import('./ShopPage'));
 
 const HomePage = () => (
-    <Suspense fallback={<div>Loading...</div>}>
+    <Suspense
+        fallback={
+            <div className="flex items-center justify-items">
+                <LoadingSpinner />
+            </div>
+        }
+    >
         <ShopPageComponent />
     </Suspense>
 );

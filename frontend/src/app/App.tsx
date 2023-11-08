@@ -24,7 +24,7 @@ const App = () => {
                     element={<PrivacyPolicy />}
                 />
                 <Route path="/api/health" element={<HealthCheck />} />
-                <Route path="/shop/item" element={<ProductPage />} />
+                <Route path="/shop/item/" element={<ProductPage />} />
                 <Route path="/shop" element={<ShopPage />} />
             </Routes>
         </div>

@@ -5,6 +5,7 @@ import AppPath from '../../components/appPath/AppPath';
 import ProductInformation from '../../components/productInformation/ProductInformation';
 import { Product, BidInformation } from '../../types';
 import BidUtils from '../../utils/entities/BidUtils';
+import LoadingSpinner from '../../components/loadingSpinner/LoadingSpinner';
 
 const ProductPage = () => {
     const [product, setProduct] = useState<Product | null>(null);
@@ -107,7 +108,7 @@ const ProductPage = () => {
                             <div>{product.name}</div>
                         </div>
                     ) : (
-                        <p>Loading product...</p>
+                        <LoadingSpinner />
                     )}
                 </div>
                 <AppPath />

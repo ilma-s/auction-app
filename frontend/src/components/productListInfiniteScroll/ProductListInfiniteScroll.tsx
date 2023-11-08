@@ -1,10 +1,11 @@
+import React from 'react';
 import { useState, useEffect, useCallback, useRef } from 'react';
 import ProductUtils from '../../utils/entities/ProductUtils';
 import { Product } from '../../types';
 import { useNavigate } from 'react-router-dom';
-
 import bidIcon from './assets/bid-icon.svg';
 import favoriteIcon from './assets/favorite-icon.svg';
+import LoadingSpinner from '../loadingSpinner/LoadingSpinner';
 
 const ProductListInfiniteScroll = ({
     searchResults,
@@ -12,8 +13,6 @@ const ProductListInfiniteScroll = ({
     searchResults?: Product[];
 }) => {
     const navigate = useNavigate();
-
-    console.log('in plis: ', searchResults);
 
     const handleProductClick = (productId: string) => {
         navigate(`/shop/item?product_id=${productId}`);
@@ -24,7 +23,6 @@ const ProductListInfiniteScroll = ({
     const [isLoading, setIsLoading] = useState(false);
     const [hasMoreProducts, setHasMoreProducts] = useState(true);
     const [loadMore, setLoadMore] = useState(true);
-    const [initialLoadComplete, setInitialLoadComplete] = useState(false);
 
     const productsToLoad = 9;
     const containerRef = useRef<HTMLDivElement | null>(null);
@@ -68,7 +66,7 @@ const ProductListInfiniteScroll = ({
         fetchMoreProducts();
 
         return () => {
-            setAllProducts(prevAllProducts => prevAllProducts);
+            setAllProducts([]);
         };
     }, [searchResults]);
 
@@ -116,7 +114,7 @@ const ProductListInfiniteScroll = ({
                                 <div className="group-overlay absolute inset-0 bg-trueIndigo-500/50 flex justify-center items-center transition-opacity duration-300 opacity-0 group-hover:opacity-100">
                                     <div className="text-white flex justify-center items-center gap-3">
                                         <div
-                                            className="flex gap-1 bg-white cursor-not-allowed"
+                                            className="flex gap-2 bg-white cursor-not-allowed p-2"
                                             onClick={(e) => {
                                                 e.stopPropagation();
                                             }}
@@ -132,7 +130,7 @@ const ProductListInfiniteScroll = ({
                                             />
                                         </div>
                                         <div
-                                            className="flex gap-1 bg-white cursor-not-allowed"
+                                            className="flex gap-2 bg-white cursor-not-allowed p-2"
                                             onClick={(e) => {
                                                 e.stopPropagation();
                                             }}
@@ -164,8 +162,12 @@ const ProductListInfiniteScroll = ({
                     ))}
                 </div>
             </div>
-            {isLoading && <div>Loading...</div>}
-            {hasMoreProducts && (
+            {isLoading ? (
+                <div className="flex items-center justify-center h-24">
+                    <LoadingSpinner />
+                </div>
+            ) : null}
+            {hasMoreProducts && !isLoading && (
                 <button
                     onClick={handleLoadMoreClick}
                     className="pt-3 pb-3 pl-8 pr-8 mb-5 bg-trueIndigo-500 text-white mx-auto my-4 block"
