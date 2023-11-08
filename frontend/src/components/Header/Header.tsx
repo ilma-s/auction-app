@@ -61,10 +61,6 @@ const Header = () => {
         };
     }, [searchTerm]);
 
-    useEffect(() => {
-        setSearchTerm('');
-    }, [location.pathname])
-
     return (
         <div className="flex flex-col">
             <div className="bg-trueGray-800">

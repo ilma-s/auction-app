@@ -24,6 +24,7 @@ const ProductListInfiniteScroll = ({
     const [isLoading, setIsLoading] = useState(false);
     const [hasMoreProducts, setHasMoreProducts] = useState(true);
     const [loadMore, setLoadMore] = useState(true);
+    const [initialLoadComplete, setInitialLoadComplete] = useState(false);
 
     const productsToLoad = 9;
     const containerRef = useRef<HTMLDivElement | null>(null);
@@ -65,6 +66,10 @@ const ProductListInfiniteScroll = ({
 
     useEffect(() => {
         fetchMoreProducts();
+
+        return () => {
+            setAllProducts(prevAllProducts => prevAllProducts);
+        };
     }, [searchResults]);
 
     useEffect(() => {
