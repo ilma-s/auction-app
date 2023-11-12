@@ -1,12 +1,14 @@
 package com.example.backend.controllers;
 
 import com.example.backend.dtos.BidInfoResponse;
+import com.example.backend.dtos.BidInfoResponse;
 import com.example.backend.models.Category;
 import com.example.backend.models.Product;
 import com.example.backend.repositories.ProductRepository;
 import com.example.backend.services.CategoryService;
 import com.example.backend.services.ProductService;
 import org.springframework.beans.factory.annotation.Autowired;
+
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
@@ -41,6 +43,7 @@ public class Controller {
 
     @GetMapping("/categories")
     public ResponseEntity<List<Category>> getAllCategories() {
+        List<Category> categories = categoryService.findCategories();
         List<Category> categories = categoryService.findCategories();
         return ResponseEntity.ok(categories);
     }
@@ -100,6 +103,4 @@ public class Controller {
         List<Product> searchResults = productRepository.searchProducts(searchTerm.toLowerCase());
         return ResponseEntity.ok(searchResults);
     }
-
-
 }

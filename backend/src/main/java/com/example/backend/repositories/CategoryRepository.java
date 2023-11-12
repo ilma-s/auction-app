@@ -17,4 +17,3 @@ public interface CategoryRepository extends JpaRepository<Category, Long> {
             "GROUP BY c.categoryId, c.name")
     List<Object[]> findSubcategoriesWithItemCount(@Param("categoryId") String categoryId);
 }
-
