@@ -1,107 +1,80 @@
-import { useState, useEffect, useCallback, useRef } from 'react';
-import ProductUtils from '../../utils/entities/ProductUtils';
+import { Dispatch, SetStateAction, useEffect, useRef, useState } from 'react';
 import { Product } from '../../types';
 import { useNavigate } from 'react-router-dom';
 import bidIcon from './assets/bid-icon.svg';
 import favoriteIcon from './assets/favorite-icon.svg';
 import LoadingSpinner from '../loadingSpinner/LoadingSpinner';
 
+interface ProductListProps {
+    fetchMoreProducts: () => Promise<void>;
+    allProducts: Product[];
+    hasMoreProducts: boolean;
+    setLoadMore: Dispatch<SetStateAction<boolean>>;
+    showExploreButton: boolean;
+    setShowExploreButton: Dispatch<SetStateAction<boolean>>;
+    productsToLoad: number;
+}
+
 const ProductListInfiniteScroll = ({
-    searchResults,
-    selectedCategory, // Add selectedCategory as a prop
-}: {
-    searchResults?: Product[];
-    selectedCategory: string | null; // Make sure it's passed as a prop
-}) => {
+    fetchMoreProducts,
+    allProducts,
+    hasMoreProducts,
+    setLoadMore,
+    showExploreButton,
+    setShowExploreButton,
+    productsToLoad,
+}: ProductListProps) => {
     const navigate = useNavigate();
+    const containerRef = useRef<HTMLDivElement | null>(null);
+    const [isLoading, setIsLoading] = useState(false);
 
     const handleProductClick = (productId: string) => {
         navigate(`/shop/item?product_id=${productId}`);
     };
 
-    const [allProducts, setAllProducts] = useState<Product[]>([]);
-    const [currentPage, setCurrentPage] = useState(1);
-    const [isLoading, setIsLoading] = useState(false);
-    const [hasMoreProducts, setHasMoreProducts] = useState(true);
-    const [loadMore, setLoadMore] = useState(true);
-
-    const productsToLoad = 9;
-    const containerRef = useRef<HTMLDivElement | null>(null);
-
-    const fetchMoreProducts = useCallback(async () => {
-        if (!isLoading && hasMoreProducts) {
+    const handleScroll = () => {
+        if (
+            containerRef.current &&
+            containerRef.current.getBoundingClientRect().bottom <=
+                window.innerHeight &&
+            !isLoading &&
+            hasMoreProducts &&
+            allProducts.length >= productsToLoad
+        ) {
             setIsLoading(true);
 
-            try {
-                if (searchResults && searchResults.length > 0) {
-                    setAllProducts(searchResults);
-                } else {
-                    const response = await ProductUtils.fetchLimitedProducts(
-                        productsToLoad,
-                        (currentPage - 1) * productsToLoad,
-                    );
-
-                    if (
-                        Array.isArray(response.products) &&
-                        response.products.length > 0
-                    ) {
-                        // Filter products based on the selected category
-                        const filteredProducts =
-                            await ProductUtils.filterProductsByCategories(
-                                response.products,
-                                selectedCategory || '',
-                            );
-
-                        setAllProducts((prevAllProducts) => [
-                            ...prevAllProducts,
-                            ...filteredProducts,
-                        ]);
-
-                        setCurrentPage(currentPage + 1);
-                    } else {
-                        setHasMoreProducts(false);
-                    }
-                }
-            } catch (error) {
-                console.error('Error fetching products', error);
-            } finally {
+            fetchMoreProducts().finally(() => {
                 setIsLoading(false);
-            }
+            });
         }
-    }, [
-        currentPage,
-        isLoading,
-        hasMoreProducts,
-        searchResults,
-        selectedCategory,
-    ]);
+    };
 
     useEffect(() => {
-        fetchMoreProducts();
-    }, [searchResults, selectedCategory, fetchMoreProducts]);
-
-    useEffect(() => {
-        const handleScroll = () => {
-            if (
-                containerRef.current &&
-                !loadMore &&
-                containerRef.current.getBoundingClientRect().bottom <=
-                    window.innerHeight
-            ) {
-                fetchMoreProducts();
-            }
-        };
-
         window.addEventListener('scroll', handleScroll);
+
         return () => {
             window.removeEventListener('scroll', handleScroll);
         };
-    }, [fetchMoreProducts]);
+    }, [fetchMoreProducts, isLoading, hasMoreProducts, allProducts]);
 
     const handleLoadMoreClick = () => {
-        fetchMoreProducts();
-        setLoadMore(false);
+        setIsLoading(true);
+        setLoadMore(true);
+        setShowExploreButton(false);
+
+        fetchMoreProducts().finally(() => {
+            setIsLoading(false);
+        });
     };
+
+    useEffect(() => {
+        // check if there are enough items to show the "Explore More" button
+        if (allProducts.length >= 9) {
+            setShowExploreButton(true);
+        } else {
+            setShowExploreButton(false);
+        }
+    }, [allProducts]);
 
     return (
         <div className="w-2/3">
@@ -177,7 +150,7 @@ const ProductListInfiniteScroll = ({
                     <LoadingSpinner />
                 </div>
             ) : null}
-            {hasMoreProducts && !isLoading && (
+            {showExploreButton && hasMoreProducts && (
                 <button
                     onClick={handleLoadMoreClick}
                     className="pt-3 pb-3 pl-8 pr-8 mb-5 bg-trueIndigo-500 text-white mx-auto my-4 block"

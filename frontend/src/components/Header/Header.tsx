@@ -1,4 +1,4 @@
-import { NavLink, useLocation, useNavigate } from 'react-router-dom';
+import { NavLink, useNavigate } from 'react-router-dom';
 import { useState, useEffect } from 'react';
 import { useSelector } from 'react-redux';
 import gavelIcon from './assets/gavel-icon.svg';
@@ -15,7 +15,6 @@ import { selectName } from '../../app/selectors';
 
 const Header = () => {
     const [searchTerm, setSearchTerm] = useState('');
-    const [searchResults, setSearchResults] = useState([]);
     const name = useSelector(selectName);
 
     const navigate = useNavigate();
@@ -25,25 +24,7 @@ const Header = () => {
             return;
         }
 
-        fetch(`http://localhost:8080/search?searchTerm=${searchTerm}`, {
-            method: 'GET',
-        })
-            .then((response) => {
-                if (!response.ok) {
-                    throw new Error('Search request failed');
-                }
-                return response.json();
-            })
-            .then((data) => {
-                console.log('Search results:', data);
-                setSearchResults(data);
-                navigate(`/shop?searchTerm=${searchTerm}`, {
-                    state: { searchResults: data },
-                });
-            })
-            .catch((error) => {
-                console.error('Search request failed:', error);
-            });
+        navigate(`shop?searchTerm=${searchTerm}`); //shop ili home -> iz urla na kojoj stranici; update q.params r.router
     };
 
     useEffect(() => {
