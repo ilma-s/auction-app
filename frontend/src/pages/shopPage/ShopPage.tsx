@@ -34,10 +34,6 @@ const ShopPage = () => {
                 return;
             }
 
-            console.log('LM: ', loadMore);
-
-            console.log('pass');
-
             const response = await fetch(`http://localhost:8080/${endpoint}`, {
                 method: 'GET',
             });
@@ -47,19 +43,6 @@ const ShopPage = () => {
             }
 
             const data = await response.json();
-
-            console.log(
-                'checkpoint: loadmore: ',
-                loadMore,
-                ' st length: ',
-                searchTerm.length,
-            );
-
-            // if (loadMore && searchTerm.length > 0) {
-            //     setLoadMore(false);
-            // }
-
-            console.log('data.products: ', data.products);
 
             if (data.products.length !== 0) {
                 setHasMoreProducts(true);
@@ -109,11 +92,9 @@ const ShopPage = () => {
         } catch (error) {
             console.error('Search request failed:', error);
         }
-    }, [location.search, currentPage, selectedCategory, searchTerm]);
+    }, [location.search, currentPage, selectedCategory, searchTerm, loadMore]);
 
     useEffect(() => {
-        console.log('useEffect triggered with searchTerm:', searchTerm);
-
         fetchMoreProducts();
     }, [searchTerm, currentPage, hasMoreProducts]);
 

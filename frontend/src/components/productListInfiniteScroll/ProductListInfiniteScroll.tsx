@@ -57,14 +57,18 @@ const ProductListInfiniteScroll = ({
         };
     }, [fetchMoreProducts, isLoading, hasMoreProducts, allProducts]);
 
-    const handleLoadMoreClick = () => {
+    const handleLoadMoreClick = async () => {
         setIsLoading(true);
-        setLoadMore(true);
         setShowExploreButton(false);
 
-        fetchMoreProducts().finally(() => {
+        try {
+            setLoadMore(true);
+            await fetchMoreProducts();
+        } catch (error) {
+            console.error('Error while loading more:', error);
+        } finally {
             setIsLoading(false);
-        });
+        }
     };
 
     useEffect(() => {
