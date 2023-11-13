@@ -32,7 +32,8 @@ export interface Seller {
     isAdmin: boolean;
 }
 
-export interface Category {
-    categoryId: string;
-    name: string;
-};
+export interface BidInformation {
+    highestBid: number;
+    numberOfBids: number;
+    timeLeft: string;
+}

@@ -1,9 +1,6 @@
 import { useState } from 'react';
 import { useSelector } from 'react-redux';
 import {
-    HIGHEST_BID,
-    NUMBER_OF_BIDS,
-    TIME_LEFT,
     PLACE_BID,
     DETAILS_STRING,
 } from '../../utils/constants';

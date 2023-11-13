@@ -13,7 +13,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @Service
 public class ProductService {
@@ -86,5 +88,9 @@ public class ProductService {
     public Page<Product> getAllProductsPaged(int limit, int page) {
         Pageable pageable = PageRequest.of(page, limit);
         return productRepository.getAllProductsPaged(pageable);
+    }
+
+    public List<Product> searchProducts(String searchTerm) {
+        return productRepository.searchProducts(searchTerm.toLowerCase());
     }
 }

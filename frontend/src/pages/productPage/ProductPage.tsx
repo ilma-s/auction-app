@@ -2,7 +2,7 @@ import { useEffect, useState, useRef } from 'react';
 import { useLocation } from 'react-router-dom';
 import ProductUtils from '../../utils/entities/ProductUtils';
 import AppPath from '../../components/appPath/AppPath';
-import ProductInformation from '../../components/productInformation/ProductInformation';
+import ProductInformation from '../../components/productDetails/ProductDetails';
 import { Product, BidInformation } from '../../types';
 import BidUtils from '../../utils/entities/BidUtils';
 import LoadingSpinner from '../../components/loadingSpinner/LoadingSpinner';

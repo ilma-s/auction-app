@@ -10,6 +10,7 @@ const ShopPage = () => {
     const [searchResults, setSearchResults] = useState([]);
     const queryParams = new URLSearchParams(location.search);
     const selectedCategory = queryParams.get('category') || '';
+    const searchTerm = queryParams.get('searchTerm') || '';
 
     const [currentPage, setCurrentPage] = useState(1);
     const [hasMoreProducts, setHasMoreProducts] = useState(true);
@@ -22,11 +23,20 @@ const ShopPage = () => {
         try {
             if (!hasMoreProducts) return;
 
-            if (loadMore == false) return;
-
             let offset = (currentPage - 1) * productsToLoad;
 
             let endpoint = `all-products?limit=${productsToLoad}&offset=${offset}`;
+
+            if (searchTerm.length > 0) {
+                setLoadMore(true);
+                endpoint = `search?searchTerm=${searchTerm}`;
+            } else if (!loadMore) {
+                return;
+            }
+
+            console.log('LM: ', loadMore);
+
+            console.log('pass');
 
             const response = await fetch(`http://localhost:8080/${endpoint}`, {
                 method: 'GET',
@@ -38,10 +48,31 @@ const ShopPage = () => {
 
             const data = await response.json();
 
+            console.log(
+                'checkpoint: loadmore: ',
+                loadMore,
+                ' st length: ',
+                searchTerm.length,
+            );
+
+            // if (loadMore && searchTerm.length > 0) {
+            //     setLoadMore(false);
+            // }
+
+            console.log('data.products: ', data.products);
+
             if (data.products.length !== 0) {
                 setHasMoreProducts(true);
 
                 if (
+                    Array.isArray(data.products) &&
+                    data.products.length > 0 &&
+                    searchTerm.length > 0
+                ) {
+                    setAllProducts(data.products);
+                    setCurrentPage(currentPage + 1);
+                    setHasMoreProducts(true);
+                } else if (
                     Array.isArray(data.products) &&
                     data.products.length > 0 &&
                     selectedCategory
@@ -64,6 +95,7 @@ const ShopPage = () => {
                         ...prevAllProducts,
                         ...data.products,
                     ]);
+
                     setCurrentPage(currentPage + 1);
                     setHasMoreProducts(true);
                 }
@@ -77,11 +109,13 @@ const ShopPage = () => {
         } catch (error) {
             console.error('Search request failed:', error);
         }
-    }, [location.search, currentPage, selectedCategory, loadMore]);
+    }, [location.search, currentPage, selectedCategory, searchTerm]);
 
     useEffect(() => {
+        console.log('useEffect triggered with searchTerm:', searchTerm);
+
         fetchMoreProducts();
-    }, []);
+    }, [searchTerm, currentPage, hasMoreProducts]);
 
     return (
         <div className="w-2/3 mx-auto pt-12 flex font-lato">

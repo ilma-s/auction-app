@@ -44,7 +44,6 @@ public class Controller {
     @GetMapping("/categories")
     public ResponseEntity<List<Category>> getAllCategories() {
         List<Category> categories = categoryService.findCategories();
-        List<Category> categories = categoryService.findCategories();
         return ResponseEntity.ok(categories);
     }
 
@@ -99,8 +98,12 @@ public class Controller {
     }
 
     @GetMapping("/search")
-    public ResponseEntity<List<Product>> searchProducts(@RequestParam("searchTerm") String searchTerm) {
-        List<Product> searchResults = productRepository.searchProducts(searchTerm.toLowerCase());
-        return ResponseEntity.ok(searchResults);
+    public ResponseEntity<Map<String, List<Product>>> searchProducts(@RequestParam("searchTerm") String searchTerm) {
+        List<Product> searchResults = productService.searchProducts(searchTerm.toLowerCase());
+
+        Map<String, List<Product>> response = new HashMap<>();
+        response.put("products", searchResults);
+
+        return ResponseEntity.ok(response);
     }
 }

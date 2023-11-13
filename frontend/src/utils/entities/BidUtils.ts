@@ -3,7 +3,7 @@ import { BidInformation, Product } from '../../types';
 
 class BidUtils {
     static async getBidInformation(productId: string): Promise<BidInformation> {
-        const data = await fetchData(`bid-info/${productId}`);
+        const data = await fetchData(`bid-info?product_id=${productId}`);
         data.timeLeft = BidUtils.convertTimeLeft(data.timeLeft) as string;
         return data;
     }
@@ -32,7 +32,10 @@ class BidUtils {
         }
     }
 
-    static getNextBidValue(bidInformation: BidInformation, product: Product,): string {
+    static getNextBidValue(
+        bidInformation: BidInformation,
+        product: Product,
+    ): string {
         const price =
             bidInformation.numberOfBids === 0
                 ? product?.startingPrice + 1

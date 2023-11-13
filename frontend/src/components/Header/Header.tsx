@@ -1,5 +1,5 @@
 import { NavLink, useNavigate } from 'react-router-dom';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useSelector } from 'react-redux';
 import gavelIcon from './assets/gavel-icon.svg';
 import searchIcon from './assets/search-icon.svg';
@@ -16,15 +16,23 @@ import { selectName } from '../../app/selectors';
 const Header = () => {
     const [searchTerm, setSearchTerm] = useState('');
     const name = useSelector(selectName);
+    const queryParams = new URLSearchParams(location.search);
+    const searchTermValue = queryParams.get('searchTerm') || '';
 
     const navigate = useNavigate();
+
+    const searchInputRef = useRef(null);
 
     const handleSearch = () => {
         if (searchTerm.trim() === '') {
             return;
         }
 
-        navigate(`shop?searchTerm=${searchTerm}`); //shop ili home -> iz urla na kojoj stranici; update q.params r.router
+        navigate(`shop?searchTerm=${searchTerm}`);
+
+        if (searchInputRef.current) {
+            (searchInputRef.current as HTMLInputElement).blur();
+        }
     };
 
     useEffect(() => {
@@ -40,6 +48,10 @@ const Header = () => {
             document.removeEventListener('keypress', handleKeyPress);
         };
     }, [searchTerm]);
+
+    useEffect(() => {
+        setSearchTerm(searchTermValue || '');
+    }, [searchTermValue]);
 
     return (
         <div className="flex flex-col">
@@ -68,6 +80,7 @@ const Header = () => {
 
                 <div className="px-2 py-2 w-1/2 border border-gray-300 flex items-center">
                     <input
+                        ref={searchInputRef}
                         type="text"
                         placeholder={`Try entering: ${SEARCH_PLACEHOLDER_STRING}`}
                         className="flex-grow border-none outline-none"
