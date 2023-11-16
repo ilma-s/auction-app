@@ -21,7 +21,7 @@ const Header = () => {
 
     const navigate = useNavigate();
 
-    const searchInputRef = useRef(null);
+    const searchInputRef = useRef<HTMLInputElement | null>(null);
 
     const handleSearch = () => {
         if (searchTerm.trim() === '') {
@@ -31,7 +31,7 @@ const Header = () => {
         navigate(`shop?searchTerm=${searchTerm}`);
 
         if (searchInputRef.current) {
-            (searchInputRef.current as HTMLInputElement).blur();
+            (searchInputRef.current).blur();
         }
     };
 

@@ -37,3 +37,10 @@ export interface BidInformation {
     numberOfBids: number;
     timeLeft: string;
 }
+
+export interface Subcategory {
+    categoryId: string;
+    subcategoryId: string;
+    subcategoryName: string;
+    subcategoryItemCount: number;
+}

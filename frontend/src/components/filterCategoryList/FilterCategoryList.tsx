@@ -9,50 +9,22 @@ import { PRODUCT_CATEGORIES_STRING } from '../../utils/constants';
 
 import { Category } from '../../types';
 
+import { Subcategory } from '../../types';
+
 interface FilterCategoryListProps {
     selectedCategory: string | null;
 }
 
-// define types for subcategory data
-type SubcategoryData = [string, string, number];
-
-const initialSubcategoriesState: {
-    [categoryId: string]: {
-        subcategoryName: string;
-        subcategoryItemCount: number;
-    }[];
-} = {};
-
-const transformSubcategoriesWithItemCount = (
-    data: SubcategoryData[],
-): { subcategoryName: string; subcategoryItemCount: number }[] => {
-    const subcategoriesArray: {
-        subcategoryName: string;
-        subcategoryItemCount: number;
-    }[] = [];
-
-    data.forEach((subcategory) => {
-        const subcategoryName = subcategory[1];
-        const subcategoryItemCount = subcategory[2];
-        subcategoriesArray.push({ subcategoryName, subcategoryItemCount });
-    });
-
-    return subcategoriesArray;
-};
-
 const FilterCategoryList = ({ selectedCategory }: FilterCategoryListProps) => {
-    console.log('selectedCategory::::: ', selectedCategory);
-
     const [categories, setCategories] = useState<Category[]>([]);
     const [expandedCategories, setExpandedCategories] = useState<string[]>([]);
+
     const [subcategories, setSubcategories] = useState<{
-        [categoryId: string]: {
-            subcategoryName: string;
-            subcategoryItemCount: number;
-        }[];
-    }>(initialSubcategoriesState);
+        [key: string]: Subcategory[];
+    }>({});
+
     const [selectedCheckboxes, setSelectedCheckboxes] = useState<{
-        [key: string]: string[];
+        [key: string]: boolean;
     }>({});
 
     useEffect(() => {
@@ -79,53 +51,46 @@ const FilterCategoryList = ({ selectedCategory }: FilterCategoryListProps) => {
                 delete updatedSubcategories[categoryId];
                 return updatedSubcategories;
             });
-            setSelectedCheckboxes((prevSelectedCheckboxes) => {
-                const updatedCheckboxes = { ...prevSelectedCheckboxes };
-                delete updatedCheckboxes[categoryId];
-                return updatedCheckboxes;
-            });
+
+            //what is the desired behavior?
+            //kada se zatvori dropdown, da li se zadrzavaju checked boxes?
+            // setSelectedCheckboxes((prevSelectedCheckboxes) => {
+            //     const updatedCheckboxes = { ...prevSelectedCheckboxes };
+            //     delete updatedCheckboxes[categoryId];
+            //     return updatedCheckboxes;
+            // });
+
             setExpandedCategories(
                 expandedCategories.filter((id) => id !== categoryId),
             );
         } else {
             CategoryUtils.fetchSubcategories(categoryId).then((data) => {
-                const transformedSubcategories: {
-                    subcategoryName: string;
-                    subcategoryItemCount: number;
-                }[] = transformSubcategoriesWithItemCount(data);
+                CategoryUtils.transformSubcategoriesWithItemCount(
+                    categoryId,
+                    data,
+                ).then((transformedSubcategories) => {
+                    setSubcategories((prevSubcategories) => {
+                        return {
+                            ...prevSubcategories,
+                            [categoryId]: transformedSubcategories,
+                        };
+                    });
 
-                setSubcategories((prevSubcategories) => {
-                    return {
-                        ...prevSubcategories,
-                        [categoryId]: transformedSubcategories,
-                    };
+                    setExpandedCategories([...expandedCategories, categoryId]);
                 });
             });
-            setExpandedCategories([...expandedCategories, categoryId]);
         }
     };
 
-    const handleCheckboxChange = (
-        categoryId: string,
-        subcategoryId: string,
-    ) => {
+    const handleCheckboxChange = (subcategoryId: string) => {
         setSelectedCheckboxes((prevSelectedCheckboxes) => {
+            // Create a copy of the previous state
             const updatedCheckboxes = { ...prevSelectedCheckboxes };
-            if (updatedCheckboxes[categoryId]) {
-                // check if the subcategory is already selected
-                const index =
-                    updatedCheckboxes[categoryId].indexOf(subcategoryId);
-                if (index !== -1) {
-                    // if it's already selected, remove it
-                    updatedCheckboxes[categoryId].splice(index, 1);
-                } else {
-                    // if it's not selected, add it
-                    updatedCheckboxes[categoryId].push(subcategoryId);
-                }
-            } else {
-                // if no checkboxes are selected for this category, create a new array
-                updatedCheckboxes[categoryId] = [subcategoryId];
-            }
+
+            // Toggle the value for the subcategoryId
+            updatedCheckboxes[subcategoryId] =
+                !updatedCheckboxes[subcategoryId];
+
             return updatedCheckboxes;
         });
     };
@@ -170,42 +135,37 @@ const FilterCategoryList = ({ selectedCategory }: FilterCategoryListProps) => {
                                 subcategories[category.categoryId].map(
                                     (subcategory) => (
                                         <div
-                                            key={subcategory.subcategoryName}
+                                            key={`${subcategory.subcategoryId}`}
                                             className="pt-1 pb-3 pl-2 flex items-center relative"
                                         >
                                             <input
                                                 type="checkbox"
-                                                id={subcategory.subcategoryName}
-                                                name={
-                                                    subcategory.subcategoryName
-                                                }
+                                                id={subcategory.subcategoryId}
+                                                name={subcategory.subcategoryId}
                                                 checked={
                                                     selectedCheckboxes[
-                                                        category.categoryId
-                                                    ]?.includes(
-                                                        subcategory.subcategoryName,
-                                                    ) || false
+                                                        subcategory
+                                                            .subcategoryId
+                                                    ] || false
                                                 }
                                                 onChange={() =>
                                                     handleCheckboxChange(
-                                                        category.categoryId,
-                                                        subcategory.subcategoryName,
+                                                        subcategory.subcategoryId,
                                                     )
                                                 }
                                                 className="peer hidden"
                                             />
+
                                             <label
                                                 htmlFor={
-                                                    subcategory.subcategoryName
+                                                    subcategory.subcategoryId
                                                 }
                                                 className="cursor-pointer relative"
                                             >
                                                 <div className="w-4 h-4 border-2 border-trueIndigo-500 rounded-sm"></div>
                                                 {selectedCheckboxes[
-                                                    category.categoryId
-                                                ]?.includes(
-                                                    subcategory.subcategoryName,
-                                                ) && (
+                                                    subcategory.subcategoryId
+                                                ] && (
                                                     <svg
                                                         className="w-4 h-4 text-trueIndigo-500 absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2"
                                                         xmlns="http://www.w3.org/2000/svg"

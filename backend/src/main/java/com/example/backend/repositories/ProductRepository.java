@@ -37,10 +37,6 @@ public interface ProductRepository extends JpaRepository<Product, String> {
 
 
     @Query("SELECT DISTINCT p FROM Product p " +
-            "JOIN ProductCategory pc ON p.productId = pc.product.productId " +
-            "WHERE lower(p.name) LIKE %:searchTerm% " +
-            "OR lower(p.description) LIKE %:searchTerm% " +
-            "OR lower(pc.category.name) LIKE %:searchTerm%")
-    List<Product> searchProducts(@Param("searchTerm") String searchTerm);
-
+            "WHERE lower(p.name) LIKE %:searchTerm% ")
+    Page<Product> searchProductsPaged(@Param("searchTerm") String searchTerm, Pageable pageable);
 }

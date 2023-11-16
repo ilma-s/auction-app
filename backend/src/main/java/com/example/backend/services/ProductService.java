@@ -90,7 +90,8 @@ public class ProductService {
         return productRepository.getAllProductsPaged(pageable);
     }
 
-    public List<Product> searchProducts(String searchTerm) {
-        return productRepository.searchProducts(searchTerm.toLowerCase());
+    public Page<Product> searchProductsPaged(String searchTerm, int limit, int page) {
+        Pageable pageable = PageRequest.of(page, limit);
+        return productRepository.searchProductsPaged(searchTerm.toLowerCase(), pageable);
     }
 }

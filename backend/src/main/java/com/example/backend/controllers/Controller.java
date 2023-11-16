@@ -4,7 +4,6 @@ import com.example.backend.dtos.BidInfoResponse;
 import com.example.backend.dtos.BidInfoResponse;
 import com.example.backend.models.Category;
 import com.example.backend.models.Product;
-import com.example.backend.repositories.ProductRepository;
 import com.example.backend.services.CategoryService;
 import com.example.backend.services.ProductService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,16 +23,14 @@ public class Controller {
 
     private final CategoryService categoryService;
     private final ProductService productService;
-    private final ProductRepository productRepository; // Inject ProductRepository
 
     @Value("${frontend_address}")
     private String frontend_address;
 
     @Autowired
-    public Controller(CategoryService categoryService, ProductService productService, ProductRepository productRepository) {
+    public Controller(CategoryService categoryService, ProductService productService) {
         this.categoryService = categoryService;
         this.productService = productService;
-        this.productRepository = productRepository; // Initialize ProductRepository
     }
 
     @GetMapping("/health")
@@ -87,7 +84,7 @@ public class Controller {
     public ResponseEntity<Map<String, Object>> getAllProductsPaged(
             @RequestParam("limit") int limit,
             @RequestParam("offset") int offset) {
-        int page = offset / limit; // Calculate the page number
+        int page = offset / limit;
         Page<Product> productsPage = productService.getAllProductsPaged(limit, page);
 
         Map<String, Object> response = new HashMap<>();
@@ -98,11 +95,19 @@ public class Controller {
     }
 
     @GetMapping("/search")
-    public ResponseEntity<Map<String, List<Product>>> searchProducts(@RequestParam("searchTerm") String searchTerm) {
-        List<Product> searchResults = productService.searchProducts(searchTerm.toLowerCase());
+    public ResponseEntity<Map<String, Object>> searchProductsPaged(
+            @RequestParam("searchTerm") String searchTerm,
+            @RequestParam("limit") int limit,
+            @RequestParam("offset") int offset) {
 
-        Map<String, List<Product>> response = new HashMap<>();
-        response.put("products", searchResults);
+        int page = offset / limit;
+        Page<Product> searchResultsPage = productService.searchProductsPaged(searchTerm, limit, page);
+
+        Map<String, Object> response = new HashMap<>();
+        response.put("currentPage", searchResultsPage.getNumber());
+        response.put("pageSize", searchResultsPage.getSize());
+        response.put("totalResults", searchResultsPage.getTotalElements());
+        response.put("products", searchResultsPage.getContent());
 
         return ResponseEntity.ok(response);
     }
