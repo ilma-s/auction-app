@@ -100,7 +100,7 @@ public class Controller {
             @RequestParam("limit") int limit,
             @RequestParam("offset") int offset) {
 
-        int page = offset / limit;
+        int page = (int) Math.ceil((double) offset / limit);
         Page<Product> searchResultsPage = productService.searchProductsPaged(searchTerm, limit, page);
 
         Map<String, Object> response = new HashMap<>();

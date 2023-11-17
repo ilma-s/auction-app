@@ -4,13 +4,18 @@ import FilterCategoryList from '../../components/filterCategoryList/FilterCatego
 import ProductListInfiniteScroll from '../../components/productListInfiniteScroll/ProductListInfiniteScroll';
 import ProductUtils from '../../utils/entities/ProductUtils';
 import { Product } from '../../types';
+import { fetchData } from '../../helpers/apiFunctions';
 
 const ShopPage = () => {
     const location = useLocation();
     const [searchResults, setSearchResults] = useState([]);
     const queryParams = new URLSearchParams(location.search);
-    const selectedCategory = queryParams.get('category') || '';
-    const searchTerm = queryParams.get('searchTerm') || '';
+    const [selectedCategory, setSelectedCategory] = useState(
+        queryParams.get('category') || '',
+    );
+    const [searchTerm, setSearchTerm] = useState(
+        queryParams.get('searchTerm') || '',
+    );
 
     const [currentPage, setCurrentPage] = useState(1);
     const [hasMoreProducts, setHasMoreProducts] = useState(true);
@@ -21,28 +26,26 @@ const ShopPage = () => {
 
     const fetchMoreProducts = useCallback(async () => {
         try {
-            if (!hasMoreProducts) return;
-
             let offset = (currentPage - 1) * productsToLoad;
+            let queryParams: Record<string, string> = {
+                limit: productsToLoad.toString(),
+                offset: offset.toString(),
+            };
 
-            let endpoint = `all-products?limit=${productsToLoad}&offset=${offset}`;
+            let endpoint = 'all-products';
 
             if (searchTerm.length > 0) {
                 setLoadMore(true);
-                endpoint = `search?searchTerm=${searchTerm}`;
+                queryParams = {
+                    ...queryParams,
+                    searchTerm: searchTerm,
+                };
+                endpoint = 'search';
             } else if (!loadMore) {
                 return;
             }
 
-            const response = await fetch(`http://localhost:8080/${endpoint}`, {
-                method: 'GET',
-            });
-
-            if (!response.ok) {
-                throw new Error('Search request failed');
-            }
-
-            const data = await response.json();
+            const data = await fetchData(endpoint, queryParams);
 
             if (data.products.length !== 0) {
                 setHasMoreProducts(true);
@@ -53,8 +56,6 @@ const ShopPage = () => {
                     searchTerm.length > 0
                 ) {
                     setAllProducts(data.products);
-                    setCurrentPage(currentPage + 1);
-                    setHasMoreProducts(true);
                 } else if (
                     Array.isArray(data.products) &&
                     data.products.length > 0 &&
@@ -80,7 +81,6 @@ const ShopPage = () => {
                     ]);
 
                     setCurrentPage(currentPage + 1);
-                    setHasMoreProducts(true);
                 }
             } else {
                 setHasMoreProducts(false);
@@ -88,11 +88,17 @@ const ShopPage = () => {
 
             setSearchResults(data.products);
 
-            if (showExploreButton) setLoadMore(false); //stop loading while the button is being displayed; wait for the user to click it
+            if (showExploreButton) setLoadMore(false);
         } catch (error) {
             console.error('Search request failed:', error);
         }
     }, [location.search, currentPage, selectedCategory, searchTerm, loadMore]);
+    
+    useEffect(() => {
+        // update selectedCategory and searchTerm when location changes
+        setSelectedCategory(queryParams.get('category') || '');
+        setSearchTerm(queryParams.get('searchTerm') || '');
+    }, [location.search, queryParams]);
 
     useEffect(() => {
         fetchMoreProducts();
