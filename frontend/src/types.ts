@@ -16,6 +16,7 @@ export interface Category {
     name: string;
     parentCategory?: Category;
     category?: Category;
+    isExpanded: boolean;
 }
 
 export interface Image {
@@ -43,4 +44,5 @@ export interface Subcategory {
     subcategoryId: string;
     subcategoryName: string;
     subcategoryItemCount: number;
+    isChecked?: boolean;
 }

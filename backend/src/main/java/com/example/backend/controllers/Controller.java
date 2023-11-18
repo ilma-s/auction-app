@@ -2,6 +2,7 @@ package com.example.backend.controllers;
 
 import com.example.backend.dtos.BidInfoResponse;
 import com.example.backend.dtos.BidInfoResponse;
+import com.example.backend.dtos.ProductSubcategoryResponseDTO;
 import com.example.backend.models.Category;
 import com.example.backend.models.Product;
 import com.example.backend.services.CategoryService;
@@ -45,8 +46,8 @@ public class Controller {
     }
 
     @GetMapping("/subcategories/{categoryId}")
-    public ResponseEntity<List<Object[]>> getSubcategoriesWithItemCount(@PathVariable String categoryId) {
-        List<Object[]> subcategoriesWithItemCount = categoryService.findSubcategoriesWithItemCount(categoryId);
+    public ResponseEntity<List<ProductSubcategoryResponseDTO>> getSubcategoriesWithItemCount(@PathVariable String categoryId) {
+        List<ProductSubcategoryResponseDTO> subcategoriesWithItemCount = categoryService.findSubcategoriesWithItemCount(categoryId);
         return ResponseEntity.ok(subcategoriesWithItemCount);
     }
 

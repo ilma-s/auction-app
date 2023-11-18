@@ -24,14 +24,20 @@ const Header = () => {
     const searchInputRef = useRef<HTMLInputElement | null>(null);
 
     const handleSearch = () => {
+        // if (searchTerm.trim() === '') {
+        //     navigate(`/shop`, { replace: true });
+        // } else {
+        //     navigate(`/shop?searchTerm=${searchTerm}`);
+        // }
+
         if (searchTerm.trim() === '') {
-            return;
+            navigate(`/shop`);
+        } else {
+            navigate(`/shop?searchTerm=${searchTerm}`);
         }
 
-        navigate(`shop?searchTerm=${searchTerm}`);
-
         if (searchInputRef.current) {
-            (searchInputRef.current).blur();
+            searchInputRef.current.blur();
         }
     };
 

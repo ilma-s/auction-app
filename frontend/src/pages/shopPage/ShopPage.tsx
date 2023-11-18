@@ -1,4 +1,4 @@
-import { useState, useCallback, useEffect } from 'react';
+import React, { useState, useCallback, useEffect, useRef } from 'react';
 import { useLocation } from 'react-router-dom';
 import FilterCategoryList from '../../components/filterCategoryList/FilterCategoryList';
 import ProductListInfiniteScroll from '../../components/productListInfiniteScroll/ProductListInfiniteScroll';
@@ -17,12 +17,31 @@ const ShopPage = () => {
         queryParams.get('searchTerm') || '',
     );
 
+    // Add a state variable to track whether the search term was cleared
+    const [searchTermCleared, setSearchTermCleared] = useState(false);
+
     const [currentPage, setCurrentPage] = useState(1);
     const [hasMoreProducts, setHasMoreProducts] = useState(true);
     const [productsToLoad, setProductsToLoad] = useState(9);
     const [allProducts, setAllProducts] = useState<Product[]>([]);
     const [loadMore, setLoadMore] = useState(true);
     const [showExploreButton, setShowExploreButton] = useState(true);
+    const initRef = useRef(true);
+
+    useEffect(() => {
+        // update selectedCategory and searchTerm when location changes
+        setSelectedCategory(queryParams.get('category') || '');
+        const newSearchTerm = queryParams.get('searchTerm') || '';
+
+        if (newSearchTerm !== searchTerm) {
+            // reset page to 1 when the search term changes
+            setCurrentPage(1);
+            // set searchTermCleared to true when the search term is cleared
+            setSearchTermCleared(newSearchTerm === '');
+        }
+
+        setSearchTerm(newSearchTerm);
+    }, [location.search, queryParams, searchTerm]);
 
     const fetchMoreProducts = useCallback(async () => {
         try {
@@ -34,7 +53,17 @@ const ShopPage = () => {
 
             let endpoint = 'all-products';
 
-            if (searchTerm.length > 0) {
+            if (
+                !initRef.current &&
+                searchTerm.length === 0 &&
+                searchTermCleared
+            ) {
+                setAllProducts([]);
+                setLoadMore(true);
+                // Reset searchTermCleared to false after handling it
+                setSearchTermCleared(false);
+            } else if (searchTerm.length > 0) {
+                initRef.current = false;
                 setLoadMore(true);
                 queryParams = {
                     ...queryParams,
@@ -74,7 +103,7 @@ const ShopPage = () => {
                     ]);
 
                     setCurrentPage(currentPage + 1);
-                } else {
+                } else if (initRef.current || searchTerm.length === 0) {
                     setAllProducts((prevAllProducts) => [
                         ...prevAllProducts,
                         ...data.products,
@@ -82,23 +111,30 @@ const ShopPage = () => {
 
                     setCurrentPage(currentPage + 1);
                 }
+
+                if (
+                    data.products.length < productsToLoad &&
+                    (initRef.current || searchTerm.length === 0)
+                ) {
+                } else {
+                    setLoadMore(false);
+                }
             } else {
                 setHasMoreProducts(false);
             }
 
             setSearchResults(data.products);
-
-            if (showExploreButton) setLoadMore(false);
         } catch (error) {
             console.error('Search request failed:', error);
         }
-    }, [location.search, currentPage, selectedCategory, searchTerm, loadMore]);
-    
-    useEffect(() => {
-        // update selectedCategory and searchTerm when location changes
-        setSelectedCategory(queryParams.get('category') || '');
-        setSearchTerm(queryParams.get('searchTerm') || '');
-    }, [location.search, queryParams]);
+    }, [
+        location.search,
+        currentPage,
+        selectedCategory,
+        searchTerm,
+        loadMore,
+        searchTermCleared,
+    ]);
 
     useEffect(() => {
         fetchMoreProducts();

@@ -1,4 +1,11 @@
-import { Dispatch, SetStateAction, useEffect, useRef, useState } from 'react';
+import {
+    Dispatch,
+    SetStateAction,
+    useCallback,
+    useEffect,
+    useRef,
+    useState,
+} from 'react';
 import { Product } from '../../types';
 import { useNavigate } from 'react-router-dom';
 import LoadingSpinner from '../loadingSpinner/LoadingSpinner';
@@ -31,7 +38,7 @@ const ProductListInfiniteScroll = ({
         navigate(`/shop/item?product_id=${productId}`);
     };
 
-    const handleScroll = () => {
+    const handleScroll = useCallback(() => {
         if (
             containerRef.current &&
             containerRef.current.getBoundingClientRect().bottom <=
@@ -42,11 +49,22 @@ const ProductListInfiniteScroll = ({
         ) {
             setIsLoading(true);
 
+            if (!showExploreButton) {
+                setLoadMore(true);
+            }
+
+            // Fetch more products here
             fetchMoreProducts().finally(() => {
                 setIsLoading(false);
             });
         }
-    };
+    }, [
+        fetchMoreProducts,
+        isLoading,
+        hasMoreProducts,
+        allProducts,
+        productsToLoad,
+    ]);
 
     useEffect(() => {
         window.addEventListener('scroll', handleScroll);
@@ -54,11 +72,13 @@ const ProductListInfiniteScroll = ({
         return () => {
             window.removeEventListener('scroll', handleScroll);
         };
-    }, [fetchMoreProducts, isLoading, hasMoreProducts, allProducts]);
+    }, [handleScroll]);
 
     const handleLoadMoreClick = async () => {
         setIsLoading(true);
-        setShowExploreButton(false);
+        if (allProducts.length > 0) {
+            setShowExploreButton(false);
+        }
 
         try {
             setLoadMore(true);
@@ -71,13 +91,14 @@ const ProductListInfiniteScroll = ({
     };
 
     useEffect(() => {
-        // check if there are enough items to show the "Explore More" button
-        if (allProducts.length >= 9) {
+        if (allProducts.length === 0) return;
+
+        if (hasMoreProducts) {
             setShowExploreButton(true);
         } else {
             setShowExploreButton(false);
         }
-    }, [allProducts]);
+    }, [allProducts, hasMoreProducts, productsToLoad]);
 
     return (
         <div className="w-2/3">
