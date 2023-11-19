@@ -1,11 +1,7 @@
 package com.example.backend.controllers;
 
 import com.example.backend.dtos.BidInfoResponse;
-import com.example.backend.dtos.BidInfoResponse;
-import com.example.backend.dtos.ProductSubcategoryResponseDTO;
-import com.example.backend.models.Category;
 import com.example.backend.models.Product;
-import com.example.backend.services.CategoryService;
 import com.example.backend.services.ProductService;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -20,35 +16,21 @@ import java.util.Map;
 
 @RestController
 @CrossOrigin(origins = "${frontend_address}")
-public class Controller {
+public class ProductController {
 
-    private final CategoryService categoryService;
     private final ProductService productService;
 
     @Value("${frontend_address}")
     private String frontend_address;
 
     @Autowired
-    public Controller(CategoryService categoryService, ProductService productService) {
-        this.categoryService = categoryService;
+    public ProductController(ProductService productService) {
         this.productService = productService;
     }
 
     @GetMapping("/health")
     public ResponseEntity<String> healthCheck() {
         return ResponseEntity.ok("Backend running!");
-    }
-
-    @GetMapping("/categories")
-    public ResponseEntity<List<Category>> getAllCategories() {
-        List<Category> categories = categoryService.findCategories();
-        return ResponseEntity.ok(categories);
-    }
-
-    @GetMapping("/subcategories/{categoryId}")
-    public ResponseEntity<List<ProductSubcategoryResponseDTO>> getSubcategoriesWithItemCount(@PathVariable String categoryId) {
-        List<ProductSubcategoryResponseDTO> subcategoriesWithItemCount = categoryService.findSubcategoriesWithItemCount(categoryId);
-        return ResponseEntity.ok(subcategoriesWithItemCount);
     }
 
     @GetMapping("/products")
