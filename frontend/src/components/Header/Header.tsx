@@ -24,12 +24,6 @@ const Header = () => {
     const searchInputRef = useRef<HTMLInputElement | null>(null);
 
     const handleSearch = () => {
-        // if (searchTerm.trim() === '') {
-        //     navigate(`/shop`, { replace: true });
-        // } else {
-        //     navigate(`/shop?searchTerm=${searchTerm}`);
-        // }
-
         if (searchTerm.trim() === '') {
             navigate(`/shop`);
         } else {

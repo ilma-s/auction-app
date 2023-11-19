@@ -53,7 +53,6 @@ const ProductListInfiniteScroll = ({
                 setLoadMore(true);
             }
 
-            // Fetch more products here
             fetchMoreProducts().finally(() => {
                 setIsLoading(false);
             });
