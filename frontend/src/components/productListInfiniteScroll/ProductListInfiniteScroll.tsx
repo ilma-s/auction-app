@@ -14,21 +14,21 @@ import ProductCard from '../productCard/ProductCard';
 interface ProductListProps {
     fetchMoreProducts: () => Promise<void>;
     allProducts: Product[];
-    hasMoreProducts: boolean;
+    fetchedProductsLength: number;
     setLoadMore: Dispatch<SetStateAction<boolean>>;
     showExploreButton: boolean;
-    setShowExploreButton: Dispatch<SetStateAction<boolean>>; //izbacitiiiii
     productsToLoad: number;
+    onExploreClick: () => void;
 }
 
 const ProductListInfiniteScroll = ({
     fetchMoreProducts,
     allProducts,
-    hasMoreProducts,
+    fetchedProductsLength,
     setLoadMore,
     showExploreButton,
-    setShowExploreButton, //
     productsToLoad,
+    onExploreClick,
 }: ProductListProps) => {
     const navigate = useNavigate();
     const containerRef = useRef<HTMLDivElement | null>(null);
@@ -44,12 +44,13 @@ const ProductListInfiniteScroll = ({
             containerRef.current.getBoundingClientRect().bottom <=
                 window.innerHeight &&
             !isLoading &&
-            hasMoreProducts &&
-            allProducts.length >= productsToLoad
+            fetchedProductsLength >= productsToLoad
         ) {
             setIsLoading(true);
 
             if (!showExploreButton) {
+                console.log('allProducts.length: ', allProducts.length);
+                console.log('MMMMMMMMMMMmm');
                 setLoadMore(true);
             }
 
@@ -57,13 +58,7 @@ const ProductListInfiniteScroll = ({
                 setIsLoading(false);
             });
         }
-    }, [
-        fetchMoreProducts,
-        isLoading,
-        hasMoreProducts,
-        allProducts,
-        productsToLoad,
-    ]);
+    }, [fetchMoreProducts, isLoading, allProducts, productsToLoad]);
 
     useEffect(() => {
         window.addEventListener('scroll', handleScroll);
@@ -75,29 +70,19 @@ const ProductListInfiniteScroll = ({
 
     const handleLoadMoreClick = async () => {
         setIsLoading(true);
-        if (allProducts.length > 0) {
-            setShowExploreButton(false);
-        }
 
         try {
+            console.log('AAAAAAAAAAAAAAAAAAAAAAAAAAA');
             setLoadMore(true);
             await fetchMoreProducts();
+            // call the callback function provided by the parent component instead of setting the showExploreMore state here
+            onExploreClick();
         } catch (error) {
             console.error('Error while loading more:', error);
         } finally {
             setIsLoading(false);
         }
     };
-
-    useEffect(() => {
-        if (allProducts.length === 0) return;
-
-        if (hasMoreProducts) {
-            setShowExploreButton(true);
-        } else {
-            setShowExploreButton(false);
-        }
-    }, [allProducts, hasMoreProducts, productsToLoad]);
 
     return (
         <div className="w-2/3">
@@ -117,7 +102,7 @@ const ProductListInfiniteScroll = ({
                     <LoadingSpinner />
                 </div>
             ) : null}
-            {showExploreButton && hasMoreProducts && (
+            {allProducts.length > 0 && showExploreButton && (
                 <button
                     onClick={handleLoadMoreClick}
                     className="pt-3 pb-3 pl-8 pr-8 mb-5 bg-trueIndigo-500 text-white mx-auto my-4 block"

@@ -20,7 +20,6 @@ const ShopPage = () => {
     const [searchTermCleared, setSearchTermCleared] = useState(false);
 
     const [currentPage, setCurrentPage] = useState(1);
-    const [hasMoreProducts, setHasMoreProducts] = useState(true);
     const [productsToLoad, setProductsToLoad] = useState(9);
     const [allProducts, setAllProducts] = useState<Product[]>([]);
     const [loadMore, setLoadMore] = useState(true);
@@ -29,9 +28,11 @@ const ShopPage = () => {
 
     const [suggestedTerm, setSuggestedTerm] = useState<string | null>(null);
     const [showSuggestedTerm, setShowSuggestedTerm] = useState(true);
+    const [fetchedProductsLength, setFetchedProductsLength] = useState(0);
 
     useEffect(() => {
         // update selectedCategory and searchTerm when searchParams change
+
         setSelectedCategory(searchParams.get('category') || '');
         let newSearchTerm = searchParams.get('searchTerm') || '';
 
@@ -48,6 +49,10 @@ const ShopPage = () => {
 
         setSearchTerm(newSearchTerm);
     }, [searchParams, searchTerm]);
+
+    useEffect(() => {
+        setShowExploreButton(true);
+    }, [searchTerm]);
 
     const fetchMoreProducts = useCallback(async () => {
         try {
@@ -74,19 +79,19 @@ const ShopPage = () => {
 
                 const res = await fetchData('autocorrect', { searchTerm });
 
-                if (res.suggestedTerm.length > 0) {
-                    setShowExploreButton(false);
-                }
-
                 setSuggestedTerm(res.suggestedTerm);
 
                 //if the user searches by a plural and only singular is stored in the DB
-                //need to be returned from the backend because the search needs to be performed on that term 
-                if (searchTerm.includes(res.suggestedTerm) && res.suggestedTerm.length > 0) {
+                //need to be returned from the backend because the search needs to be performed on that term
+                if (
+                    searchTerm.includes(res.suggestedTerm) &&
+                    res.suggestedTerm.length > 0
+                ) {
                     setSearchTerm(res.suggestedTerm);
                     setShowSuggestedTerm(false);
                     setSuggestedTerm('');
                 } else if (res.suggestedTerm && res.suggestedTerm.length > 0) {
+                    console.log('product list: ', allProducts);
                     setShowExploreButton(false);
                     setShowSuggestedTerm(true);
                     setSuggestedTerm(res.suggestedTerm);
@@ -104,67 +109,44 @@ const ShopPage = () => {
                 return;
             }
 
-            //setShowSuggestedTerm(false);
             const data = await fetchData(endpoint, queryParams);
 
-            if (data.products.length !== 9) {
-                setShowExploreButton(false);
-            }
-
             if (data.products.length !== 0) {
-                setHasMoreProducts(true);
+                let filteredProducts: Product[] = [];
 
-                if (
-                    Array.isArray(data.products) &&
-                    data.products.length > 0 &&
-                    searchTerm.length > 0
-                ) {
-                    setAllProducts(data.products);
-                } else if (
-                    Array.isArray(data.products) &&
-                    data.products.length > 0 &&
-                    selectedCategory
-                ) {
-                    const filteredProducts =
+                if (selectedCategory) {
+                    filteredProducts =
                         await ProductUtils.filterProductsByCategories(
-                            selectedCategory || '',
+                            selectedCategory,
                         );
-
-                    if (filteredProducts.length < 9) {
-                        setShowExploreButton(false);
-                    }
-
-                    setAllProducts((prevAllProducts) => [
-                        ...prevAllProducts,
-                        ...(filteredProducts.length > 0
-                            ? filteredProducts
-                            : data.products),
-                    ]);
-
-                    setCurrentPage(currentPage + 1);
-                } else if (initRef.current || searchTerm.length === 0) {
-                    setAllProducts((prevAllProducts) => [
-                        ...prevAllProducts,
-                        ...data.products,
-                    ]);
-
-                    setCurrentPage(currentPage + 1);
                 }
 
+                // Reset the state to an empty array before appending the new results
+                setAllProducts((prevAllProducts) => [
+                    ...(searchTerm.length > 0 ? [] : prevAllProducts), // Reset if it's a new search
+                    ...(filteredProducts.length > 0
+                        ? filteredProducts
+                        : data.products),
+                ]);
+
+                setFetchedProductsLength(
+                    filteredProducts.length > 0
+                        ? filteredProducts.length
+                        : data.products.length,
+                );
+
                 if (
-                    data.products.length < productsToLoad &&
-                    (initRef.current || searchTerm.length === 0)
+                    (filteredProducts.length < productsToLoad &&
+                        filteredProducts.length > 0) ||
+                    (data.products.length < productsToLoad &&
+                        data.products.length > 0)
                 ) {
+                    setShowExploreButton(false);
+                    setLoadMore(false);
                 } else {
+                    setCurrentPage(currentPage + 1);
                     setLoadMore(false);
                 }
-            } else {
-                setHasMoreProducts(false);
-            }
-
-            setSearchResults(data.products);
-            if (data.products < 9) {
-                setShowExploreButton(false);
             }
         } catch (error) {
             console.error('Search request failed:', error);
@@ -180,7 +162,7 @@ const ShopPage = () => {
 
     useEffect(() => {
         fetchMoreProducts();
-    }, [searchTerm, currentPage, hasMoreProducts]);
+    }, [searchTerm, currentPage]);
 
     const handleSuggestedTermClick = useCallback(() => {
         setSearchTerm(suggestedTerm || '');
@@ -214,11 +196,11 @@ const ShopPage = () => {
                 <ProductListInfiniteScroll
                     fetchMoreProducts={fetchMoreProducts}
                     allProducts={allProducts}
-                    hasMoreProducts={hasMoreProducts}
+                    fetchedProductsLength={fetchedProductsLength}
                     setLoadMore={setLoadMore}
                     showExploreButton={showExploreButton}
-                    setShowExploreButton={setShowExploreButton}
                     productsToLoad={productsToLoad}
+                    onExploreClick={() => setShowExploreButton(false)}
                 />
             </div>
         </div>
