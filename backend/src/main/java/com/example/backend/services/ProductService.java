@@ -153,8 +153,6 @@ public class ProductService {
                 if (distance < minDistance) {
                     minDistance = distance;
                     closestMatch = word;
-                    System.out.println("word: " + closestMatch);
-                    System.out.println("mind: " + minDistance);
                 }
             }
         }

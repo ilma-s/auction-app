@@ -53,10 +53,6 @@ const Header = () => {
         setSearchTerm(searchTermValue || '');
     }, [searchTermValue]);
 
-    useEffect(() => {
-        console.log("l.s. u headeru: ", location.search)
-    }, [location.search])
-
     return (
         <div className="flex flex-col">
             <div className="bg-trueGray-800">
