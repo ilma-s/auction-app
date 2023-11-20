@@ -78,18 +78,18 @@ const ShopPage = () => {
                     setShowExploreButton(false);
                 }
 
-                if (
-                    searchTerm.includes(res.suggestedTerm) &&
-                    res.suggestedTerm.length > 0
-                ) {
-                    setSearchTerm(res.suggestedTerm);
-                    setShowSuggestedTerm(true);
-                }
                 setSuggestedTerm(res.suggestedTerm);
 
-                if (res.suggestedTerm && res.suggestedTerm.length > 0) {
+                //if the user searches by a plural and only singular is stored in the DB
+                //need to be returned from the backend because the search needs to be performed on that term 
+                if (searchTerm.includes(res.suggestedTerm) && res.suggestedTerm.length > 0) {
+                    setSearchTerm(res.suggestedTerm);
+                    setShowSuggestedTerm(false);
+                    setSuggestedTerm('');
+                } else if (res.suggestedTerm && res.suggestedTerm.length > 0) {
                     setShowExploreButton(false);
                     setShowSuggestedTerm(true);
+                    setSuggestedTerm(res.suggestedTerm);
                     return;
                 } else {
                     setShowSuggestedTerm(false);
@@ -191,7 +191,7 @@ const ShopPage = () => {
         }
 
         // update query parameters when the suggested term is clicked
-        setSearchParams({ 'searchTerm': suggestedTerm || '' });
+        setSearchParams({ searchTerm: suggestedTerm || '' });
     }, [searchTerm, suggestedTerm, searchParams]);
 
     return (
