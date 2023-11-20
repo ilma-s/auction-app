@@ -17,7 +17,7 @@ interface ProductListProps {
     hasMoreProducts: boolean;
     setLoadMore: Dispatch<SetStateAction<boolean>>;
     showExploreButton: boolean;
-    setShowExploreButton: Dispatch<SetStateAction<boolean>>;
+    setShowExploreButton: Dispatch<SetStateAction<boolean>>; //izbacitiiiii
     productsToLoad: number;
 }
 
@@ -27,7 +27,7 @@ const ProductListInfiniteScroll = ({
     hasMoreProducts,
     setLoadMore,
     showExploreButton,
-    setShowExploreButton,
+    setShowExploreButton, //
     productsToLoad,
 }: ProductListProps) => {
     const navigate = useNavigate();

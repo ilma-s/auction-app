@@ -34,7 +34,6 @@ class ProductUtils {
 
     static async filterProductsByCategories(selectedCategory: string) {
         const products: Product[] = await fetchData('products');
-        console.log(products)
 
         const subcategories = await CategoryUtils.fetchSubcategories(
             selectedCategory,
@@ -47,7 +46,7 @@ class ProductUtils {
             const matchedCategory = product.categories.some(
                 (productCategory) => {
                     const categoryMatched =
-                        productCategory.name === selectedCategory ||
+                        productCategory.category?.parentCategory?.categoryId === selectedCategory ||
                         subcategoryNames.includes(
                             productCategory.category?.name,
                         );

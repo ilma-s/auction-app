@@ -1,5 +1,5 @@
-import React, { useState, useCallback, useEffect, useRef } from 'react';
-import { useLocation } from 'react-router-dom';
+import { useState, useCallback, useEffect, useRef } from 'react';
+import { useSearchParams } from 'react-router-dom';
 import FilterCategoryList from '../../components/filterCategoryList/FilterCategoryList';
 import ProductListInfiniteScroll from '../../components/productListInfiniteScroll/ProductListInfiniteScroll';
 import ProductUtils from '../../utils/entities/ProductUtils';
@@ -7,17 +7,16 @@ import { Product } from '../../types';
 import { fetchData } from '../../helpers/apiFunctions';
 
 const ShopPage = () => {
-    const location = useLocation();
+    const [searchParams, setSearchParams] = useSearchParams();
     const [searchResults, setSearchResults] = useState([]);
-    const queryParams = new URLSearchParams(location.search);
     const [selectedCategory, setSelectedCategory] = useState(
-        queryParams.get('category') || '',
+        searchParams.get('category') || '',
     );
     const [searchTerm, setSearchTerm] = useState(
-        queryParams.get('searchTerm') || '',
+        searchParams.get('searchTerm') || '',
     );
 
-    // Add a state variable to track whether the search term was cleared
+    // a state variable to track whether the search term was cleared
     const [searchTermCleared, setSearchTermCleared] = useState(false);
 
     const [currentPage, setCurrentPage] = useState(1);
@@ -28,10 +27,17 @@ const ShopPage = () => {
     const [showExploreButton, setShowExploreButton] = useState(true);
     const initRef = useRef(true);
 
+    const [suggestedTerm, setSuggestedTerm] = useState<string | null>(null);
+    const [showSuggestedTerm, setShowSuggestedTerm] = useState(true);
+
     useEffect(() => {
-        // update selectedCategory and searchTerm when location changes
-        setSelectedCategory(queryParams.get('category') || '');
-        const newSearchTerm = queryParams.get('searchTerm') || '';
+        // update selectedCategory and searchTerm when searchParams change
+        setSelectedCategory(searchParams.get('category') || '');
+        let newSearchTerm = searchParams.get('searchTerm') || '';
+
+        if (suggestedTerm && suggestedTerm?.length > 0) {
+            newSearchTerm = suggestedTerm;
+        }
 
         if (newSearchTerm !== searchTerm) {
             // reset page to 1 when the search term changes
@@ -41,7 +47,7 @@ const ShopPage = () => {
         }
 
         setSearchTerm(newSearchTerm);
-    }, [location.search, queryParams, searchTerm]);
+    }, [searchParams, searchTerm]);
 
     const fetchMoreProducts = useCallback(async () => {
         try {
@@ -65,6 +71,30 @@ const ShopPage = () => {
             } else if (searchTerm.length > 0) {
                 initRef.current = false;
                 setLoadMore(true);
+
+                const res = await fetchData('autocorrect', { searchTerm });
+
+                if (res.suggestedTerm.length > 0) {
+                    setShowExploreButton(false);
+                }
+
+                if (
+                    searchTerm.includes(res.suggestedTerm) &&
+                    res.suggestedTerm.length > 0
+                ) {
+                    setSearchTerm(res.suggestedTerm);
+                    setShowSuggestedTerm(true);
+                }
+                setSuggestedTerm(res.suggestedTerm);
+
+                if (res.suggestedTerm && res.suggestedTerm.length > 0) {
+                    setShowExploreButton(false);
+                    setShowSuggestedTerm(true);
+                    return;
+                } else {
+                    setShowSuggestedTerm(false);
+                }
+
                 queryParams = {
                     ...queryParams,
                     searchTerm: searchTerm,
@@ -74,7 +104,12 @@ const ShopPage = () => {
                 return;
             }
 
+            //setShowSuggestedTerm(false);
             const data = await fetchData(endpoint, queryParams);
+
+            if (data.products.length !== 9) {
+                setShowExploreButton(false);
+            }
 
             if (data.products.length !== 0) {
                 setHasMoreProducts(true);
@@ -94,6 +129,10 @@ const ShopPage = () => {
                         await ProductUtils.filterProductsByCategories(
                             selectedCategory || '',
                         );
+
+                    if (filteredProducts.length < 9) {
+                        setShowExploreButton(false);
+                    }
 
                     setAllProducts((prevAllProducts) => [
                         ...prevAllProducts,
@@ -124,11 +163,14 @@ const ShopPage = () => {
             }
 
             setSearchResults(data.products);
+            if (data.products < 9) {
+                setShowExploreButton(false);
+            }
         } catch (error) {
             console.error('Search request failed:', error);
         }
     }, [
-        location.search,
+        searchParams,
         currentPage,
         selectedCategory,
         searchTerm,
@@ -140,9 +182,34 @@ const ShopPage = () => {
         fetchMoreProducts();
     }, [searchTerm, currentPage, hasMoreProducts]);
 
+    const handleSuggestedTermClick = useCallback(() => {
+        setSearchTerm(suggestedTerm || '');
+
+        if (searchTerm == suggestedTerm) {
+            setSuggestedTerm(null);
+            setShowSuggestedTerm(false);
+        }
+
+        // update query parameters when the suggested term is clicked
+        setSearchParams({ 'searchTerm': suggestedTerm || '' });
+    }, [searchTerm, suggestedTerm, searchParams]);
+
     return (
-        <div className="w-2/3 mx-auto pt-12 flex font-lato">
-            <div className="flex gap-8">
+        <div className="w-2/3 mx-auto pt-12 flex font-lato" id="shop-page-id">
+            {showSuggestedTerm && suggestedTerm && (
+                <div className="mt-4 pl-1 mb-8 ml-52 flex absolute top-36 ">
+                    <div>Did you mean?</div>
+                    <div>
+                        <button
+                            className="ml-2 text-trueIndigo-500 pl-1"
+                            onClick={handleSuggestedTermClick}
+                        >
+                            {suggestedTerm}
+                        </button>
+                    </div>
+                </div>
+            )}
+            <div className="flex gap-8 pt-6">
                 <FilterCategoryList selectedCategory={selectedCategory} />
                 <ProductListInfiniteScroll
                     fetchMoreProducts={fetchMoreProducts}

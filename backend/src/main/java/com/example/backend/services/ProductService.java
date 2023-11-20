@@ -4,6 +4,7 @@ import com.example.backend.dtos.BidInfoResponse;
 import com.example.backend.models.Product;
 import com.example.backend.repositories.BidRepository;
 import com.example.backend.repositories.ProductRepository;
+import com.example.backend.utils.LevenshteinDistanceCalculator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -12,8 +13,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.RequestParam;
 
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 
 @Service
 public class ProductService {
@@ -95,4 +95,74 @@ public class ProductService {
         return productRepository.searchProductsPaged(searchTerm.toLowerCase(), pageable);
     }
 
+    public Map<String, String> searchProductsByLevenshteinDistance(String searchTerm) {
+        List<String> allProductNames = productRepository.getAllProductNames();
+        List<String> allCategories = productRepository.getAllCategories();
+
+        // Check if the user's input is similar to any category
+        boolean isSearchValid = allCategories.stream()
+                .anyMatch(category -> containsWord(searchTerm, category));
+
+        if (isSearchValid) {
+            // If the user's input is similar to any category, return an empty string
+            return Map.of("suggestedTerm", "");
+        }
+
+        // Check if the user's input is similar to any word in the product names
+        for (String productName : allProductNames) {
+            String[] wordsInName = productName.split(" ");
+
+            for (String word : wordsInName) {
+                if (containsWord(searchTerm, word)) {
+                    // If the user's input is similar to any word in the product names, return an empty string
+                    return Map.of("suggestedTerm", "");
+                }
+            }
+        }
+
+        // If the user's input is not similar to any categories or words in product names, find the closest match
+        Map<String,String> closestMatchByProductName = findClosestMatch(searchTerm, allProductNames);
+        Map<String,String> closestMatchByCategory = findClosestMatch(searchTerm, allCategories);
+
+        // Compare the Levenshtein distances and return the map with the smaller distance
+        Map<String, String> suggestedTermMap = new HashMap<>();
+        if (Integer.parseInt(closestMatchByProductName.get("minDistance")) < Integer.parseInt(closestMatchByCategory.get("minDistance"))) {
+            suggestedTermMap.put("suggestedTerm", closestMatchByProductName.get("closestMatch"));
+        } else {
+            suggestedTermMap.put("suggestedTerm", closestMatchByCategory.get("closestMatch"));
+        }
+
+        return suggestedTermMap;
+    }
+
+
+    private boolean containsWord(String searchTerm, String text) {
+        return text.toLowerCase().contains(searchTerm.toLowerCase());
+    }
+
+    private Map<String,String> findClosestMatch(String userInput, List<String> options) {
+        String closestMatch = userInput;
+        int minDistance = Integer.MAX_VALUE;
+
+        for (String option : options) {
+            String[] wordsInOption = option.split(" ");
+
+            for (String word : wordsInOption) {
+                int distance = LevenshteinDistanceCalculator.calculate(userInput, word);
+
+                if (distance < minDistance) {
+                    minDistance = distance;
+                    closestMatch = word;
+                    System.out.println("word: " + closestMatch);
+                    System.out.println("mind: " + minDistance);
+                }
+            }
+        }
+
+        Map<String, String> result = new HashMap<>();
+        result.put("closestMatch", closestMatch);
+        result.put("minDistance", String.valueOf(minDistance));
+
+        return result;
+    }
 }
