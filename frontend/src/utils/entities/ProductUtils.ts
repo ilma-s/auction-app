@@ -8,6 +8,8 @@ import {
 } from '../constants';
 
 import { fetchData } from '../../helpers/apiFunctions';
+import { Product } from '../../types';
+import CategoryUtils from './CategoryUtils';
 
 class ProductUtils {
     static async fetchClosestProduct() {
@@ -27,7 +29,37 @@ class ProductUtils {
     }
 
     static async fetchProduct(productId: string) {
-        return fetchData(`item/${productId}`);
+        return fetchData('shop/item', { product_id: productId });
+    }
+
+    static async filterProductsByCategories(selectedCategory: string) {
+        const products: Product[] = await fetchData('products');
+        console.log(products)
+
+        const subcategories = await CategoryUtils.fetchSubcategories(
+            selectedCategory,
+        );
+        const subcategoryNames = subcategories.map(
+            (subcategory: [string, string, number]) => subcategory[1],
+        );
+
+        const filteredProducts = products.filter((product) => {
+            const matchedCategory = product.categories.some(
+                (productCategory) => {
+                    const categoryMatched =
+                        productCategory.name === selectedCategory ||
+                        subcategoryNames.includes(
+                            productCategory.category?.name,
+                        );
+
+                    return categoryMatched;
+                },
+            );
+
+            return matchedCategory;
+        });
+
+        return filteredProducts;
     }
 }
 

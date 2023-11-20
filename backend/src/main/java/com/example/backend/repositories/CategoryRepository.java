@@ -1,25 +1,20 @@
 package com.example.backend.repositories;
 
+import com.example.backend.dtos.ProductSubcategoryResponseDTO;
 import org.springframework.data.jpa.repository.JpaRepository;
 import com.example.backend.models.Category;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
-import java.util.ArrayList;
-import java.util.Date;
+import java.util.List;
 
 public interface CategoryRepository extends JpaRepository<Category, Long> {
-    @Query("SELECT c.name " +
-            "FROM Category c " +
-            "WHERE c.parentCategory.categoryId = null " +
-            "ORDER BY c.name ASC")
-    ArrayList<String> findMainCategories();
+    List<Category> findNamesByParentCategoryIsNull();
 
-    @Query("SELECT c.name " +
+    @Query("SELECT NEW com.example.backend.dtos.ProductSubcategoryResponseDTO(c.parentCategory.categoryId, c.categoryId, c.name, COUNT(pc.product.productId)) " +
             "FROM Category c " +
-            "WHERE c.parentCategory.categoryId != null " +
-            "GROUP BY c.parentCategory.categoryId " +
-            "ORDER BY c.name ASC")
-    ArrayList<String> findSubcategories();
+            "LEFT JOIN c.productCategories pc " +
+            "WHERE c.parentCategory.categoryId = :categoryId " +
+            "GROUP BY c.parentCategory.categoryId, c.categoryId, c.name")
+    List<ProductSubcategoryResponseDTO> findSubcategoriesWithItemCount(@Param("categoryId") String categoryId);
 }
-

@@ -2,9 +2,10 @@ import { useEffect, useState, useRef } from 'react';
 import { useLocation } from 'react-router-dom';
 import ProductUtils from '../../utils/entities/ProductUtils';
 import AppPath from '../../components/appPath/AppPath';
-import ProductInformation from '../../components/productInformation/ProductInformation';
+import ProductInformation from '../../components/productDetails/ProductDetails';
 import { Product, BidInformation } from '../../types';
 import BidUtils from '../../utils/entities/BidUtils';
+import LoadingSpinner from '../../components/loadingSpinner/LoadingSpinner';
 
 const ProductPage = () => {
     const [product, setProduct] = useState<Product | null>(null);
@@ -28,6 +29,7 @@ const ProductPage = () => {
         if (productId) {
             ProductUtils.fetchProduct(productId).then((data) => {
                 setProduct(data);
+                console.log(data);
             });
         }
     }, [productId]);
@@ -107,7 +109,7 @@ const ProductPage = () => {
                             <div>{product.name}</div>
                         </div>
                     ) : (
-                        <p>Loading product...</p>
+                        <LoadingSpinner />
                     )}
                 </div>
                 <AppPath />

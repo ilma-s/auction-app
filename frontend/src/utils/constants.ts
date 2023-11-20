@@ -50,7 +50,11 @@ export const TIME_LEFT = 'Time Left';
 
 export const PLACE_BID = 'PLACE BID';
 
-export const DETAILS = 'Details';
+export const DETAILS_STRING = 'Details';
+
+export const ALL_ITEMS_STRING = 'All Items'
+
+export const PRODUCT_CATEGORIES_STRING = 'PRODUCT CATEGORIES';
 
 export const SMALL_WORDS: string[] = [
     'and',

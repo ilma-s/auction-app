@@ -1,13 +1,10 @@
-import { NavLink } from 'react-router-dom';
-import { useState } from 'react';
+import { NavLink, useNavigate } from 'react-router-dom';
+import { useState, useEffect, useRef } from 'react';
 import { useSelector } from 'react-redux';
-
 import gavelIcon from './assets/gavel-icon.svg';
 import searchIcon from './assets/search-icon.svg';
 import SocialMediaIcons from '../socialMediaIcons/SocialMediaIcons';
-
 import {
-    EVENT_KEY_STRING,
     APP_NAME_STRING,
     SEARCH_PLACEHOLDER_STRING,
     HOME_STRING,
@@ -18,19 +15,43 @@ import { selectName } from '../../app/selectors';
 
 const Header = () => {
     const [searchTerm, setSearchTerm] = useState('');
-
     const name = useSelector(selectName);
+    const queryParams = new URLSearchParams(location.search);
+    const searchTermValue = queryParams.get('searchTerm') || '';
+
+    const navigate = useNavigate();
+
+    const searchInputRef = useRef<HTMLInputElement | null>(null);
 
     const handleSearch = () => {
-        console.log(searchTerm);
-        setSearchTerm('');
-    };
+        if (searchTerm.trim() === '') {
+            navigate(`/shop`);
+        } else {
+            navigate(`/shop?searchTerm=${searchTerm}`);
+        }
 
-    const handleKeyPress = (event: React.KeyboardEvent<HTMLInputElement>) => {
-        if (event.key === EVENT_KEY_STRING) {
-            handleSearch();
+        if (searchInputRef.current) {
+            searchInputRef.current.blur();
         }
     };
+
+    useEffect(() => {
+        const handleKeyPress = (e: KeyboardEvent) => {
+            if (e.key === 'Enter') {
+                handleSearch();
+            }
+        };
+
+        document.addEventListener('keypress', handleKeyPress);
+
+        return () => {
+            document.removeEventListener('keypress', handleKeyPress);
+        };
+    }, [searchTerm]);
+
+    useEffect(() => {
+        setSearchTerm(searchTermValue || '');
+    }, [searchTermValue]);
 
     return (
         <div className="flex flex-col">
@@ -59,15 +80,15 @@ const Header = () => {
 
                 <div className="px-2 py-2 w-1/2 border border-gray-300 flex items-center">
                     <input
+                        ref={searchInputRef}
                         type="text"
                         placeholder={`Try entering: ${SEARCH_PLACEHOLDER_STRING}`}
                         className="flex-grow border-none outline-none"
                         value={searchTerm}
                         onChange={(e) => setSearchTerm(e.target.value)}
-                        onKeyPress={handleKeyPress}
                     />
                     <button
-                        type="button"
+                        type="submit"
                         className="pr-2"
                         onClick={handleSearch}
                     >

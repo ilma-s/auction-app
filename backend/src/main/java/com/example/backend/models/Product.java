@@ -1,8 +1,6 @@
 package com.example.backend.models;
 
-import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.*;
 import lombok.Data;
 
@@ -31,5 +29,8 @@ public class Product {
     @OneToMany(mappedBy = "product")
     @JsonIgnoreProperties("product")
     private List<Image> images;
-}
 
+    @OneToMany(mappedBy = "product")
+    @JsonIgnoreProperties("product")
+    private List<ProductCategory> categories;
+}

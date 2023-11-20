@@ -4,7 +4,8 @@ import com.example.backend.models.Product;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
-
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Page;
 import java.util.List;
 import java.util.Date;
 
@@ -30,4 +31,12 @@ public interface ProductRepository extends JpaRepository<Product, String> {
     @Query("SELECT p FROM Product p " +
             "WHERE p.productId = :productId")
     Product findProduct(@Param("productId") String productId);
+
+    @Query("SELECT p FROM Product p ORDER BY p.productId ASC")
+    Page<Product> getAllProductsPaged(Pageable pageable);
+
+
+    @Query("SELECT DISTINCT p FROM Product p " +
+            "WHERE lower(p.name) LIKE lower(concat('%', :searchTerm, '%'))")
+    Page<Product> searchProductsPaged(@Param("searchTerm") String searchTerm, Pageable pageable);
 }

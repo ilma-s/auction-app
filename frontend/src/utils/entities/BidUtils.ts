@@ -1,9 +1,9 @@
 import { fetchData } from '../../helpers/apiFunctions';
-import { BidInformation } from '../../types';
+import { BidInformation, Product } from '../../types';
 
 class BidUtils {
     static async getBidInformation(productId: string): Promise<BidInformation> {
-        const data = await fetchData('bid-info', { product_id: productId });
+        const data = await fetchData(`bid-info?product_id=${productId}`);
         data.timeLeft = BidUtils.convertTimeLeft(data.timeLeft) as string;
         return data;
     }
@@ -18,22 +18,30 @@ class BidUtils {
                 const weeks = Math.floor(days / 7);
                 const remainingDays = days % 7;
                 return `${weeks} weeks, ${remainingDays} days`;
-            } else if (days > 0) {
-                // Check if there are days
-                if (hoursPart) {
-                    const [hours, minutes, seconds] = hoursPart
-                        .split(':')
-                        .map(Number);
-                    return `${days} days, ${hours} hours, ${minutes} minutes, ${seconds} seconds`;
-                } else {
-                    return `${days} days`;
-                }
             }
-        } else if (hoursPart) {
+            return `${days} days`;
+        } else {
             const [hours, minutes, seconds] = hoursPart.split(':').map(Number);
-            return `${hours} hours, ${minutes} minutes, ${seconds} seconds`;
+            if (hours > 0) {
+                return `${hours} hours, ${minutes} minutes, ${seconds} seconds`;
+            }
+            if (minutes > 0) {
+                return `${minutes} minutes, ${seconds} seconds`;
+            }
+            return `${seconds} seconds`;
         }
-        return 'Less than a second'; // input not recognized
+    }
+
+    static getNextBidValue(
+        bidInformation: BidInformation,
+        product: Product,
+    ): string {
+        const price =
+            bidInformation.numberOfBids === 0
+                ? product?.startingPrice + 1
+                : bidInformation.highestBid + 1;
+
+        return `Enter $${price} or higher`;
     }
 }
 

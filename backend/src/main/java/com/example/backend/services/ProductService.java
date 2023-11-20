@@ -5,28 +5,25 @@ import com.example.backend.models.Product;
 import com.example.backend.repositories.BidRepository;
 import com.example.backend.repositories.ProductRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import java.util.Date;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 @Service
 public class ProductService {
     private final ProductRepository productRepository;
     private final BidRepository bidRepository;
 
-    private final BidRepository bidRepository;
-
 
     @Autowired
     public ProductService(ProductRepository productRepository, BidRepository bidRepository) {
-    public ProductService(ProductRepository productRepository, BidRepository bidRepository) {
         this.productRepository = productRepository;
-        this.bidRepository = bidRepository;
         this.bidRepository = bidRepository;
     }
     public ResponseEntity<List<Product>> getAllProducts() {
@@ -64,7 +61,6 @@ public class ProductService {
 
     public ResponseEntity<BidInfoResponse> getBidInfo(@RequestParam("product_id") String productId) {
         Product product = productRepository.findProduct(productId);
-
         if (product == null) {
             return ResponseEntity.notFound().build();
         }
@@ -86,4 +82,17 @@ public class ProductService {
 
         return ResponseEntity.ok(response);
     }
+
+    public Page<Product> getAllProductsPaged(int limit, int page) {
+        Pageable pageable = PageRequest.of(page, limit);
+        return productRepository.getAllProductsPaged(pageable);
+    }
+
+    public Page<Product> searchProductsPaged(String searchTerm, int limit, int offset) {
+        int page = offset / limit;
+        Pageable pageable = PageRequest.of(page, limit);
+
+        return productRepository.searchProductsPaged(searchTerm.toLowerCase(), pageable);
+    }
+
 }
