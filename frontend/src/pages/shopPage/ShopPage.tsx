@@ -84,19 +84,23 @@ const ShopPage = () => {
                 //if the user searches by a plural and only singular is stored in the DB
                 //need to be returned from the backend because the search needs to be performed on that term
                 if (
-                    searchTerm.includes(res.suggestedTerm) &&
-                    res.suggestedTerm.length > 0
+                    ((searchTerm.includes(res.suggestedTerm) ||
+                        res.suggestedTerm.includes(searchTerm)) &&
+                        res.suggestedTerm.length > 0) ||
+                    (searchTerm.endsWith('s') &&
+                        !res.suggestedTerm.endsWith('s'))
                 ) {
-                    setSearchTerm(res.suggestedTerm);
-                    setShowSuggestedTerm(false);
+                    console.log('tutututut');
                     setSuggestedTerm('');
+                    setSearchTerm(res.suggestedTerm);
                 } else if (res.suggestedTerm && res.suggestedTerm.length > 0) {
-                    console.log('product list: ', allProducts);
+                    console.log('aaaaaaa');
                     setShowExploreButton(false);
                     setShowSuggestedTerm(true);
                     setSuggestedTerm(res.suggestedTerm);
                     return;
                 } else {
+                    console.log('bbbbb');
                     setShowSuggestedTerm(false);
                 }
 
@@ -110,6 +114,7 @@ const ShopPage = () => {
             }
 
             const data = await fetchData(endpoint, queryParams);
+            console.log('DATAAA: ', data);
 
             if (data.products.length !== 0) {
                 let filteredProducts: Product[] = [];
@@ -141,6 +146,7 @@ const ShopPage = () => {
                     (data.products.length < productsToLoad &&
                         data.products.length > 0)
                 ) {
+                    console.log('uh');
                     setShowExploreButton(false);
                     setLoadMore(false);
                 } else {
@@ -167,7 +173,7 @@ const ShopPage = () => {
     const handleSuggestedTermClick = useCallback(() => {
         setSearchTerm(suggestedTerm || '');
 
-        if (searchTerm == suggestedTerm) {
+        if (searchTerm === suggestedTerm) {
             setSuggestedTerm(null);
             setShowSuggestedTerm(false);
         }

@@ -95,41 +95,65 @@ public class ProductService {
         return productRepository.searchProductsPaged(searchTerm.toLowerCase(), pageable);
     }
 
-    public Map<String, String> searchProductsByLevenshteinDistance(String searchTerm) {
-        List<String> allProductNames = productRepository.getAllProductNames();
-        List<String> allCategories = productRepository.getAllCategories();
+    private String checkPluralForms(String searchTerm, List<String> words) {
+        for (String originalWord : words) {
+            String[] allWords = originalWord.split(" ");
 
-        // Check if the user's input is similar to any category
-        boolean isSearchValid = allCategories.stream()
-                .anyMatch(category -> containsWord(searchTerm, category));
-
-        if (isSearchValid) {
-            // If the user's input is similar to any category, return an empty string
-            return Map.of("suggestedTerm", "");
-        }
-
-        // Check if the user's input is similar to any word in the product names
-        for (String productName : allProductNames) {
-            String[] wordsInName = productName.split(" ");
-
-            for (String word : wordsInName) {
-                if (containsWord(searchTerm, word)) {
-                    // If the user's input is similar to any word in the product names, return an empty string
-                    return Map.of("suggestedTerm", "");
+            for (String word : allWords) {
+                if (word.endsWith("ies")) {
+                    String modifiedWord = word.substring(0, word.length() - 3) + "y";
+                    if (containsWord(searchTerm, modifiedWord)) {
+                        return word;
+                    }
+                } else if (word.endsWith("s")) {
+                    String modifiedWord = word.substring(0, word.length() - 1);
+                    if (containsWord(searchTerm, modifiedWord)) {
+                        return word;
+                    }
+                } else if (containsWord(searchTerm, word)) {
+                    return word;
                 }
             }
         }
 
-        // If the user's input is not similar to any categories or words in product names, find the closest match
+        return "";
+    }
+
+    public Map<String, String> searchProductsByLevenshteinDistance(String searchTerm) {
+        List<String> allProductNames = productRepository.getAllProductNames();
+        List<String> allCategories = productRepository.getAllCategories();
+        Map<String, String> suggestedTermMap = new HashMap<>(); //results map
+
+        boolean isPlural = false;
+
         Map<String,String> closestMatchByProductName = findClosestMatch(searchTerm, allProductNames);
         Map<String,String> closestMatchByCategory = findClosestMatch(searchTerm, allCategories);
-
         // Compare the Levenshtein distances and return the map with the smaller distance
-        Map<String, String> suggestedTermMap = new HashMap<>();
         if (Integer.parseInt(closestMatchByProductName.get("minDistance")) < Integer.parseInt(closestMatchByCategory.get("minDistance"))) {
             suggestedTermMap.put("suggestedTerm", closestMatchByProductName.get("closestMatch"));
         } else {
             suggestedTermMap.put("suggestedTerm", closestMatchByCategory.get("closestMatch"));
+        }
+
+        if (searchTerm.endsWith("ies")) {
+            searchTerm = searchTerm.substring(0, searchTerm.length() - 3) + "y";
+            isPlural = true;
+        } else if (searchTerm.endsWith("s")) {
+            searchTerm = searchTerm.substring(0, searchTerm.length() - 1);
+            isPlural = true;
+        }
+
+        String categoryMatch = checkPluralForms(searchTerm, allCategories);
+        String productMatch = checkPluralForms(searchTerm, allProductNames);
+
+        boolean isSearchValid = !categoryMatch.isEmpty() || !productMatch.isEmpty();
+
+        if(isSearchValid) {
+            String suggestedTerm = "";
+            if (!categoryMatch.isEmpty()) suggestedTerm = categoryMatch;
+            else if (!productMatch.isEmpty()) suggestedTerm = productMatch;
+
+            return Map.of("suggestedTerm", suggestedTerm);
         }
 
         return suggestedTermMap;
