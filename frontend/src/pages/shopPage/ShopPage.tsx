@@ -8,7 +8,6 @@ import { fetchData } from '../../helpers/apiFunctions';
 
 const ShopPage = () => {
     const [searchParams, setSearchParams] = useSearchParams();
-    const [searchResults, setSearchResults] = useState([]);
     const [selectedCategory, setSelectedCategory] = useState(
         searchParams.get('category') || '',
     );
@@ -25,7 +24,7 @@ const ShopPage = () => {
     const [loadMore, setLoadMore] = useState(true);
     const [showExploreButton, setShowExploreButton] = useState(true);
     const initRef = useRef(true);
-
+// { term: string, isSuggestion: boolean}
     const [suggestedTerm, setSuggestedTerm] = useState<string | null>(null);
     const [showSuggestedTerm, setShowSuggestedTerm] = useState(true);
     const [fetchedProductsLength, setFetchedProductsLength] = useState(0);
@@ -35,6 +34,8 @@ const ShopPage = () => {
 
         setSelectedCategory(searchParams.get('category') || '');
         let newSearchTerm = searchParams.get('searchTerm') || '';
+
+        if (newSearchTerm === searchTerm) return;
 
         if (suggestedTerm && suggestedTerm?.length > 0) {
             newSearchTerm = suggestedTerm;
@@ -46,7 +47,6 @@ const ShopPage = () => {
             // set searchTermCleared to true when the search term is cleared
             setSearchTermCleared(newSearchTerm === '');
         }
-
         setSearchTerm(newSearchTerm);
     }, [searchParams, searchTerm]);
 
@@ -78,7 +78,6 @@ const ShopPage = () => {
                 setLoadMore(true);
 
                 const res = await fetchData('autocorrect', { searchTerm });
-
                 setSuggestedTerm(res.suggestedTerm);
 
                 //if the user searches by a plural and only singular is stored in the DB
@@ -86,21 +85,19 @@ const ShopPage = () => {
                 if (
                     ((searchTerm.includes(res.suggestedTerm) ||
                         res.suggestedTerm.includes(searchTerm)) &&
-                        res.suggestedTerm.length > 0) ||
-                    (searchTerm.endsWith('s') &&
-                        !res.suggestedTerm.endsWith('s'))
+                        res.suggestedTerm.length > 0) //||
+                    // (searchTerm.endsWith('s') &&
+                    //     !res.suggestedTerm.endsWith('s'))
                 ) {
-                    console.log('tutututut');
                     setSuggestedTerm('');
                     setSearchTerm(res.suggestedTerm);
-                } else if (res.suggestedTerm && res.suggestedTerm.length > 0) {
-                    console.log('aaaaaaa');
+                } else 
+                if (res.suggestedTerm && res.suggestedTerm.length > 0) {
                     setShowExploreButton(false);
                     setShowSuggestedTerm(true);
                     setSuggestedTerm(res.suggestedTerm);
                     return;
                 } else {
-                    console.log('bbbbb');
                     setShowSuggestedTerm(false);
                 }
 
@@ -114,7 +111,6 @@ const ShopPage = () => {
             }
 
             const data = await fetchData(endpoint, queryParams);
-            console.log('DATAAA: ', data);
 
             if (data.products.length !== 0) {
                 let filteredProducts: Product[] = [];
@@ -146,7 +142,6 @@ const ShopPage = () => {
                     (data.products.length < productsToLoad &&
                         data.products.length > 0)
                 ) {
-                    console.log('uh');
                     setShowExploreButton(false);
                     setLoadMore(false);
                 } else {

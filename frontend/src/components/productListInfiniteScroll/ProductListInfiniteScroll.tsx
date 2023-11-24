@@ -49,8 +49,6 @@ const ProductListInfiniteScroll = ({
             setIsLoading(true);
 
             if (!showExploreButton) {
-                console.log('allProducts.length: ', allProducts.length);
-                console.log('MMMMMMMMMMMmm');
                 setLoadMore(true);
             }
 
@@ -72,7 +70,6 @@ const ProductListInfiniteScroll = ({
         setIsLoading(true);
 
         try {
-            console.log('AAAAAAAAAAAAAAAAAAAAAAAAAAA');
             setLoadMore(true);
             await fetchMoreProducts();
             // call the callback function provided by the parent component instead of setting the showExploreMore state here

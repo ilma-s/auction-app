@@ -1,14 +1,12 @@
 package com.example.backend.services;
 
+import com.example.backend.utils.StringUtils;
 import com.example.backend.dtos.BidInfoResponse;
 import com.example.backend.models.Product;
 import com.example.backend.repositories.BidRepository;
 import com.example.backend.repositories.ProductRepository;
 import com.example.backend.utils.LevenshteinDistanceCalculator;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -98,39 +96,16 @@ public class ProductService {
         return productRepository.searchProductsPaged(searchTerm.toLowerCase(), pageable);
     }
 
-    private String checkPluralForms(String searchTerm, List<String> words) {
-        for (String originalWord : words) {
-            String[] allWords = originalWord.split(" ");
-
-            for (String word : allWords) {
-                if (word.endsWith("ies")) {
-                    String modifiedWord = word.substring(0, word.length() - 3) + "y";
-                    if (containsWord(searchTerm, modifiedWord)) {
-                        return word;
-                    }
-                } else if (word.endsWith("s")) {
-                    String modifiedWord = word.substring(0, word.length() - 1);
-                    if (containsWord(searchTerm, modifiedWord)) {
-                        return word;
-                    }
-                } else if (containsWord(searchTerm, word)) {
-                    return word;
-                }
-            }
-        }
-
-        return "";
-    }
-
     public Map<String, String> searchProductsByLevenshteinDistance(String searchTerm) {
         List<String> allProductNames = productRepository.getAllProductNames();
         List<String> allCategories = productRepository.getAllCategories();
         Map<String, String> suggestedTermMap = new HashMap<>(); //results map
 
-        boolean isPlural = false;
+        String isPlural = "false";
 
         Map<String,String> closestMatchByProductName = findClosestMatch(searchTerm, allProductNames);
         Map<String,String> closestMatchByCategory = findClosestMatch(searchTerm, allCategories);
+
         // Compare the Levenshtein distances and return the map with the smaller distance
         if (Integer.parseInt(closestMatchByProductName.get("minDistance")) < Integer.parseInt(closestMatchByCategory.get("minDistance"))) {
             suggestedTermMap.put("suggestedTerm", closestMatchByProductName.get("closestMatch"));
@@ -140,14 +115,16 @@ public class ProductService {
 
         if (searchTerm.endsWith("ies")) {
             searchTerm = searchTerm.substring(0, searchTerm.length() - 3) + "y";
-            isPlural = true;
+            isPlural = "true";
         } else if (searchTerm.endsWith("s")) {
             searchTerm = searchTerm.substring(0, searchTerm.length() - 1);
-            isPlural = true;
+            isPlural = "true";
         }
 
-        String categoryMatch = checkPluralForms(searchTerm, allCategories);
-        String productMatch = checkPluralForms(searchTerm, allProductNames);
+        suggestedTermMap.put("isPlural", isPlural);
+
+        String categoryMatch = StringUtils.checkPluralForms(searchTerm, allCategories);
+        String productMatch = StringUtils.checkPluralForms(searchTerm, allProductNames);
 
         boolean isSearchValid = !categoryMatch.isEmpty() || !productMatch.isEmpty();
 
@@ -155,16 +132,11 @@ public class ProductService {
             String suggestedTerm = "";
             if (!categoryMatch.isEmpty()) suggestedTerm = categoryMatch;
             else if (!productMatch.isEmpty()) suggestedTerm = productMatch;
-
-            return Map.of("suggestedTerm", suggestedTerm);
+            suggestedTermMap.put("suggestedTerm", suggestedTerm);
+            return suggestedTermMap;
         }
 
         return suggestedTermMap;
-    }
-
-
-    private boolean containsWord(String searchTerm, String text) {
-        return text.toLowerCase().contains(searchTerm.toLowerCase());
     }
 
     private Map<String,String> findClosestMatch(String userInput, List<String> options) {
