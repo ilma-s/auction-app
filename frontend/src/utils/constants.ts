@@ -56,6 +56,28 @@ export const ALL_ITEMS_STRING = 'All Items'
 
 export const PRODUCT_CATEGORIES_STRING = 'PRODUCT CATEGORIES';
 
+export const EMAIL_STRING = 'Email';
+
+export const PASSWORD_STRING = 'Password';
+
+export const REMEMBER_ME_STRING = 'Remember me';
+
+export const UPPERCASE_LOGIN_STRING = 'LOGIN';
+
+export const CAPITALIZED_LOGIN_STRING = 'Login';
+
+export const FORGOT_PASSWORD_STRING = 'Forgot password?';
+
+export const FIRST_NAME_STRING = 'First Name';
+
+export const LAST_NAME_STRING = 'Last Name';
+
+export const ENTER_STRING = 'Enter';
+
+export const REGISTER_STRING = 'REGISTER';
+
+export const ALREADY_HAVE_AN_ACCOUNT_STRING = 'Already have an account?';
+
 export const SMALL_WORDS: string[] = [
     'and',
     'the',

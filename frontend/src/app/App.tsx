@@ -7,6 +7,8 @@ import PrivacyPolicy from '../pages/privacyPolicy/LazyLoad';
 import HealthCheck from '../pages/healthCheck/LazyLoad';
 import ProductPage from '../pages/productPage/ProductPage';
 import ShopPage from '../pages/shopPage/LazyLoad';
+import LoginPage from '../pages/loginPage/LazyLoad';
+import RegistrationPage from '../pages/registrationPage/LazyLoad';
 
 const App = () => {
     return (
@@ -26,6 +28,8 @@ const App = () => {
                 <Route path="/shop/item/" element={<ProductPage />} />
                 <Route path="/shop" element={<ShopPage />} />
                 <Route path="/shop/:categoryName" element={<ShopPage />} />
+                <Route path="/login" element={<LoginPage />}/>
+                <Route path="/register" element={<RegistrationPage />}/>
             </Routes>
         </div>
     );

@@ -2,7 +2,7 @@ import { configureStore } from '@reduxjs/toolkit';
 import { createSlice } from '@reduxjs/toolkit';
 
 const initialState = {
-    name: 'John Doe',
+    name: '',
 };
 
 const appSlice = createSlice({
