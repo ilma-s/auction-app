@@ -101,7 +101,7 @@ public class ProductService {
         List<String> allCategories = productRepository.getAllCategories();
         Map<String, String> suggestedTermMap = new HashMap<>(); //results map
 
-        String isPlural = "false";
+        boolean isPlural = false;
 
         Map<String,String> closestMatchByProductName = findClosestMatch(searchTerm, allProductNames);
         Map<String,String> closestMatchByCategory = findClosestMatch(searchTerm, allCategories);
@@ -115,13 +115,13 @@ public class ProductService {
 
         if (searchTerm.endsWith("ies")) {
             searchTerm = searchTerm.substring(0, searchTerm.length() - 3) + "y";
-            isPlural = "true";
+            isPlural = true;
         } else if (searchTerm.endsWith("s")) {
             searchTerm = searchTerm.substring(0, searchTerm.length() - 1);
-            isPlural = "true";
+            isPlural = true;
         }
 
-        suggestedTermMap.put("isPlural", isPlural);
+        suggestedTermMap.put("isPlural", String.valueOf(isPlural));
 
         String categoryMatch = StringUtils.checkPluralForms(searchTerm, allCategories);
         String productMatch = StringUtils.checkPluralForms(searchTerm, allProductNames);

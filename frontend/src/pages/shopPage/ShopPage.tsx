@@ -24,7 +24,7 @@ const ShopPage = () => {
     const [loadMore, setLoadMore] = useState(true);
     const [showExploreButton, setShowExploreButton] = useState(true);
     const initRef = useRef(true);
-// { term: string, isSuggestion: boolean}
+
     const [suggestedTerm, setSuggestedTerm] = useState<string | null>(null);
     const [showSuggestedTerm, setShowSuggestedTerm] = useState(true);
     const [fetchedProductsLength, setFetchedProductsLength] = useState(0);
@@ -86,9 +86,7 @@ const ShopPage = () => {
                     ((searchTerm.includes(res.suggestedTerm) ||
                         res.suggestedTerm.includes(searchTerm)) &&
                         res.suggestedTerm.length > 0) //||
-                    // (searchTerm.endsWith('s') &&
-                    //     !res.suggestedTerm.endsWith('s'))
-                ) {
+                     ) {
                     setSuggestedTerm('');
                     setSearchTerm(res.suggestedTerm);
                 } else 
