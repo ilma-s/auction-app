@@ -1,4 +1,4 @@
-import React, { useState, useCallback, useEffect, useRef } from 'react';
+import { useState, useCallback, useEffect, useRef } from 'react';
 import { useLocation } from 'react-router-dom';
 import FilterCategoryList from '../../components/filterCategoryList/FilterCategoryList';
 import ProductListInfiniteScroll from '../../components/productListInfiniteScroll/ProductListInfiniteScroll';
