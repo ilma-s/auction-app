@@ -1,6 +1,6 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { setName } from '../../app/store';
 import JwtUtils from '../../utils/entities/JwtUtils';
 
@@ -12,6 +12,7 @@ import {
     UPPERCASE_LOGIN_STRING,
     FORGOT_PASSWORD_STRING,
 } from '../../utils/constants';
+import { selectName } from '../../app/selectors';
 
 const LoginPage = () => {
     const [identifier, setIdentifier] = useState('');
@@ -23,6 +24,13 @@ const LoginPage = () => {
 
     const navigate = useNavigate();
     const dispatch = useDispatch();
+    const name = useSelector(selectName);
+
+    useEffect(() => {
+        if (name !== '') {
+            navigate('/home');
+        }
+    }, [name, navigate]);
 
     const handleLogin = async () => {
         try {

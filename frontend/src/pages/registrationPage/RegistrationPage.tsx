@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import {
     FIRST_NAME_STRING,
     LAST_NAME_STRING,
@@ -11,10 +11,11 @@ import {
 } from '../../utils/constants';
 
 import JwtUtils from '../../utils/entities/JwtUtils';
-import RegistrationUtils from '../../utils/entities/RegistrationUtils';
+import ValidationUtils from '../../utils/entities/ValidationUtils';
 import { useNavigate } from 'react-router-dom';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { setName } from '../../app/store';
+import { selectName } from '../../app/selectors';
 
 const RegistrationPage = () => {
     const [firstName, setFirstName] = useState('');
@@ -29,19 +30,27 @@ const RegistrationPage = () => {
     const navigate = useNavigate();
     const dispatch = useDispatch();
 
+    const name = useSelector(selectName);
+
+    useEffect(() => {
+        if (name !== '') {
+            navigate('/home');
+        }
+    }, [name, navigate]);
+
     const handleRegister = async () => {
         console.log('err: ', errorMessage);
         try {
             setRegisterButtonDisabled(true);
 
             // Validation checks
-            if (!RegistrationUtils.isValidEmail(email)) {
+            if (!ValidationUtils.isValidEmail(email)) {
                 console.log('email: ', email);
                 setErrorMessage('Please enter a valid email address.');
                 return;
             }
 
-            if (!RegistrationUtils.isValidPassword(password)) {
+            if (!ValidationUtils.isValidPassword(password)) {
                 console.log('pass: ', password);
                 setErrorMessage(
                     'Password must be at least 8 characters long and include at least one uppercase letter, one symbol, and one number.',
