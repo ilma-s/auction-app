@@ -7,16 +7,16 @@ import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.stereotype.Component;
 
-import java.util.Date;
-import java.util.List;
-import java.util.concurrent.TimeUnit;
+import java.util.*;
 
 @Component
 public class JwtUtil {
 
 
     private final byte[] secret_key = Keys.secretKeyFor(SignatureAlgorithm.HS256).getEncoded();
-    private long accessTokenValidity = 60 * 60 * 1000;
+
+    private static final long ACCESS_TOKEN_EXPIRATION = 3600 * 24; // 24 hours
+    private static final long REMEMBER_ME_EXPIRATION = 3600 * 24 * 30; // 30 days
 
     private final JwtParser jwtParser;
 
@@ -24,19 +24,17 @@ public class JwtUtil {
     private final String TOKEN_PREFIX = "Bearer ";
 
     public JwtUtil() {
-        //this.jwtParser = (JwtParser) Jwts.parser().setSigningKey(secret_key);
         this.jwtParser = Jwts.parser().build();
     }
 
-    public String createToken(AppUser user) {
-        Claims claims = (Claims) Jwts.claims().setSubject(user.getEmail());
-        claims.put("firstName", user.getFirstName());
-        claims.put("lastName", user.getLastName());
-        Date tokenCreateTime = new Date();
-        Date tokenValidity = new Date(tokenCreateTime.getTime() + TimeUnit.MINUTES.toMillis(accessTokenValidity));
+    public String createToken(AppUser user, boolean rememberMe) {
+        long expiration = rememberMe ? REMEMBER_ME_EXPIRATION : ACCESS_TOKEN_EXPIRATION;
+
         return Jwts.builder()
-                .setClaims(claims)
-                .setExpiration(tokenValidity)
+                .setSubject(user.getEmail())
+                .claim("firstName", user.getFirstName())
+                .claim("lastName", user.getLastName())
+                .setExpiration(new Date(System.currentTimeMillis() + expiration * 1000))
                 .signWith(SignatureAlgorithm.HS256, secret_key)
                 .compact();
     }
@@ -76,13 +74,5 @@ public class JwtUtil {
         } catch (Exception e) {
             throw e;
         }
-    }
-
-    public String getEmail(Claims claims) {
-        return claims.getSubject();
-    }
-
-    private List<String> getRoles(Claims claims) {
-        return (List<String>) claims.get("roles");
     }
 }

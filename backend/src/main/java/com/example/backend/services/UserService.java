@@ -10,8 +10,6 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
-import java.util.logging.Logger;
-
 @Service
 public class UserService implements UserDetailsService {
 
@@ -21,34 +19,38 @@ public class UserService implements UserDetailsService {
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
         AppUser appUser = userRepository.findUserByUsername(username);
-        Logger.getLogger("TestLog").info("Pozvana funkcija: " + username);
 
         if (appUser == null) {
             throw new UsernameNotFoundException("User with username: " + username + " not found");
         }
 
-        // Log retrieved user details for debugging
-        Logger.getLogger("TestLog").info("Retrieved user: " + appUser.getUsername() + ", Password: " + appUser.getPassword());
-
         // Create and return the Spring Security AppUser object
-        return org.springframework.security.core.userdetails.User.builder()
-                .username(appUser.getUsername())
-                .password(appUser.getPassword())
-                //.roles("USER")
-                .build();
+        return appUser;
+//        return User.builder()
+//                .username(appUser.getUsername())
+//                .password(appUser.getPassword())
+//                .roles("USER")
+//                .build();
     }
 
 
     public void registerUser(AppUser user) {
-        System.out.println("here: " + user.toString());
-        // Perform validation logic (e.g., check if username is unique)
-        System.out.println("user.getPassword: " + user.getPassword());
+        // Check if a user with the same username already exists
+        AppUser existingUserByUsername = userRepository.findUserByUsername(user.getUsername());
+        if (existingUserByUsername != null) {
+            throw new RuntimeException("User with this username already exists.");
+        }
+
+        // Check if a user with the same email already exists
+        AppUser existingUserByEmail = userRepository.findUserByEmail(user.getEmail());
+        if (existingUserByEmail != null) {
+            throw new RuntimeException("User with this email already exists.");
+        }
 
         // Encode the user's password before saving to the database
         BCryptPasswordEncoder bCryptPasswordEncoder = new BCryptPasswordEncoder();
         user.setPassword(bCryptPasswordEncoder.encode(user.getPassword()));
 
-        System.out.println("pass: " + user.getPassword());
         //set role?
 
         user.setUserId(null);
@@ -57,9 +59,7 @@ public class UserService implements UserDetailsService {
         try {
             userRepository.save(user);
         } catch (DataAccessException e) {
-            System.out.println("errorrr: " + e);
+            System.out.println("error: " + e);
         }
-
-        System.out.println("ohohhhh");
     }
 }

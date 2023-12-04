@@ -4,6 +4,7 @@ import lombok.Data;
 
 @Data
 public class JwtTokenRequest {
-    private String username;
+    private String identifier; //so the user can login with both username and password
     private String password;
+    private boolean rememberMe;
 }

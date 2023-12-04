@@ -5,5 +5,6 @@ import com.example.backend.models.AppUser;
 
 public interface UserRepository extends JpaRepository<AppUser, String> {
     AppUser findUserByUsername(String username);
+    AppUser findUserByEmail(String email);
 }
 

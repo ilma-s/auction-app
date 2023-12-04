@@ -2,9 +2,11 @@ package com.example.backend.auth;
 
 import com.example.backend.services.UserService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -12,6 +14,12 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.cors.CorsConfigurationSource;
+import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
+
+import java.util.Arrays;
+
 import static org.springframework.security.config.Customizer.withDefaults;
 
 @Configuration
@@ -20,6 +28,14 @@ import static org.springframework.security.config.Customizer.withDefaults;
 public class SecurityConfig {
 
     private final UserService userService;
+
+    private final EmailOrUsernameAuthenticationProvider emailOrUsernameAuthenticationProvider;
+
+    // needed so users can be authenticated using either username or email
+    @Autowired
+    public void configureGlobal(AuthenticationManagerBuilder auth) throws Exception {
+        auth.authenticationProvider(emailOrUsernameAuthenticationProvider);
+    }
 
     @Bean
     public BCryptPasswordEncoder bCryptPasswordEncoder() {
@@ -38,11 +54,12 @@ public class SecurityConfig {
         AuthenticationManager authenticationManager = authenticationManagerBuilder.build();
 
         return httpSecurity.csrf(AbstractHttpConfigurer::disable)
-                .authorizeHttpRequests(request -> request.requestMatchers("/all-products").permitAll())
-                .authorizeHttpRequests(request -> request.anyRequest().authenticated())
-                .formLogin(withDefaults())
+                .authorizeHttpRequests(request -> request.requestMatchers("/**")
+                        .permitAll()
+                        .anyRequest()
+                        .authenticated())
                 .authenticationManager(authenticationManager)
+                .httpBasic(Customizer.withDefaults())
                 .build();
     }
-
 }
