@@ -6,6 +6,8 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Page;
 import java.util.List;
 import java.util.Date;
 
@@ -37,6 +39,17 @@ public interface ProductRepository extends JpaRepository<Product, String> {
 
 
     @Query("SELECT DISTINCT p FROM Product p " +
-            "WHERE lower(p.name) LIKE lower(concat('%', :searchTerm, '%'))")
+            "JOIN p.categories pc " +
+            "JOIN pc.category c " +
+            "JOIN c.parentCategory pcParent " +
+            "WHERE lower(p.name) LIKE lower(concat('%', :searchTerm, '%')) " +
+            "OR lower(c.name) LIKE lower(concat('%', :searchTerm, '%')) " +
+            "OR lower(pcParent.name) LIKE lower(concat('%', :searchTerm, '%'))")
     Page<Product> searchProductsPaged(@Param("searchTerm") String searchTerm, Pageable pageable);
+
+    @Query("SELECT LOWER(p.name) FROM Product p")
+    List<String> getAllProductNames();
+
+    @Query("SELECT LOWER(c.name) FROM Product p JOIN p.categories pc JOIN pc.category c")
+    List<String> getAllCategories();
 }

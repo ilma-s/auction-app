@@ -1,5 +1,5 @@
 import { useState, useCallback, useEffect, useRef } from 'react';
-import { useLocation } from 'react-router-dom';
+import { useSearchParams } from 'react-router-dom';
 import FilterCategoryList from '../../components/filterCategoryList/FilterCategoryList';
 import ProductListInfiniteScroll from '../../components/productListInfiniteScroll/ProductListInfiniteScroll';
 import ProductUtils from '../../utils/entities/ProductUtils';
@@ -7,31 +7,39 @@ import { Product } from '../../types';
 import { fetchData } from '../../helpers/apiFunctions';
 
 const ShopPage = () => {
-    const location = useLocation();
-    const [searchResults, setSearchResults] = useState([]);
-    const queryParams = new URLSearchParams(location.search);
+    const [searchParams, setSearchParams] = useSearchParams();
     const [selectedCategory, setSelectedCategory] = useState(
-        queryParams.get('category') || '',
+        searchParams.get('category') || '',
     );
     const [searchTerm, setSearchTerm] = useState(
-        queryParams.get('searchTerm') || '',
+        searchParams.get('searchTerm') || '',
     );
 
-    // Add a state variable to track whether the search term was cleared
+    // a state variable to track whether the search term was cleared
     const [searchTermCleared, setSearchTermCleared] = useState(false);
 
     const [currentPage, setCurrentPage] = useState(1);
-    const [hasMoreProducts, setHasMoreProducts] = useState(true);
     const [productsToLoad, setProductsToLoad] = useState(9);
     const [allProducts, setAllProducts] = useState<Product[]>([]);
     const [loadMore, setLoadMore] = useState(true);
     const [showExploreButton, setShowExploreButton] = useState(true);
     const initRef = useRef(true);
 
+    const [suggestedTerm, setSuggestedTerm] = useState<string | null>(null);
+    const [showSuggestedTerm, setShowSuggestedTerm] = useState(true);
+    const [fetchedProductsLength, setFetchedProductsLength] = useState(0);
+
     useEffect(() => {
-        // update selectedCategory and searchTerm when location changes
-        setSelectedCategory(queryParams.get('category') || '');
-        const newSearchTerm = queryParams.get('searchTerm') || '';
+        // update selectedCategory and searchTerm when searchParams change
+
+        setSelectedCategory(searchParams.get('category') || '');
+        let newSearchTerm = searchParams.get('searchTerm') || '';
+
+        if (newSearchTerm === searchTerm) return;
+
+        if (suggestedTerm && suggestedTerm?.length > 0) {
+            newSearchTerm = suggestedTerm;
+        }
 
         if (newSearchTerm !== searchTerm) {
             // reset page to 1 when the search term changes
@@ -39,9 +47,12 @@ const ShopPage = () => {
             // set searchTermCleared to true when the search term is cleared
             setSearchTermCleared(newSearchTerm === '');
         }
-
         setSearchTerm(newSearchTerm);
-    }, [location.search, queryParams, searchTerm]);
+    }, [searchParams, searchTerm]);
+
+    useEffect(() => {
+        setShowExploreButton(true);
+    }, [searchTerm]);
 
     const fetchMoreProducts = useCallback(async () => {
         try {
@@ -65,6 +76,29 @@ const ShopPage = () => {
             } else if (searchTerm.length > 0) {
                 initRef.current = false;
                 setLoadMore(true);
+
+                const res = await fetchData('autocorrect', { searchTerm });
+                setSuggestedTerm(res.suggestedTerm);
+
+                //if the user searches by a plural and only singular is stored in the DB
+                //need to be returned from the backend because the search needs to be performed on that term
+                if (
+                    ((searchTerm.includes(res.suggestedTerm) ||
+                        res.suggestedTerm.includes(searchTerm)) &&
+                        res.suggestedTerm.length > 0) //||
+                     ) {
+                    setSuggestedTerm('');
+                    setSearchTerm(res.suggestedTerm);
+                } else 
+                if (res.suggestedTerm && res.suggestedTerm.length > 0) {
+                    setShowExploreButton(false);
+                    setShowSuggestedTerm(true);
+                    setSuggestedTerm(res.suggestedTerm);
+                    return;
+                } else {
+                    setShowSuggestedTerm(false);
+                }
+
                 queryParams = {
                     ...queryParams,
                     searchTerm: searchTerm,
@@ -77,58 +111,47 @@ const ShopPage = () => {
             const data = await fetchData(endpoint, queryParams);
 
             if (data.products.length !== 0) {
-                setHasMoreProducts(true);
+                let filteredProducts: Product[] = [];
 
-                if (
-                    Array.isArray(data.products) &&
-                    data.products.length > 0 &&
-                    searchTerm.length > 0
-                ) {
-                    setAllProducts(data.products);
-                } else if (
-                    Array.isArray(data.products) &&
-                    data.products.length > 0 &&
-                    selectedCategory
-                ) {
-                    const filteredProducts =
+                if (selectedCategory) {
+                    filteredProducts =
                         await ProductUtils.filterProductsByCategories(
-                            selectedCategory || '',
+                            selectedCategory,
                         );
-
-                    setAllProducts((prevAllProducts) => [
-                        ...prevAllProducts,
-                        ...(filteredProducts.length > 0
-                            ? filteredProducts
-                            : data.products),
-                    ]);
-
-                    setCurrentPage(currentPage + 1);
-                } else if (initRef.current || searchTerm.length === 0) {
-                    setAllProducts((prevAllProducts) => [
-                        ...prevAllProducts,
-                        ...data.products,
-                    ]);
-
-                    setCurrentPage(currentPage + 1);
                 }
 
+                // Reset the state to an empty array before appending the new results
+                setAllProducts((prevAllProducts) => [
+                    ...(searchTerm.length > 0 ? [] : prevAllProducts), // Reset if it's a new search
+                    ...(filteredProducts.length > 0
+                        ? filteredProducts
+                        : data.products),
+                ]);
+
+                setFetchedProductsLength(
+                    filteredProducts.length > 0
+                        ? filteredProducts.length
+                        : data.products.length,
+                );
+
                 if (
-                    data.products.length < productsToLoad &&
-                    (initRef.current || searchTerm.length === 0)
+                    (filteredProducts.length < productsToLoad &&
+                        filteredProducts.length > 0) ||
+                    (data.products.length < productsToLoad &&
+                        data.products.length > 0)
                 ) {
+                    setShowExploreButton(false);
+                    setLoadMore(false);
                 } else {
+                    setCurrentPage(currentPage + 1);
                     setLoadMore(false);
                 }
-            } else {
-                setHasMoreProducts(false);
             }
-
-            setSearchResults(data.products);
         } catch (error) {
             console.error('Search request failed:', error);
         }
     }, [
-        location.search,
+        searchParams,
         currentPage,
         selectedCategory,
         searchTerm,
@@ -138,20 +161,45 @@ const ShopPage = () => {
 
     useEffect(() => {
         fetchMoreProducts();
-    }, [searchTerm, currentPage, hasMoreProducts]);
+    }, [searchTerm, currentPage]);
+
+    const handleSuggestedTermClick = useCallback(() => {
+        setSearchTerm(suggestedTerm || '');
+
+        if (searchTerm === suggestedTerm) {
+            setSuggestedTerm(null);
+            setShowSuggestedTerm(false);
+        }
+
+        // update query parameters when the suggested term is clicked
+        setSearchParams({ searchTerm: suggestedTerm || '' });
+    }, [searchTerm, suggestedTerm, searchParams]);
 
     return (
-        <div className="w-2/3 mx-auto pt-12 flex font-lato">
-            <div className="flex gap-8">
+        <div className="w-2/3 mx-auto pt-12 flex font-lato" id="shop-page-id">
+            {showSuggestedTerm && suggestedTerm && (
+                <div className="mt-4 pl-1 mb-8 ml-52 flex absolute top-36 ">
+                    <div>Did you mean?</div>
+                    <div>
+                        <button
+                            className="ml-2 text-trueIndigo-500 pl-1"
+                            onClick={handleSuggestedTermClick}
+                        >
+                            {suggestedTerm}
+                        </button>
+                    </div>
+                </div>
+            )}
+            <div className="flex gap-8 pt-6">
                 <FilterCategoryList selectedCategory={selectedCategory} />
                 <ProductListInfiniteScroll
                     fetchMoreProducts={fetchMoreProducts}
                     allProducts={allProducts}
-                    hasMoreProducts={hasMoreProducts}
+                    fetchedProductsLength={fetchedProductsLength}
                     setLoadMore={setLoadMore}
                     showExploreButton={showExploreButton}
-                    setShowExploreButton={setShowExploreButton}
                     productsToLoad={productsToLoad}
+                    onExploreClick={() => setShowExploreButton(false)}
                 />
             </div>
         </div>
