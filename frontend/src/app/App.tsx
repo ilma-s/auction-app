@@ -9,8 +9,22 @@ import ProductPage from '../pages/productPage/ProductPage';
 import ShopPage from '../pages/shopPage/LazyLoad';
 import LoginPage from '../pages/loginPage/LazyLoad';
 import RegistrationPage from '../pages/registrationPage/LazyLoad';
+import { useDispatch } from 'react-redux';
+import { useEffect } from 'react';
+import { setName } from './store';
+import JwtUtils from '../utils/entities/JwtUtils';
 
 const App = () => {
+    const dispatch = useDispatch();
+
+    useEffect(() => {
+        const token = localStorage.getItem('token');
+
+        if (token) {
+            dispatch(setName(JwtUtils.decodeJWTAndGetFirstName(token)));
+        }
+    }, []);
+
     return (
         <div>
             <Routes>
@@ -28,8 +42,8 @@ const App = () => {
                 <Route path="/shop/item/" element={<ProductPage />} />
                 <Route path="/shop" element={<ShopPage />} />
                 <Route path="/shop/:categoryName" element={<ShopPage />} />
-                <Route path="/login" element={<LoginPage />}/>
-                <Route path="/register" element={<RegistrationPage />}/>
+                <Route path="/login" element={<LoginPage />} />
+                <Route path="/register" element={<RegistrationPage />} />
             </Routes>
         </div>
     );

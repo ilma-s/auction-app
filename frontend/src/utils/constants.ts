@@ -52,7 +52,7 @@ export const PLACE_BID = 'PLACE BID';
 
 export const DETAILS_STRING = 'Details';
 
-export const ALL_ITEMS_STRING = 'All Items'
+export const ALL_ITEMS_STRING = 'All Items';
 
 export const PRODUCT_CATEGORIES_STRING = 'PRODUCT CATEGORIES';
 
@@ -77,6 +77,8 @@ export const ENTER_STRING = 'Enter';
 export const REGISTER_STRING = 'REGISTER';
 
 export const ALREADY_HAVE_AN_ACCOUNT_STRING = 'Already have an account?';
+
+export const ENTER_EMAIL_OR_USERNAME = 'Enter email or username';
 
 export const SMALL_WORDS: string[] = [
     'and',

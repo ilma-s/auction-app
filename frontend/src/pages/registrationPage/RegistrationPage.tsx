@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import {
     FIRST_NAME_STRING,
     LAST_NAME_STRING,
@@ -9,9 +10,102 @@ import {
     CAPITALIZED_LOGIN_STRING,
 } from '../../utils/constants';
 
+import JwtUtils from '../../utils/entities/JwtUtils';
+import RegistrationUtils from '../../utils/entities/RegistrationUtils';
+import { useNavigate } from 'react-router-dom';
+import { useDispatch } from 'react-redux';
+import { setName } from '../../app/store';
+
 const RegistrationPage = () => {
+    const [firstName, setFirstName] = useState('');
+    const [lastName, setLastName] = useState('');
+    const [username, setUsername] = useState('');
+    const [email, setEmail] = useState('');
+    const [password, setPassword] = useState('');
+    const [rememberMe, setRememberMe] = useState(false);
+    const [errorMessage, setErrorMessage] = useState('');
+    const [isRegisterButtonDisabled, setRegisterButtonDisabled] =
+        useState(false);
+    const navigate = useNavigate();
+    const dispatch = useDispatch();
+
+    const handleRegister = async () => {
+        console.log('err: ', errorMessage);
+        try {
+            setRegisterButtonDisabled(true);
+
+            // Validation checks
+            if (!RegistrationUtils.isValidEmail(email)) {
+                console.log('email: ', email);
+                setErrorMessage('Please enter a valid email address.');
+                return;
+            }
+
+            if (!RegistrationUtils.isValidPassword(password)) {
+                console.log('pass: ', password);
+                setErrorMessage(
+                    'Password must be at least 8 characters long and include at least one uppercase letter, one symbol, and one number.',
+                );
+                return;
+            }
+
+            const response = await fetch('http://localhost:8080/register', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    username,
+                    email,
+                    password,
+                    firstName,
+                    lastName,
+                }),
+            });
+
+            console.log('ress: ', response);
+
+            if (response.ok) {
+                const token = await response.text();
+
+                console.log('data: ', token);
+
+                // Store the token in localStorage or a cookie
+                localStorage.setItem('token', token);
+
+                if (rememberMe) {
+                    document.cookie = `token=${token}; Secure; HttpOnly; SameSite=Strict`;
+                }
+
+                const jwt = token;
+                const decodedToken = JwtUtils.decodeJWT(jwt);
+                const userFirstName = decodedToken?.firstName || '';
+
+                // Dispatch user information to Redux store
+                dispatch(setName(userFirstName));
+
+                // Redirect to home or dashboard page
+                navigate('/home');
+            } else {
+                const errorData = await response.text();
+                setErrorMessage(errorData);
+                console.error('Registration failed', errorData);
+            }
+        } catch (error) {
+            console.error('Error during registration', error);
+        } finally {
+            setRegisterButtonDisabled(false);
+        }
+    };
+
     return (
-        <div className="w-2/3 mx-auto pt-12 pb-12 flex font-lato">
+        <div className="w-2/3 mx-auto pt-12 pb-12 flex flex-col font-lato">
+            {errorMessage.length > 0 && (
+                <div className="w-1/2 mx-auto border-2 bg-red-500 text-white p-4 mb-4 flex items-center justify-center">
+                    <span className="text-xl">&#9888;</span>
+                    <span className="ml-2 font-bold">{errorMessage}</span>
+                </div>
+            )}
             <div className="w-1/2 mx-auto border-2">
                 <p className="text-center font-bold pt-4">REGISTER</p>
                 <div className="pt-8 w-3/4 mx-auto">
@@ -26,6 +120,8 @@ const RegistrationPage = () => {
                             type="text"
                             id="firstName"
                             placeholder="First Name"
+                            value={firstName}
+                            onChange={(e) => setFirstName(e.target.value)}
                             className="w-full border rounded-md py-2 px-3 focus:outline-none focus:ring focus:border-trueIndigo-500"
                         />
                     </div>
@@ -41,6 +137,25 @@ const RegistrationPage = () => {
                             type="text"
                             id="lastName"
                             placeholder="Last Name"
+                            value={lastName}
+                            onChange={(e) => setLastName(e.target.value)}
+                            className="w-full border rounded-md py-2 px-3 focus:outline-none focus:ring focus:border-trueIndigo-500"
+                        />
+                    </div>
+
+                    <div className="mb-8">
+                        <label
+                            htmlFor="username"
+                            className="pb-2 block text-sm font-medium text-trueGray-700"
+                        >
+                            Username
+                        </label>
+                        <input
+                            type="text"
+                            id="username"
+                            placeholder="Username"
+                            value={username}
+                            onChange={(e) => setUsername(e.target.value)}
                             className="w-full border rounded-md py-2 px-3 focus:outline-none focus:ring focus:border-trueIndigo-500"
                         />
                     </div>
@@ -56,6 +171,8 @@ const RegistrationPage = () => {
                             type="email"
                             id="email"
                             placeholder="Email"
+                            value={email}
+                            onChange={(e) => setEmail(e.target.value)}
                             className="w-full border rounded-md py-2 px-3 focus:outline-none focus:ring focus:border-trueIndigo-500"
                         />
                     </div>
@@ -71,6 +188,8 @@ const RegistrationPage = () => {
                             type="password"
                             id="password"
                             placeholder="Password"
+                            value={password}
+                            onChange={(e) => setPassword(e.target.value)}
                             className="w-full border rounded-md py-2 px-3 focus:outline-none focus:ring focus:border-trueIndigo-500"
                         />
                     </div>
@@ -78,6 +197,8 @@ const RegistrationPage = () => {
                     <button
                         type="button"
                         className="w-full bg-trueIndigo-500 text-white py-2 rounded-md focus:outline-none focus:ring focus:border-trueIndigo-700"
+                        onClick={handleRegister}
+                        disabled={isRegisterButtonDisabled}
                     >
                         {REGISTER_STRING}
                     </button>
