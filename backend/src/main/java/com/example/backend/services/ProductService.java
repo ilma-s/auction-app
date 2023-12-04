@@ -1,9 +1,11 @@
 package com.example.backend.services;
 
+import com.example.backend.utils.StringUtils;
 import com.example.backend.dtos.BidInfoResponse;
 import com.example.backend.models.Product;
 import com.example.backend.repositories.BidRepository;
 import com.example.backend.repositories.ProductRepository;
+import com.example.backend.utils.LevenshteinDistanceCalculator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -12,8 +14,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.RequestParam;
 
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 
 @Service
 public class ProductService {
@@ -95,4 +96,70 @@ public class ProductService {
         return productRepository.searchProductsPaged(searchTerm.toLowerCase(), pageable);
     }
 
+    public Map<String, String> searchProductsByLevenshteinDistance(String searchTerm) {
+        List<String> allProductNames = productRepository.getAllProductNames();
+        List<String> allCategories = productRepository.getAllCategories();
+        Map<String, String> suggestedTermMap = new HashMap<>(); //results map
+
+        boolean isPlural = false;
+
+        Map<String,String> closestMatchByProductName = findClosestMatch(searchTerm, allProductNames);
+        Map<String,String> closestMatchByCategory = findClosestMatch(searchTerm, allCategories);
+
+        // Compare the Levenshtein distances and return the map with the smaller distance
+        if (Integer.parseInt(closestMatchByProductName.get("minDistance")) < Integer.parseInt(closestMatchByCategory.get("minDistance"))) {
+            suggestedTermMap.put("suggestedTerm", closestMatchByProductName.get("closestMatch"));
+        } else {
+            suggestedTermMap.put("suggestedTerm", closestMatchByCategory.get("closestMatch"));
+        }
+
+        if (searchTerm.endsWith("ies")) {
+            searchTerm = searchTerm.substring(0, searchTerm.length() - 3) + "y";
+            isPlural = true;
+        } else if (searchTerm.endsWith("s")) {
+            searchTerm = searchTerm.substring(0, searchTerm.length() - 1);
+            isPlural = true;
+        }
+
+        suggestedTermMap.put("isPlural", String.valueOf(isPlural));
+
+        String categoryMatch = StringUtils.checkPluralForms(searchTerm, allCategories);
+        String productMatch = StringUtils.checkPluralForms(searchTerm, allProductNames);
+
+        boolean isSearchValid = !categoryMatch.isEmpty() || !productMatch.isEmpty();
+
+        if(isSearchValid) {
+            String suggestedTerm = "";
+            if (!categoryMatch.isEmpty()) suggestedTerm = categoryMatch;
+            else if (!productMatch.isEmpty()) suggestedTerm = productMatch;
+            suggestedTermMap.put("suggestedTerm", suggestedTerm);
+            return suggestedTermMap;
+        }
+
+        return suggestedTermMap;
+    }
+
+    private Map<String,String> findClosestMatch(String userInput, List<String> options) {
+        String closestMatch = userInput;
+        int minDistance = Integer.MAX_VALUE;
+
+        for (String option : options) {
+            String[] wordsInOption = option.split(" ");
+
+            for (String word : wordsInOption) {
+                int distance = LevenshteinDistanceCalculator.calculate(userInput, word);
+
+                if (distance < minDistance) {
+                    minDistance = distance;
+                    closestMatch = word;
+                }
+            }
+        }
+
+        Map<String, String> result = new HashMap<>();
+        result.put("closestMatch", closestMatch);
+        result.put("minDistance", String.valueOf(minDistance));
+
+        return result;
+    }
 }

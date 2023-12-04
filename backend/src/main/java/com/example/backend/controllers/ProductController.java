@@ -94,4 +94,10 @@ public class ProductController {
 
         return ResponseEntity.ok(response);
     }
+
+    @GetMapping("/autocorrect")
+    public ResponseEntity<Map<String, String>> autocorrect(@RequestParam("searchTerm") String searchTerm) {
+        Map<String, String> closestMatchMap = productService.searchProductsByLevenshteinDistance(searchTerm);
+        return ResponseEntity.ok(closestMatchMap);
+    }
 }
