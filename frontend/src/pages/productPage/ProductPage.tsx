@@ -2,10 +2,11 @@ import { useEffect, useState, useRef } from 'react';
 import { useLocation } from 'react-router-dom';
 import ProductUtils from '../../utils/entities/ProductUtils';
 import AppPath from '../../components/appPath/AppPath';
-import ProductInformation from '../../components/productDetails/ProductDetails';
+import ProductDetails from '../../components/productDetails/ProductDetails';
 import { Product, BidInformation } from '../../types';
 import BidUtils from '../../utils/entities/BidUtils';
 import LoadingSpinner from '../../components/loadingSpinner/LoadingSpinner';
+import BidNotifications from '../../components/bidNotifications/BidNotifications';
 
 const ProductPage = () => {
     const [product, setProduct] = useState<Product | null>(null);
@@ -28,8 +29,29 @@ const ProductPage = () => {
     useEffect(() => {
         if (productId) {
             ProductUtils.fetchProduct(productId).then((data) => {
-                setProduct(data);
-                console.log(data);
+                setProduct((prevProduct) => {
+                    if (prevProduct) {
+                        // If there is a previous product, update the productId
+                        return {
+                            ...prevProduct,
+                            productId: productId,
+                        } as Product;
+                    } else {
+                        // If there is no previous product, create a new one
+                        return {
+                            productId: productId,
+                            name: data?.name,
+                            description: data?.description,
+                            startingPrice: data?.startingPrice,
+                            images: data?.images,
+                            sellerId: data?.seller,
+                            startDate: data?.startDate,
+                            endDate: data?.endDate,
+                            status: data?.status,
+                            categories: data?.categories,
+                        } as Product;
+                    }
+                });
             });
         }
     }, [productId]);
@@ -102,6 +124,8 @@ const ProductPage = () => {
 
     return (
         <>
+            <BidNotifications />
+            
             <div className="w-2/3 mx-auto pt-12 flex justify-between font-lato">
                 <div>
                     {product ? (
@@ -164,7 +188,7 @@ const ProductPage = () => {
                 </div>
 
                 {product && (
-                    <ProductInformation
+                    <ProductDetails
                         product={product}
                         bidInformation={bidInformation}
                     />

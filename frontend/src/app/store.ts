@@ -1,13 +1,13 @@
 import { configureStore } from '@reduxjs/toolkit';
 import { createSlice } from '@reduxjs/toolkit';
 
-const initialState = {
-    name: 'John Doe',
+const initialNameState = {
+    name: 'ilma',
 };
 
-const appSlice = createSlice({
-    name: 'appSlice',
-    initialState,
+const nameSlice = createSlice({
+    name: 'nameSlice',
+    initialState: initialNameState,
     reducers: {
         setName: (state, action) => {
             state.name = action.payload;
@@ -15,11 +15,30 @@ const appSlice = createSlice({
     },
 });
 
-export const { setName } = appSlice.actions;
+const initialNotificationState = {
+    notification: '',
+};
+
+const notificationSlice = createSlice({
+    name: 'notificationSlice',
+    initialState: initialNotificationState,
+    reducers: {
+        setNotification: (state, action) => {
+            state.notification = action.payload;
+        },
+        clearNotification: (state) => {
+            state.notification = '';
+        },
+    },
+});
+
+export const { setName } = nameSlice.actions;
+export const { setNotification, clearNotification } = notificationSlice.actions;
 
 export const store = configureStore({
     reducer: {
-        name: appSlice.reducer,
+        name: nameSlice.reducer,
+        notification: notificationSlice.reducer,
     },
 });
 

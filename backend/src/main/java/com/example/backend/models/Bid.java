@@ -3,13 +3,16 @@ package com.example.backend.models;
 import jakarta.persistence.*;
 import java.sql.Timestamp;
 import lombok.Data;
+import org.hibernate.annotations.GenericGenerator;
 
 @Entity
 @Data
 public class Bid {
+    @GeneratedValue(strategy = GenerationType.AUTO, generator = "uuid2")
+    @GenericGenerator(name = "uuid2", strategy = "org.hibernate.id.UUIDGenerator")
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
     private String bidId;
+
     private Double amount;
     private Timestamp timestamp;
 
@@ -23,6 +26,7 @@ public class Bid {
 
     @OneToOne(mappedBy = "bid", cascade = CascadeType.ALL, orphanRemoval = true)
     private Transaction transaction;
+
 }
 
 

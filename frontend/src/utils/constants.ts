@@ -56,6 +56,37 @@ export const ALL_ITEMS_STRING = 'All Items'
 
 export const PRODUCT_CATEGORIES_STRING = 'PRODUCT CATEGORIES';
 
+export const NOTIFICATION_TYPES = {
+    HIGHEST_BIDDER: 'HIGHEST_BIDDER',
+    HIGHER_BIDS: 'HIGHER_BIDS',
+    OUTBID_COMPETITION: 'OUTBID_COMPETITION',
+};
+
+export const NOTIFICATION_MESSAGES = {
+    [NOTIFICATION_TYPES.HIGHEST_BIDDER]: 'Congrats! You are the highest bidder.',
+    [NOTIFICATION_TYPES.HIGHER_BIDS]: 'There are higher bids than yours. You could give it a second try!',
+    [NOTIFICATION_TYPES.OUTBID_COMPETITION]: 'Congratulations! You outbid the competition.',
+};
+
+export const NOTIFICATION_STYLES = {
+    [NOTIFICATION_TYPES.HIGHEST_BIDDER]: {
+        textColor: 'text-green-800',
+        bgColor: 'bg-green-100',
+    },
+    [NOTIFICATION_TYPES.HIGHER_BIDS]: {
+        textColor: 'text-orange-600',
+        bgColor: 'bg-orange-100',
+    },
+    [NOTIFICATION_TYPES.OUTBID_COMPETITION]: {
+        textColor: 'text-trueIndigo-500',
+        bgColor: 'bg-purple-100',
+    },
+    default: {
+        textColor: 'text-black',
+        bgColor: 'bg-white',
+    },
+};
+
 export const SMALL_WORDS: string[] = [
     'and',
     'the',
