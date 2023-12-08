@@ -14,13 +14,6 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
-import org.springframework.web.cors.CorsConfiguration;
-import org.springframework.web.cors.CorsConfigurationSource;
-import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
-
-import java.util.Arrays;
-
-import static org.springframework.security.config.Customizer.withDefaults;
 
 @Configuration
 @RequiredArgsConstructor
@@ -29,12 +22,12 @@ public class SecurityConfig {
 
     private final UserService userService;
 
-    private final EmailOrUsernameAuthenticationProvider emailOrUsernameAuthenticationProvider;
+    private final UserAuthenticationProvider userAuthenticationProvider;
 
     // needed so users can be authenticated using either username or email
     @Autowired
     public void configureGlobal(AuthenticationManagerBuilder auth) throws Exception {
-        auth.authenticationProvider(emailOrUsernameAuthenticationProvider);
+        auth.authenticationProvider(userAuthenticationProvider);
     }
 
     @Bean

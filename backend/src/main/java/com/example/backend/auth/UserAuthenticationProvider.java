@@ -1,8 +1,8 @@
 package com.example.backend.auth;
 
 import com.example.backend.models.AppUser;
+import com.example.backend.services.UserService;
 import com.example.backend.utils.RegistrationUtil;
-import com.example.backend.repositories.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.security.authentication.BadCredentialsException;
@@ -16,16 +16,11 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Component;
 
-import static com.example.backend.utils.RegistrationUtil.findUserByEmailOrUsername;
-
 @Component
-public class EmailOrUsernameAuthenticationProvider extends AbstractUserDetailsAuthenticationProvider {
+public class UserAuthenticationProvider extends AbstractUserDetailsAuthenticationProvider {
 
     @Autowired
     private UserDetailsService userDetailsService;
-
-    @Autowired
-    private UserRepository userRepository;
 
     @Autowired
     private ApplicationContext applicationContext;
@@ -39,9 +34,10 @@ public class EmailOrUsernameAuthenticationProvider extends AbstractUserDetailsAu
     protected UserDetails retrieveUser(String identifier, UsernamePasswordAuthenticationToken authentication) throws AuthenticationException {
         AppUser appUser = null;
         try {
-            appUser = RegistrationUtil.findUserByEmailOrUsername(identifier);
+            appUser = UserService.findUserByEmailOrUsername(identifier);
         } catch (Exception e) {
-            System.out.println("eeeeeeeee: " + e);
+            logger.error("User with identifier " + identifier + " not found.");
+            throw new UsernameNotFoundException("User with identifier " + identifier + " not found.");
         }
 
         if (appUser == null) {

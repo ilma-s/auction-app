@@ -35,7 +35,7 @@ public class RegistrationController {
             tokenRequest.setIdentifier(user.getUsername());
             tokenRequest.setPassword(user.getPassword());
 
-            String generatedToken = jwtUtil.createToken(user, true);;
+            String generatedToken = jwtUtil.createToken(user, true);
 
             return ResponseEntity.ok(generatedToken);
 

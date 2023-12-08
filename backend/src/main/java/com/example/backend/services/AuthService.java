@@ -23,10 +23,7 @@ public class AuthService {
     private AuthenticationManager authenticationManager;
 
     @Autowired
-    private UserDetailsService userDetailsService;
-
-    @Autowired
-    private UserRepository userRepository;
+    private UserService userService;
 
     @Autowired
     private JwtUtil jwtUtil;
@@ -35,13 +32,8 @@ public class AuthService {
         try {
             // check if the identifier is a valid email or username
             String identifier = tokenRequest.getIdentifier();
-            AppUser appUser;
 
-            if (RegistrationUtil.isValidEmail(identifier)) {
-                appUser = userRepository.findUserByEmail(identifier);
-            } else {
-                appUser = userRepository.findUserByUsername(identifier);
-            }
+            AppUser appUser = UserService.findUserByEmailOrUsername(identifier);
 
             if (appUser == null) {
                 throw new UsernameNotFoundException("User not found with the provided identifier");

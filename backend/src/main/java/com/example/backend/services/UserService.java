@@ -10,11 +10,13 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
+import static com.example.backend.utils.RegistrationUtil.isValidEmail;
+
 @Service
 public class UserService implements UserDetailsService {
 
     @Autowired
-    private UserRepository userRepository;
+    private static UserRepository userRepository;
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
@@ -26,11 +28,6 @@ public class UserService implements UserDetailsService {
 
         // Create and return the Spring Security AppUser object
         return appUser;
-//        return User.builder()
-//                .username(appUser.getUsername())
-//                .password(appUser.getPassword())
-//                .roles("USER")
-//                .build();
     }
 
 
@@ -61,5 +58,16 @@ public class UserService implements UserDetailsService {
         } catch (DataAccessException e) {
             System.out.println("error: " + e);
         }
+    }
+
+    public static AppUser findUserByEmailOrUsername(String identifier) {
+        AppUser appUser;
+        if (isValidEmail(identifier)) {
+            appUser = userRepository.findUserByEmail(identifier);
+        } else {
+            appUser = userRepository.findUserByUsername(identifier);
+        }
+
+        return appUser;
     }
 }

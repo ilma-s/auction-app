@@ -12,14 +12,10 @@ import java.util.*;
 @Component
 public class JwtUtil {
 
-
     private final byte[] secret_key = Keys.secretKeyFor(SignatureAlgorithm.HS256).getEncoded();
-
     private static final long ACCESS_TOKEN_EXPIRATION = 3600 * 24; // 24 hours
     private static final long REMEMBER_ME_EXPIRATION = 3600 * 24 * 30; // 30 days
-
     private final JwtParser jwtParser;
-
     private final String TOKEN_HEADER = "Authorization";
     private final String TOKEN_PREFIX = "Bearer ";
 
