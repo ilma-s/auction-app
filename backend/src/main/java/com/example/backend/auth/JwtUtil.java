@@ -12,30 +12,37 @@ import java.util.*;
 @Component
 public class JwtUtil {
 
-    private final byte[] secret_key = Keys.secretKeyFor(SignatureAlgorithm.HS256).getEncoded();
-    private static final long ACCESS_TOKEN_EXPIRATION = 3600 * 24; // 24 hours
-    private static final long REMEMBER_ME_EXPIRATION = 3600 * 24 * 30; // 30 days
+    private final byte[] secretKey = Keys.secretKeyFor(SignatureAlgorithm.HS256).getEncoded();
+    private static final long ACCESS_TOKEN_EXPIRATION = 900; // 15 minutes
+    private static final long REFRESH_TOKEN_EXPIRATION = 2592000; // 30 days
     private final JwtParser jwtParser;
     private final String TOKEN_HEADER = "Authorization";
     private final String TOKEN_PREFIX = "Bearer ";
 
     public JwtUtil() {
-        this.jwtParser = Jwts.parser().build();
+        this.jwtParser = Jwts.parser().setSigningKey(secretKey).build();
     }
 
-    public String createToken(AppUser user, boolean rememberMe) {
-        long expiration = rememberMe ? REMEMBER_ME_EXPIRATION : ACCESS_TOKEN_EXPIRATION;
-
+    public String createToken(AppUser user, boolean isRefreshToken) {
+        long expiration = isRefreshToken ? REFRESH_TOKEN_EXPIRATION : ACCESS_TOKEN_EXPIRATION;
         return Jwts.builder()
                 .setSubject(user.getEmail())
                 .claim("firstName", user.getFirstName())
                 .claim("lastName", user.getLastName())
                 .setExpiration(new Date(System.currentTimeMillis() + expiration * 1000))
-                .signWith(SignatureAlgorithm.HS256, secret_key)
+                .signWith(SignatureAlgorithm.HS256, secretKey)
                 .compact();
     }
 
-    private Claims parseJwtClaims(String token) {
+    public String createAccessToken(AppUser user) {
+        return createToken(user, false);
+    }
+
+    public String createRefreshToken(AppUser user) {
+        return createToken(user, true);
+    }
+
+    public Claims parseJwtClaims(String token) {
         return jwtParser.parseClaimsJws(token).getBody();
     }
 
@@ -56,7 +63,6 @@ public class JwtUtil {
     }
 
     public String resolveToken(HttpServletRequest request) {
-
         String bearerToken = request.getHeader(TOKEN_HEADER);
         if (bearerToken != null && bearerToken.startsWith(TOKEN_PREFIX)) {
             return bearerToken.substring(TOKEN_PREFIX.length());

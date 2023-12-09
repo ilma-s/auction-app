@@ -10,6 +10,10 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
+
 @RestController
 @CrossOrigin(origins = "*")
 @RequestMapping("/register")
@@ -25,7 +29,7 @@ public class RegistrationController {
     private JwtUtil jwtUtil;
 
     @PostMapping
-    public ResponseEntity<String> registerUser(@RequestBody AppUser user) {
+    public ResponseEntity registerUser(@RequestBody AppUser user) {
         try {
             user.setIsAdmin(false);
             user.setIsEnabled(true);
@@ -35,17 +39,21 @@ public class RegistrationController {
             tokenRequest.setIdentifier(user.getUsername());
             tokenRequest.setPassword(user.getPassword());
 
-            String generatedToken = jwtUtil.createToken(user, true);
+            String accessToken = jwtUtil.createToken(user, false);
 
-            return ResponseEntity.ok(generatedToken);
+            Map<String, String> response = new HashMap<>();
+            response.put("accessToken", accessToken);
+
+            return ResponseEntity.ok(response);
 
         } catch (RuntimeException e) {
             // handle specific exceptions (e.g., username or email already exists)
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
 
+
         } catch (Exception e) {
             // handle other exceptions
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error during registration");
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
         }
     }
 }

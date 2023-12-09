@@ -2,7 +2,6 @@ package com.example.backend.auth;
 
 import com.example.backend.models.AppUser;
 import com.example.backend.services.UserService;
-import com.example.backend.utils.RegistrationUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.security.authentication.BadCredentialsException;
@@ -23,6 +22,9 @@ public class UserAuthenticationProvider extends AbstractUserDetailsAuthenticatio
     private UserDetailsService userDetailsService;
 
     @Autowired
+    private UserService userService;
+
+    @Autowired
     private ApplicationContext applicationContext;
 
     @Override
@@ -34,7 +36,7 @@ public class UserAuthenticationProvider extends AbstractUserDetailsAuthenticatio
     protected UserDetails retrieveUser(String identifier, UsernamePasswordAuthenticationToken authentication) throws AuthenticationException {
         AppUser appUser = null;
         try {
-            appUser = UserService.findUserByEmailOrUsername(identifier);
+            appUser = userService.findUserByEmailOrUsername(identifier);
         } catch (Exception e) {
             logger.error("User with identifier " + identifier + " not found.");
             throw new UsernameNotFoundException("User with identifier " + identifier + " not found.");

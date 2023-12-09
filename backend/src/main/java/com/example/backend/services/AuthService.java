@@ -4,15 +4,12 @@ import com.example.backend.auth.JwtUtil;
 import com.example.backend.models.AppUser;
 import com.example.backend.models.JwtTokenRequest;
 import com.example.backend.models.JwtTokenResponse;
-import com.example.backend.repositories.UserRepository;
-import com.example.backend.utils.RegistrationUtil;
-import jakarta.servlet.Registration;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.AuthenticationServiceException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
@@ -30,26 +27,23 @@ public class AuthService {
 
     public JwtTokenResponse authenticate(JwtTokenRequest tokenRequest) {
         try {
-            // check if the identifier is a valid email or username
             String identifier = tokenRequest.getIdentifier();
 
-            AppUser appUser = UserService.findUserByEmailOrUsername(identifier);
+            AppUser appUser = userService.findUserByEmailOrUsername(identifier);
 
             if (appUser == null) {
                 throw new UsernameNotFoundException("User not found with the provided identifier");
             }
 
-            // authenticate user using the located AppUser
             Authentication authentication = authenticationManager.authenticate(
                     new UsernamePasswordAuthenticationToken(appUser.getUsername(), tokenRequest.getPassword()));
 
-            // extract UserDetails from the authentication object
             UserDetails userDetails = (UserDetails) authentication.getPrincipal();
 
-            // generate JWT token using UserDetails
-            String generatedToken = jwtUtil.createToken((AppUser) userDetails, tokenRequest.isRememberMe());
+            String accessToken = jwtUtil.createAccessToken((AppUser) userDetails);
+            String refreshToken = jwtUtil.createRefreshToken((AppUser) userDetails);
 
-            return new JwtTokenResponse(generatedToken);
+            return new JwtTokenResponse(accessToken, refreshToken);
         } catch (UsernameNotFoundException e) {
             return new JwtTokenResponse();
         } catch (Exception e) {
@@ -57,4 +51,23 @@ public class AuthService {
             return new JwtTokenResponse();
         }
     }
+
+    public JwtTokenResponse refreshAccessToken(String refreshToken) {
+        try {
+            if (jwtUtil.validateClaims(jwtUtil.parseJwtClaims(refreshToken))) {
+                String username = jwtUtil.parseJwtClaims(refreshToken).getSubject();
+                UserDetails userDetails = userService.loadUserByUsername(username);
+
+                String newAccessToken = jwtUtil.createAccessToken((AppUser) userDetails);
+                String newRefreshToken = jwtUtil.createRefreshToken((AppUser) userDetails);
+
+                return new JwtTokenResponse(newAccessToken, newRefreshToken);
+            } else {
+                throw new AuthenticationServiceException("Invalid refresh token");
+            }
+        } catch (Exception e) {
+            throw new AuthenticationServiceException("Error refreshing access token", e);
+        }
+    }
 }
+

@@ -6,10 +6,8 @@ import lombok.NoArgsConstructor;
 
 @Data
 @NoArgsConstructor
+@AllArgsConstructor
 public class JwtTokenResponse {
-    private String token;
-
-    public JwtTokenResponse(String token) {
-        this.token = token;
-    }
+    private String accessToken;
+    private String refreshToken;
 }

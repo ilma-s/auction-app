@@ -2,7 +2,6 @@ package com.example.backend.services;
 
 import com.example.backend.models.AppUser;
 import com.example.backend.repositories.UserRepository;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -15,8 +14,11 @@ import static com.example.backend.utils.RegistrationUtil.isValidEmail;
 @Service
 public class UserService implements UserDetailsService {
 
-    @Autowired
-    private static UserRepository userRepository;
+    private final UserRepository userRepository;
+
+    public UserService(UserRepository userRepository) {
+        this.userRepository = userRepository;
+    }
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
@@ -60,7 +62,7 @@ public class UserService implements UserDetailsService {
         }
     }
 
-    public static AppUser findUserByEmailOrUsername(String identifier) {
+    public AppUser findUserByEmailOrUsername(String identifier) {
         AppUser appUser;
         if (isValidEmail(identifier)) {
             appUser = userRepository.findUserByEmail(identifier);
