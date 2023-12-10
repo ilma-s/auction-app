@@ -18,7 +18,6 @@ const LoginPage = () => {
     const [identifier, setIdentifier] = useState('');
     const [password, setPassword] = useState('');
     const [rememberMe, setRememberMe] = useState(false);
-    const [forgotPassword, setForgotPassword] = useState(false);
     const [loginError, setLoginError] = useState(false);
     const [isLoginButtonDisabled, setLoginButtonDisabled] = useState(false);
 
@@ -47,21 +46,19 @@ const LoginPage = () => {
                 }),
             });
 
-            console.log('res: ', response);
-
             if (response.ok) {
                 const data = await response.json();
 
-                localStorage.setItem('token', data.token);
+                localStorage.setItem('accessToken', data.accessToken);
+                localStorage.setItem('refreshToken', data.refreshToken);
 
-                if (rememberMe) {
-                    document.cookie = `token=${data.token}; Secure; HttpOnly; SameSite=Strict`;
-                }
-
-                const jwt = data.token;
+                const jwt = data.accessToken;
                 const firstName = JwtUtils.decodeJWTAndGetFirstName(jwt);
                 dispatch(setName(firstName));
-                console.log('fname: ', firstName);
+
+                if (!rememberMe) {
+                    window.addEventListener('beforeunload', handleBeforeUnload);
+                }
 
                 navigate('/home');
             } else if (response.status === 401) {
@@ -75,6 +72,20 @@ const LoginPage = () => {
             setLoginButtonDisabled(false);
         }
     };
+
+    const handleBeforeUnload = () => {
+        localStorage.clear();
+        window.removeEventListener('beforeunload', handleBeforeUnload);
+    };
+
+    useEffect(() => {
+        const accessToken = localStorage.getItem('accessToken');
+        const refreshToken = localStorage.getItem('refreshToken');
+
+        accessToken &&
+            refreshToken &&
+            JwtUtils.checkTokenExpiry(accessToken, refreshToken);
+    }, []);
 
     return (
         <div className="w-2/3 mx-auto pt-12 pb-12 flex flex-col font-lato">
@@ -126,8 +137,6 @@ const LoginPage = () => {
                             id="rememberMe"
                             name="rememberMe"
                             className="peer hidden"
-                            checked={rememberMe}
-                            onChange={() => setRememberMe(!rememberMe)}
                         />
                         <label
                             htmlFor="rememberMe"

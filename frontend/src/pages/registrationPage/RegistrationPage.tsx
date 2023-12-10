@@ -33,25 +33,29 @@ const RegistrationPage = () => {
     const name = useSelector(selectName);
 
     useEffect(() => {
+        const accessToken = localStorage.getItem('accessToken');
+        const refreshToken = localStorage.getItem('refreshToken');
+
+        accessToken && refreshToken && JwtUtils.checkTokenExpiry (accessToken, refreshToken);
+    }, []);
+
+    useEffect(() => {
         if (name !== '') {
             navigate('/home');
         }
     }, [name, navigate]);
 
     const handleRegister = async () => {
-        console.log('err: ', errorMessage);
         try {
             setRegisterButtonDisabled(true);
 
             // Validation checks
             if (!ValidationUtils.isValidEmail(email)) {
-                console.log('email: ', email);
                 setErrorMessage('Please enter a valid email address.');
                 return;
             }
 
             if (!ValidationUtils.isValidPassword(password)) {
-                console.log('pass: ', password);
                 setErrorMessage(
                     'Password must be at least 8 characters long and include at least one uppercase letter, one symbol, and one number.',
                 );
@@ -72,18 +76,14 @@ const RegistrationPage = () => {
                 }),
             });
 
-            console.log('ress: ', response);
-
             if (response.ok) {
                 const token = await response.text();
 
-                console.log('data: ', token);
-
                 // Store the token in localStorage or a cookie
-                localStorage.setItem('token', token);
+                localStorage.setItem('accessToken', token);
 
-                if (rememberMe) {
-                    document.cookie = `token=${token}; Secure; HttpOnly; SameSite=Strict`;
+                if (!rememberMe) {
+                    window.addEventListener('beforeunload', handleBeforeUnload);
                 }
 
                 const jwt = token;
@@ -105,6 +105,11 @@ const RegistrationPage = () => {
         } finally {
             setRegisterButtonDisabled(false);
         }
+    };
+
+    const handleBeforeUnload = () => {
+        localStorage.clear();
+        window.removeEventListener('beforeunload', handleBeforeUnload);
     };
 
     return (

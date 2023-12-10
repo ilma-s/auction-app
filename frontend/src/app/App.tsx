@@ -13,6 +13,7 @@ import { useDispatch } from 'react-redux';
 import { useEffect } from 'react';
 import { setName } from './store';
 import JwtUtils from '../utils/entities/JwtUtils';
+import AuthProvider from '../components/AuthProvider/AuthProvider';
 
 const App = () => {
     const dispatch = useDispatch();
@@ -27,24 +28,26 @@ const App = () => {
 
     return (
         <div>
-            <Routes>
-                <Route path="/home" element={<HomePage />} />
-                <Route path="/home/about-us" element={<AboutUs />} />
-                <Route
-                    path="/home/terms-and-conditions"
-                    element={<TermsAndConditions />}
-                />
-                <Route
-                    path="/home/privacy-and-policy"
-                    element={<PrivacyPolicy />}
-                />
-                <Route path="/api/health" element={<HealthCheck />} />
-                <Route path="/shop/item/" element={<ProductPage />} />
-                <Route path="/shop" element={<ShopPage />} />
-                <Route path="/shop/:categoryName" element={<ShopPage />} />
-                <Route path="/login" element={<LoginPage />} />
-                <Route path="/register" element={<RegistrationPage />} />
-            </Routes>
+            <AuthProvider>
+                <Routes>
+                    <Route path="/home" element={<HomePage />} />
+                    <Route path="/home/about-us" element={<AboutUs />} />
+                    <Route
+                        path="/home/terms-and-conditions"
+                        element={<TermsAndConditions />}
+                    />
+                    <Route
+                        path="/home/privacy-and-policy"
+                        element={<PrivacyPolicy />}
+                    />
+                    <Route path="/api/health" element={<HealthCheck />} />
+                    <Route path="/shop/item/" element={<ProductPage />} />
+                    <Route path="/shop" element={<ShopPage />} />
+                    <Route path="/shop/:categoryName" element={<ShopPage />} />
+                    <Route path="/login" element={<LoginPage />} />
+                    <Route path="/register" element={<RegistrationPage />} />
+                </Routes>
+            </AuthProvider>
         </div>
     );
 };
