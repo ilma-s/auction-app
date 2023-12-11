@@ -8,9 +8,11 @@ import com.example.backend.repositories.BidRepository;
 import com.example.backend.repositories.ProductRepository;
 import com.example.backend.repositories.UserRepository;
 import com.example.backend.utils.BidUtils;
+import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
 
@@ -27,12 +29,25 @@ public class BidService {
         this.userRepository = userRepository;
         this.productRepository = productRepository;
     }
+    @Transactional
+    public Bid placeBid(BidRequest bidRequest) {
+        // check if the amount of bid placed is greater than the max value in the db
+        if (!isValidBidAmount(bidRequest.getAmount(), bidRequest.getProductId())) {
+            throw new IllegalArgumentException("Invalid bid amount");
+        }
 
-    public boolean placeBid(BidRequest bidRequest) { //boolean to determine winning bid
+        // use pessimistic write lock to ensure exclusive access
+        List<Bid> existingBids = bidRepository.findBidsForUpdate(bidRequest.getProductId(), bidRequest.getAmount());
+
+        // Check if an identical bid already exists
+        if (existingBids != null && !existingBids.isEmpty()) {
+            // do not proceed with placing the bid
+            return null;
+        }
+
         Bid bid = new Bid();
-
         bid.setAmount(bidRequest.getAmount());
-//check if the amount of bid placed is greater than the max value in the db
+
         LocalDateTime currentDateTime = LocalDateTime.now();
         bid.setTimestamp(Timestamp.valueOf(currentDateTime));
 
@@ -42,14 +57,27 @@ public class BidService {
         Product product = productRepository.findProduct(bidRequest.getProductId());
         bid.setProduct(product);
 
-        // After saving the bid, process winning bid logic
-        BidUtils bidUtils = new BidUtils(); // Create an instance of BidUtils because processWinningBid is not static (has to be transactional)
-        if (bidUtils.processBid(bid, product)) {
-            return true;
-        }
-
         bidRepository.save(bid);
-        return false;
-
+        return bid;
     }
+
+
+    public boolean checkIfWinningBid(Bid bid) {
+        BidUtils bidUtils = new BidUtils();
+        return bidUtils.processBid(bid, bid.getProduct());
+    }
+
+    private boolean isValidBidAmount(Double bidAmount, String productId) {
+        // check if bidAmount is valid by comparing it against the maximum value in the db
+        Double maxAllowedBidAmount = bidRepository.findHighestBidByProduct(productId); // Get the max allowed bid amount from your configuration or database
+
+        // check if maxAllowedBidAmount is not null before performing the comparison
+        if (maxAllowedBidAmount != null) {
+            return bidAmount.compareTo(maxAllowedBidAmount) > 0;
+        } else {
+            // if maxAllowedBidAmount is null, consider the bid amount as invalid
+            return false;
+        }
+    }
+
 }

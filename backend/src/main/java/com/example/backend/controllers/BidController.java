@@ -27,15 +27,22 @@ public class BidController {
     @ResponseBody
     @PostMapping("/place-bid")
     public ResponseEntity<Map<String, String>> placeBid(@RequestBody BidRequest bidRequest) {
-        boolean winningBid = bidService.placeBid(bidRequest);
-        String message = winningBid ? "Winning bid" : "";
+        Bid bid = bidService.placeBid(bidRequest);
+
+        String message;
+        if (bid != null) {
+            boolean isWinningBid = bidService.checkIfWinningBid(bid);
+            message = isWinningBid ? "Winning bid" : "Bid placed successfully";
+        } else {
+            message = "Bid cannot be placed; multiple identical bids attempted";
+        }
 
         Map<String, String> response = new HashMap<>();
-        response.put("status", "Bid placed successfully");
+        String status = (bid != null) ? "Bid placed successfully" : "Bid not placed";
+        response.put("status", status);
         response.put("message", message);
-
-        // ako se ne moze place bid jer su 2 ista bida dosla u isto vrijeme, u response vratiti tu cijenu
 
         return ResponseEntity.ok(response);
     }
+
 }

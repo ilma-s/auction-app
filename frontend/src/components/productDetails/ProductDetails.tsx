@@ -1,6 +1,10 @@
 import { useState, useRef, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { PLACE_BID, DETAILS_STRING, NOTIFICATION_TYPES } from '../../utils/constants';
+import {
+    PLACE_BID,
+    DETAILS_STRING,
+    NOTIFICATION_TYPES,
+} from '../../utils/constants';
 import { Product, BidInformation } from '../../types';
 import { setNotification } from '../../app/store';
 import BidUtils from '../../utils/entities/BidUtils';
@@ -27,7 +31,6 @@ const ProductDetails = ({ product, bidInformation }: Props) => {
         setBidValue(event.target.value);
     };
 
-
     let userSet = false;
     let userAllowed = false;
 
@@ -40,7 +43,7 @@ const ProductDetails = ({ product, bidInformation }: Props) => {
         if (product.sellerId.username !== name) {
             userAllowed = true;
         }
-    }    
+    }
 
     useEffect(() => {
         // Check if bidding is still open based on the product's end date
@@ -49,7 +52,7 @@ const ProductDetails = ({ product, bidInformation }: Props) => {
         setBiddingOpen(isBiddingOpen);
     }, [product.endDate]);
 
-    const placeBid = async (enteredBid: number) => {
+    const placeBid = async (enteredBid: number): Promise<boolean> => {
         try {
             const response = await fetch('http://localhost:8080/place-bid', {
                 method: 'POST',
@@ -58,45 +61,46 @@ const ProductDetails = ({ product, bidInformation }: Props) => {
                 },
                 body: JSON.stringify({
                     amount: enteredBid,
-                    bidderName: name, //get the id on the backend
+                    bidderName: name,
                     productId: product.productId,
                 }),
             });
 
+
             if (!response.ok) {
                 console.error('Failed to place bid:', response.statusText);
-            } else {
-                const responseData = await response.json();
-                console.log('Bid placed successfully');
-                console.log('Response Message:', responseData.message);
-
-                if (responseData.message.length > 0) {
-                    // dispatch(
-                    //     setNotification(
-                    //         'Congratulations! You outbid the competition.',
-                    //     ) as any,
-                    // );
-                    dispatch(setNotification(NOTIFICATION_TYPES.OUTBID_COMPETITION));
-                }
+                return false;
             }
+
+            const responseData = await response.json();
+            console.log('Bid placed successfully');
+
+            if (responseData.message.length > 0) {
+                dispatch(
+                    setNotification(NOTIFICATION_TYPES.OUTBID_COMPETITION),
+                );
+            }
+
+            return true;
         } catch (error) {
             console.error('Error placing bid:', error);
-        } finally {
-            if (bidInputRef.current) {
-                bidInputRef.current.blur();
-            }
+            return false;
         }
     };
 
-    const handleFormSubmit = (event: React.FormEvent<HTMLFormElement>) => {
+    const handleFormSubmit = async (
+        event: React.FormEvent<HTMLFormElement>,
+    ) => {
         event.preventDefault();
-        handleBidSubmission();
+        await handleBidSubmission();
     };
 
-    const handleKeyDown = (event: React.KeyboardEvent<HTMLFormElement>) => {
+    const handleKeyDown = async (
+        event: React.KeyboardEvent<HTMLFormElement>,
+    ) => {
         if (event.key === 'Enter') {
             event.preventDefault();
-            handleBidSubmission();
+            await handleBidSubmission();
         }
     };
 
@@ -104,22 +108,26 @@ const ProductDetails = ({ product, bidInformation }: Props) => {
         const enteredBid = parseFloat(bidValue);
 
         if (!isNaN(enteredBid) && enteredBid > currentMaxBid) {
-            // Valid bid
-            setBidValue('');
-            // Update maxBid
-            setCurrentMaxBid(enteredBid);
-            // dispatch(
-            //     setNotification('Congrats! You are the highest bidder.') as any,
-            // );
-            dispatch(setNotification(NOTIFICATION_TYPES.HIGHEST_BIDDER));
-            placeBid(enteredBid);
+            try {
+                const bidPlaced = await placeBid(enteredBid);
+
+                if (bidPlaced) {
+                    // Valid bid
+                    setBidValue('');
+                    // Update maxBid
+                    setCurrentMaxBid(enteredBid);
+                    dispatch(
+                        setNotification(NOTIFICATION_TYPES.HIGHEST_BIDDER),
+                    );
+                } else {
+                    dispatch(
+                        setNotification(NOTIFICATION_TYPES.HIGHER_BIDS),
+                    );
+                }
+            } catch (error) {
+                // Handle other errors if needed
+            }
         } else {
-            // Invalid bid
-            // dispatch(
-            //     setNotification(
-            //         'There are higher bids than yours. You could give it a second try!',
-            //     ) as any,
-            // );
             dispatch(setNotification(NOTIFICATION_TYPES.HIGHER_BIDS));
         }
     };
