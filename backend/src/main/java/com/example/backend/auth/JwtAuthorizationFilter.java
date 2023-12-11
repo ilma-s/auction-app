@@ -1,5 +1,7 @@
 package com.example.backend.auth;
 
+import com.example.backend.models.AppUser;
+import com.example.backend.services.UserService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.jsonwebtoken.Claims;
 import jakarta.servlet.FilterChain;
@@ -24,10 +26,13 @@ public class JwtAuthorizationFilter extends OncePerRequestFilter {
 
     private final JwtUtil jwtUtil;
     private final ObjectMapper mapper;
+    private final UserService userService;
 
-    public JwtAuthorizationFilter(JwtUtil jwtUtil, ObjectMapper mapper) {
+
+    public JwtAuthorizationFilter(JwtUtil jwtUtil, ObjectMapper mapper, UserService userService) {
         this.jwtUtil = jwtUtil;
         this.mapper = mapper;
+        this.userService = userService;
     }
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
@@ -43,8 +48,10 @@ public class JwtAuthorizationFilter extends OncePerRequestFilter {
 
             if(claims != null & jwtUtil.validateClaims(claims)){
                 String email = claims.getSubject();
+                AppUser user = userService.findUserByEmailOrUsername(email);
+                String password = user.getPassword();
                 Authentication authentication =
-                        new UsernamePasswordAuthenticationToken(email,"", new ArrayList<>());
+                        new UsernamePasswordAuthenticationToken(email,password, new ArrayList<>());
                 SecurityContextHolder.getContext().setAuthentication(authentication);
             }
 
