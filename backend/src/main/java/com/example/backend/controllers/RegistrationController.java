@@ -4,6 +4,8 @@ import com.example.backend.models.AppUser;
 import com.example.backend.services.UserService;
 import com.example.backend.auth.JwtUtil;
 import com.example.backend.models.JwtTokenRequest;
+import jakarta.servlet.http.Cookie;
+import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
@@ -29,7 +31,7 @@ public class RegistrationController {
     private JwtUtil jwtUtil;
 
     @PostMapping
-    public ResponseEntity registerUser(@RequestBody AppUser user) {
+    public ResponseEntity registerUser(@RequestBody AppUser user, HttpServletResponse response) {
         try {
             user.setIsAdmin(false);
             user.setIsEnabled(true);
@@ -40,11 +42,13 @@ public class RegistrationController {
             tokenRequest.setPassword(user.getPassword());
 
             String accessToken = jwtUtil.createToken(user, false);
+            String refreshToken = jwtUtil.createToken(user, true);
 
-            Map<String, String> response = new HashMap<>();
-            response.put("accessToken", accessToken);
+            // Set the HTTP-only cookies
+            response.addCookie(JwtUtil.createCookie("access_token", accessToken, true, true));
+            response.addCookie(JwtUtil.createCookie("refresh_token", refreshToken, true, true));
 
-            return ResponseEntity.ok(response);
+            return ResponseEntity.ok("Registration successful!");
 
         } catch (RuntimeException e) {
             // handle specific exceptions (e.g., username or email already exists)

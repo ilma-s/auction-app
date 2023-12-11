@@ -3,6 +3,7 @@ package com.example.backend.auth;
 import com.example.backend.models.AppUser;
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.security.Keys;
+import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.stereotype.Component;
@@ -32,6 +33,13 @@ public class JwtUtil {
                 .setExpiration(new Date(System.currentTimeMillis() + expiration * 1000))
                 .signWith(SignatureAlgorithm.HS256, secretKey)
                 .compact();
+    }
+
+    public static Cookie createCookie(String name, String value, boolean httpOnly, boolean secure) {
+        Cookie cookie = new Cookie(name, value);
+        cookie.setHttpOnly(httpOnly);
+        cookie.setSecure(secure);
+        return cookie;
     }
 
     public String createAccessToken(AppUser user) {
