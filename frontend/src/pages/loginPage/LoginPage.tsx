@@ -2,7 +2,6 @@ import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import { setName } from '../../app/store';
-import JwtUtils from '../../utils/entities/JwtUtils';
 
 import CustomCheckbox from '../../components/customCheckbox/CustomCheckbox';
 import {
@@ -26,6 +25,17 @@ const LoginPage = () => {
     const name = useSelector(selectName);
 
     useEffect(() => {
+        const storedName = localStorage.getItem('firstName');
+        if (storedName) {
+            dispatch(setName(storedName));
+        }
+
+        if (name && rememberMe) {
+            navigate('/home');
+        }
+    }, [name, rememberMe, navigate, dispatch]);
+
+    useEffect(() => {
         if (name !== '') {
             navigate('/home');
         }
@@ -44,20 +54,19 @@ const LoginPage = () => {
                     password,
                     rememberMe,
                 }),
+                credentials: 'include',
             });
+
+           // console.log('RES: ', response);
 
             if (response.ok) {
                 const data = await response.json();
+                const firstName = data.firstName;
 
-                localStorage.setItem('accessToken', data.accessToken);
-                localStorage.setItem('refreshToken', data.refreshToken);
-
-                const jwt = data.accessToken;
-                const firstName = JwtUtils.decodeJWTAndGetFirstName(jwt);
-                dispatch(setName(firstName));
-
-                if (!rememberMe) {
-                    window.addEventListener('beforeunload', handleBeforeUnload);
+                if (firstName.length > 0) {
+                    const localStorageKey = 'firstName'; 
+                    localStorage.setItem(localStorageKey, firstName);
+                    dispatch(setName(firstName));
                 }
 
                 navigate('/home');
@@ -73,19 +82,25 @@ const LoginPage = () => {
         }
     };
 
-    const handleBeforeUnload = () => {
-        localStorage.clear();
-        window.removeEventListener('beforeunload', handleBeforeUnload);
-    };
-
     useEffect(() => {
-        const accessToken = localStorage.getItem('accessToken');
-        const refreshToken = localStorage.getItem('refreshToken');
-
-        accessToken &&
-            refreshToken &&
-            JwtUtils.checkTokenExpiry(accessToken, refreshToken);
-    }, []);
+        return () => {
+            if (!rememberMe) {
+                localStorage.removeItem('firstName');
+                try {
+                    fetch('http://localhost:8080/api/logout', {
+                        method: 'POST',
+                        credentials: 'include',
+                    })
+                        .then((response) => console.log(response))
+                        .catch((error) =>
+                            console.error('Error during logout', error),
+                        );
+                } catch (error) {
+                    console.error('Error during logout', error);
+                }
+            }
+        };
+    }, [rememberMe]);
 
     return (
         <div className="w-2/3 mx-auto pt-12 pb-12 flex flex-col font-lato">

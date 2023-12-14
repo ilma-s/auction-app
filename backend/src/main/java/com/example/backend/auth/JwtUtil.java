@@ -39,6 +39,7 @@ public class JwtUtil {
         Cookie cookie = new Cookie(name, value);
         cookie.setHttpOnly(httpOnly);
         cookie.setSecure(secure);
+        cookie.setPath("/");
         return cookie;
     }
 

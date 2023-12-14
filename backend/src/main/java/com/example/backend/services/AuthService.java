@@ -25,11 +25,14 @@ public class AuthService {
     @Autowired
     private JwtUtil jwtUtil;
 
+    private String firstName;
+
     public JwtTokenResponse authenticate(JwtTokenRequest tokenRequest) {
         try {
             String identifier = tokenRequest.getIdentifier();
 
             AppUser appUser = userService.findUserByEmailOrUsername(identifier);
+            firstName = appUser.getFirstName();
 
             if (appUser == null) {
                 throw new UsernameNotFoundException("User not found with the provided identifier");
@@ -43,7 +46,7 @@ public class AuthService {
             String accessToken = jwtUtil.createAccessToken((AppUser) userDetails);
             String refreshToken = jwtUtil.createRefreshToken((AppUser) userDetails);
 
-            return new JwtTokenResponse(accessToken, refreshToken);
+            return new JwtTokenResponse(accessToken, refreshToken, firstName);
         } catch (UsernameNotFoundException e) {
             return new JwtTokenResponse();
         } catch (Exception e) {
@@ -61,7 +64,7 @@ public class AuthService {
                 String newAccessToken = jwtUtil.createAccessToken((AppUser) userDetails);
                 String newRefreshToken = jwtUtil.createRefreshToken((AppUser) userDetails);
 
-                return new JwtTokenResponse(newAccessToken, newRefreshToken);
+                return new JwtTokenResponse(newAccessToken, newRefreshToken, firstName);
             } else {
                 throw new AuthenticationServiceException("Invalid refresh token");
             }

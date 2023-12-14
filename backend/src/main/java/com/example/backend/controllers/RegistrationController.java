@@ -48,7 +48,10 @@ public class RegistrationController {
             response.addCookie(JwtUtil.createCookie("access_token", accessToken, true, true));
             response.addCookie(JwtUtil.createCookie("refresh_token", refreshToken, true, true));
 
-            return ResponseEntity.ok("Registration successful!");
+            Map<String, String> jsonResponse = new HashMap<>();
+            jsonResponse.put("firstName", user.getFirstName());
+
+            return ResponseEntity.ok(jsonResponse);
 
         } catch (RuntimeException e) {
             // handle specific exceptions (e.g., username or email already exists)

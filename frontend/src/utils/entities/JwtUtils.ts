@@ -26,18 +26,18 @@ class JwtUtils {
     static handleError() {
         localStorage.clear();
         window.location.href = '/login';
-    };
+    }
 
     static startTokenCheck = (accessToken: string, refreshToken: string) => {
         JwtUtils.checkTokenExpiry(accessToken, refreshToken);
 
         setInterval(() => {
-            console.log("LALALALALALALA")
+            console.log('LALALALALALALA');
             JwtUtils.checkTokenExpiry(accessToken, refreshToken);
         }, JwtUtils.CHECK_INTERVAL);
     };
 
-    static checkTokenExpiry  = async (
+    static checkTokenExpiry = async (
         accessToken: string,
         refreshToken: string,
     ) => {
@@ -82,6 +82,26 @@ class JwtUtils {
             JwtUtils.handleError();
         }
     };
+
+    static setCookies = (cookieString: string) => {
+        const cookies = cookieString.split('; ');
+        cookies.forEach((cookie) => {
+            const [name, value] = cookie.split('=');
+            document.cookie = `${name}=${value}; Path=/; Secure; HttpOnly`;
+        });
+    };
+
+    static getCookie = (name: string) => {
+        const value = `; ${document.cookie}`;
+        const parts = value.split(`; ${name}=`);
+        
+        if (parts.length === 2 && parts[1] !== undefined) {
+            return parts[1].split(';').shift();
+        }
+    
+        return undefined;
+    };
+    
 }
 
 export default JwtUtils;

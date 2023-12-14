@@ -32,12 +32,6 @@ const RegistrationPage = () => {
 
     const name = useSelector(selectName);
 
-    useEffect(() => {
-        const accessToken = localStorage.getItem('accessToken');
-        const refreshToken = localStorage.getItem('refreshToken');
-
-        accessToken && refreshToken && JwtUtils.checkTokenExpiry (accessToken, refreshToken);
-    }, []);
 
     useEffect(() => {
         if (name !== '') {
@@ -77,23 +71,15 @@ const RegistrationPage = () => {
             });
 
             if (response.ok) {
-                const token = await response.text();
+                const data = await response.json();
+                const firstName = data.firstName;
 
-                // Store the token in localStorage or a cookie
-                localStorage.setItem('accessToken', token);
-
-                if (!rememberMe) {
-                    window.addEventListener('beforeunload', handleBeforeUnload);
+                if (firstName.length > 0) {
+                    const localStorageKey = 'firstName'; 
+                    localStorage.setItem(localStorageKey, firstName);
+                    dispatch(setName(firstName));
                 }
 
-                const jwt = token;
-                const decodedToken = JwtUtils.decodeJWT(jwt);
-                const userFirstName = decodedToken?.firstName || '';
-
-                // Dispatch user information to Redux store
-                dispatch(setName(userFirstName));
-
-                // Redirect to home or dashboard page
                 navigate('/home');
             } else {
                 const errorData = await response.text();
