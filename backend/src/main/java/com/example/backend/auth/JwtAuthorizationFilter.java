@@ -6,7 +6,6 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import org.apache.catalina.Authenticator;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -17,7 +16,6 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
-import java.util.Arrays;
 
 @Component
 public class JwtAuthorizationFilter extends OncePerRequestFilter {
@@ -40,25 +38,17 @@ public class JwtAuthorizationFilter extends OncePerRequestFilter {
             for (Cookie cookie : request.getCookies()) {
                 if (cookie.getName().equals("accessToken")) {
                     token = cookie.getValue();
-                    System.out.println("tojen: " + token.toString());
-                    logger.debug("token: " + token.toString());
                 }
             }
         }
 
-        System.out.println("TOKEN: " + token.toString());
-        System.out.println("TOKEN LENGTH: " + token.length());
-
-        if (!token.isEmpty()) {
+        if (token != null && !token.isEmpty()) {
             // Token exists, try to authenticate
             String email = jwtUtil.extractEmail(token);
 
             if (email != null) {
                 UserDetails userDetails = userService.loadUserByUsername(email);
                 if (jwtUtil.validateToken(token, userDetails)) {
-                    // Log token and key for debugging
-                    System.out.println("Validating Token: " + token);
-                    System.out.println("Using Key: " + Arrays.toString(jwtUtil.getSecretKey()));
 
                     UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
                     authenticationToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
@@ -71,8 +61,6 @@ public class JwtAuthorizationFilter extends OncePerRequestFilter {
             // No token, handle user login without a token
             // Assuming you have a method in your service to load user details by username
             UserDetails userDetails = userService.loadUserByUsername("username");
-
-            System.out.println("LALALA");
 
             // Assuming you have a method in your service to authenticate the user
             UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(userDetails, "password", userDetails.getAuthorities());

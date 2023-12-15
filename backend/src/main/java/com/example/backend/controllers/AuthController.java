@@ -5,7 +5,6 @@ import com.example.backend.auth.UserAuthenticationProvider;
 import com.example.backend.models.JwtTokenRequest;
 import com.example.backend.models.JwtTokenResponse;
 import com.example.backend.services.AuthService;
-import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -52,6 +51,8 @@ public class AuthController {
             Map<String, String> jsonResponse = new HashMap<>();
             jsonResponse.put("firstName", loginRes.getFirstName());
 
+            System.out.println("res: " + jsonResponse.toString());
+
             return ResponseEntity.ok(jsonResponse);
         } catch (Exception e) {
             System.out.println("error: " + e);
@@ -81,8 +82,6 @@ public class AuthController {
         // Clear HTTP-only cookies
         response.addCookie(JwtUtil.createCookie("accessToken", null, true, true));
         response.addCookie(JwtUtil.createCookie("refreshToken", null, true, true));
-
-        System.out.println("done idk");
 
         return ResponseEntity.ok("Logout successful!");
     }

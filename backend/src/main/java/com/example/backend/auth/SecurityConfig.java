@@ -46,40 +46,6 @@ public class SecurityConfig {
         return authenticationConfiguration.getAuthenticationManager();
     }
 
-//    @Bean
-//    public SecurityFilterChain filterChain(HttpSecurity httpSecurity) throws Exception {
-//        AuthenticationManagerBuilder authenticationManagerBuilder = httpSecurity.getSharedObject(AuthenticationManagerBuilder.class);
-//        authenticationManagerBuilder.userDetailsService(userService).passwordEncoder(bCryptPasswordEncoder());
-//        AuthenticationManager authenticationManager = authenticationManagerBuilder.build();
-//
-//        return httpSecurity.csrf(AbstractHttpConfigurer::disable)
-//                .authorizeHttpRequests(request -> request.requestMatchers("/**")
-//                        .permitAll()
-//                        .anyRequest()
-//                        .authenticated())
-//                .authenticationManager(authenticationManager)
-//                .httpBasic(Customizer.withDefaults())
-//                .build();
-//    }
-
-//    @Bean
-//    public SecurityFilterChain filterChain(HttpSecurity httpSecurity) throws Exception {
-//        AuthenticationManagerBuilder authenticationManagerBuilder = httpSecurity.getSharedObject(AuthenticationManagerBuilder.class);
-//        authenticationManagerBuilder.userDetailsService(userService).passwordEncoder(bCryptPasswordEncoder());
-//        AuthenticationManager authenticationManager = authenticationManagerBuilder.build();
-//
-//        httpSecurity.cors(withDefaults());
-//
-//        return httpSecurity.csrf(AbstractHttpConfigurer::disable)
-//                .authorizeHttpRequests(request -> request.requestMatchers("/all-products", "/categories", "/closest-product", "/new-arrivals", "api/login")
-//                        .permitAll()
-//                        .anyRequest()
-//                        .authenticated())
-//                .authenticationManager(authenticationManager)
-//                .httpBasic(withDefaults())
-//                .build();
-//    }
-
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity httpSecurity) throws Exception {
         AuthenticationManagerBuilder authenticationManagerBuilder = httpSecurity.getSharedObject(AuthenticationManagerBuilder.class);
@@ -89,12 +55,12 @@ public class SecurityConfig {
         httpSecurity.cors(withDefaults());
 
         return httpSecurity.csrf(AbstractHttpConfigurer::disable)
-                .authorizeHttpRequests(request -> request.requestMatchers("/all-products", "/categories", "/closest-product", "/new-arrivals", "api/login")
+                .authorizeHttpRequests(request -> request.requestMatchers("/all-products", "/categories", "/closest-product", "/new-arrivals")
                         .permitAll()
                         .anyRequest()
                         .authenticated())
                 .authenticationManager(authenticationManager)
-                .httpBasic(Customizer.withDefaults())
+                //.httpBasic(Customizer.withDefaults())
                 .build();
     }
 
