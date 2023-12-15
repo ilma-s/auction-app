@@ -11,7 +11,12 @@ export async function fetchData(
             url.searchParams.append(key, queryParams[key]);
         });
 
-        const response = await fetch(url.toString());
+        //const response = await fetch(url.toString());
+
+        const response = await fetch(url.toString(), {
+            credentials: 'include',
+        });
+
         const data = await response.json();
         return data;
     } catch (error) {

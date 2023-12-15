@@ -22,7 +22,7 @@ import java.util.Map;
 
 @RestController
 @RequestMapping("/")
-@CrossOrigin(origins = "${frontend_address}", allowedHeaders = "*", allowCredentials = "true", methods = {RequestMethod.POST})
+@CrossOrigin(origins = "http://localhost:3500", allowedHeaders = "*", allowCredentials = "true", methods = {RequestMethod.POST})
 public class AuthController {
     @Value("${frontend_address}")
     private String frontendAddress;

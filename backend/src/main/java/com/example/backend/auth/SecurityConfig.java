@@ -5,6 +5,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
@@ -14,6 +15,11 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.cors.CorsConfigurationSource;
+import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
+
+import static org.springframework.security.config.Customizer.withDefaults;
 
 @Configuration
 @RequiredArgsConstructor
@@ -40,14 +46,50 @@ public class SecurityConfig {
         return authenticationConfiguration.getAuthenticationManager();
     }
 
+//    @Bean
+//    public SecurityFilterChain filterChain(HttpSecurity httpSecurity) throws Exception {
+//        AuthenticationManagerBuilder authenticationManagerBuilder = httpSecurity.getSharedObject(AuthenticationManagerBuilder.class);
+//        authenticationManagerBuilder.userDetailsService(userService).passwordEncoder(bCryptPasswordEncoder());
+//        AuthenticationManager authenticationManager = authenticationManagerBuilder.build();
+//
+//        return httpSecurity.csrf(AbstractHttpConfigurer::disable)
+//                .authorizeHttpRequests(request -> request.requestMatchers("/**")
+//                        .permitAll()
+//                        .anyRequest()
+//                        .authenticated())
+//                .authenticationManager(authenticationManager)
+//                .httpBasic(Customizer.withDefaults())
+//                .build();
+//    }
+
+//    @Bean
+//    public SecurityFilterChain filterChain(HttpSecurity httpSecurity) throws Exception {
+//        AuthenticationManagerBuilder authenticationManagerBuilder = httpSecurity.getSharedObject(AuthenticationManagerBuilder.class);
+//        authenticationManagerBuilder.userDetailsService(userService).passwordEncoder(bCryptPasswordEncoder());
+//        AuthenticationManager authenticationManager = authenticationManagerBuilder.build();
+//
+//        httpSecurity.cors(withDefaults());
+//
+//        return httpSecurity.csrf(AbstractHttpConfigurer::disable)
+//                .authorizeHttpRequests(request -> request.requestMatchers("/all-products", "/categories", "/closest-product", "/new-arrivals", "api/login")
+//                        .permitAll()
+//                        .anyRequest()
+//                        .authenticated())
+//                .authenticationManager(authenticationManager)
+//                .httpBasic(withDefaults())
+//                .build();
+//    }
+
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity httpSecurity) throws Exception {
         AuthenticationManagerBuilder authenticationManagerBuilder = httpSecurity.getSharedObject(AuthenticationManagerBuilder.class);
         authenticationManagerBuilder.userDetailsService(userService).passwordEncoder(bCryptPasswordEncoder());
         AuthenticationManager authenticationManager = authenticationManagerBuilder.build();
 
+        httpSecurity.cors(withDefaults());
+
         return httpSecurity.csrf(AbstractHttpConfigurer::disable)
-                .authorizeHttpRequests(request -> request.requestMatchers("/**")
+                .authorizeHttpRequests(request -> request.requestMatchers("/all-products", "/categories", "/closest-product", "/new-arrivals", "api/login")
                         .permitAll()
                         .anyRequest()
                         .authenticated())
@@ -55,4 +97,20 @@ public class SecurityConfig {
                 .httpBasic(Customizer.withDefaults())
                 .build();
     }
+
+
+    @Bean
+    public CorsConfigurationSource corsConfigurationSource() {
+        CorsConfiguration configuration = new CorsConfiguration();
+        configuration.addAllowedOrigin("http://localhost:3500");
+        configuration.addAllowedHeader("*");
+        configuration.addAllowedMethod("*");
+        configuration.setAllowCredentials(true);
+
+        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+        source.registerCorsConfiguration("/**", configuration);
+
+        return source;
+    }
+
 }

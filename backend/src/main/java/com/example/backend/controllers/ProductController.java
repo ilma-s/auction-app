@@ -15,7 +15,7 @@ import java.util.List;
 import java.util.Map;
 
 @RestController
-@CrossOrigin(origins = "${frontend_address}")
+@CrossOrigin(origins = "${frontend_address}", allowedHeaders = "*", allowCredentials = "true")
 public class ProductController {
 
     private final ProductService productService;

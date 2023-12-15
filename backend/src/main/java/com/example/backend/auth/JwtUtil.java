@@ -5,7 +5,9 @@ import io.jsonwebtoken.*;
 import io.jsonwebtoken.security.Keys;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
+import lombok.Getter;
 import org.springframework.security.core.AuthenticationException;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 
 import java.util.*;
@@ -13,6 +15,7 @@ import java.util.*;
 @Component
 public class JwtUtil {
 
+    @Getter
     private final byte[] secretKey = Keys.secretKeyFor(SignatureAlgorithm.HS256).getEncoded();
     private static final long ACCESS_TOKEN_EXPIRATION = 900; // 15 minutes
     private static final long REFRESH_TOKEN_EXPIRATION = 2592000; // 30 days
@@ -52,6 +55,7 @@ public class JwtUtil {
     }
 
     public Claims parseJwtClaims(String token) {
+        System.out.println("token: " + token.toString());
         return jwtParser.parseClaimsJws(token).getBody();
     }
 
@@ -86,4 +90,15 @@ public class JwtUtil {
             throw e;
         }
     }
+
+    public String extractEmail(String token) {
+        return parseJwtClaims(token).getSubject();
+    }
+
+    public boolean validateToken(String token, UserDetails userDetails) {
+        Claims claims = parseJwtClaims(token);
+        String email = extractEmail(token);
+        return email.equals(userDetails.getUsername()) && validateClaims(claims);
+    }
+
 }

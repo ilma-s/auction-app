@@ -1,71 +1,90 @@
 package com.example.backend.auth;
 
-import com.example.backend.models.AppUser;
 import com.example.backend.services.UserService;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import io.jsonwebtoken.Claims;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
+import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
+import org.apache.catalina.Authenticator;
+import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.Arrays;
 
 @Component
 public class JwtAuthorizationFilter extends OncePerRequestFilter {
 
     private final JwtUtil jwtUtil;
-    private final ObjectMapper mapper;
     private final UserService userService;
+    private final AuthenticationManager authenticationManager;
 
-
-    public JwtAuthorizationFilter(JwtUtil jwtUtil, ObjectMapper mapper, UserService userService) {
+    public JwtAuthorizationFilter(JwtUtil jwtUtil, UserService userService, AuthenticationManager authenticationManager) {
         this.jwtUtil = jwtUtil;
-        this.mapper = mapper;
         this.userService = userService;
+        this.authenticationManager = authenticationManager;
     }
+
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
-        Map<String, Object> errorDetails = new HashMap<>();
+        String token = null;
 
-        try {
-            String accessToken = jwtUtil.resolveToken(request);
-            if (accessToken == null) {
-                filterChain.doFilter(request, response);
-                return;
+        if (request.getCookies() != null) {
+            for (Cookie cookie : request.getCookies()) {
+                if (cookie.getName().equals("accessToken")) {
+                    token = cookie.getValue();
+                    System.out.println("tojen: " + token.toString());
+                    logger.debug("token: " + token.toString());
+                }
             }
-            Claims claims = jwtUtil.resolveClaims(request);
-
-            if(claims != null & jwtUtil.validateClaims(claims)){
-                String email = claims.getSubject();
-                AppUser user = userService.findUserByEmailOrUsername(email);
-                String password = user.getPassword();
-                Authentication authentication =
-                        new UsernamePasswordAuthenticationToken(email,password, new ArrayList<>());
-                SecurityContextHolder.getContext().setAuthentication(authentication);
-            }
-
-        } catch (Exception e){
-            errorDetails.put("message", "Authentication Error");
-            errorDetails.put("details", e.getMessage());
-            response.setStatus(HttpStatus.FORBIDDEN.value());
-            response.setContentType(MediaType.APPLICATION_JSON_VALUE);
-
-            mapper.writeValue(response.getWriter(), errorDetails);
-
         }
+
+        System.out.println("TOKEN: " + token.toString());
+        System.out.println("TOKEN LENGTH: " + token.length());
+
+        if (!token.isEmpty()) {
+            // Token exists, try to authenticate
+            String email = jwtUtil.extractEmail(token);
+
+            if (email != null) {
+                UserDetails userDetails = userService.loadUserByUsername(email);
+                if (jwtUtil.validateToken(token, userDetails)) {
+                    // Log token and key for debugging
+                    System.out.println("Validating Token: " + token);
+                    System.out.println("Using Key: " + Arrays.toString(jwtUtil.getSecretKey()));
+
+                    UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
+                    authenticationToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
+                    SecurityContextHolder.getContext().setAuthentication(authenticationToken);
+                } else {
+                    System.out.println("Token validation failed!");
+                }
+            }
+        } else {
+            // No token, handle user login without a token
+            // Assuming you have a method in your service to load user details by username
+            UserDetails userDetails = userService.loadUserByUsername("username");
+
+            System.out.println("LALALA");
+
+            // Assuming you have a method in your service to authenticate the user
+            UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(userDetails, "password", userDetails.getAuthorities());
+            authenticationToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
+
+            // Authenticate the user
+            Authentication authentication = authenticationManager.authenticate(authenticationToken);
+
+            // Set the authentication in the security context
+            SecurityContextHolder.getContext().setAuthentication(authentication);
+        }
+
         filterChain.doFilter(request, response);
     }
-
-
 }

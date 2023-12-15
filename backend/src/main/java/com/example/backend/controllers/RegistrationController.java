@@ -17,7 +17,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 @RestController
-@CrossOrigin(origins = "*")
+@CrossOrigin(origins = "${frontend_address}", allowedHeaders = "*", allowCredentials = "true")
 @RequestMapping("/register")
 public class RegistrationController {
 
