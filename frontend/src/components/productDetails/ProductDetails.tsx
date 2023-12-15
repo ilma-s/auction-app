@@ -24,7 +24,6 @@ const ProductDetails = ({ product, bidInformation }: Props) => {
         BidUtils.getNextBidValue(bidInformation, product),
     );
     const [biddingOpen, setBiddingOpen] = useState(true);
-
     const bidInputRef = useRef<HTMLInputElement | null>(null);
 
     const handleBidChange = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -50,7 +49,7 @@ const ProductDetails = ({ product, bidInformation }: Props) => {
         const isBiddingOpen =
             product.endDate && new Date() < new Date(product.endDate);
         setBiddingOpen(isBiddingOpen);
-    }, [product.endDate]);
+    }, [product.endDate, currentMaxBid]);
 
     const placeBid = async (enteredBid: number): Promise<boolean> => {
         try {
@@ -65,28 +64,45 @@ const ProductDetails = ({ product, bidInformation }: Props) => {
                     productId: product.productId,
                 }),
             });
-
-
+    
             if (!response.ok) {
                 console.error('Failed to place bid:', response.statusText);
                 return false;
             }
-
-            const responseData = await response.json();
+    
             console.log('Bid placed successfully');
 
-            if (responseData.message.length > 0) {
+    
+            // After placing a bid, start the periodic checks on the backend
+            const res = await fetch('http://localhost:8080/start-winning-bid-check', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    amount: currentMaxBid,
+                    bidderName: name,
+                    productId: product.productId,
+                }),
+            });
+
+            const data = await res.json();
+
+            console.log("data: ", data)
+
+            if (data.winningBid) {
                 dispatch(
                     setNotification(NOTIFICATION_TYPES.OUTBID_COMPETITION),
                 );
             }
-
+            
             return true;
         } catch (error) {
             console.error('Error placing bid:', error);
             return false;
         }
     };
+    
 
     const handleFormSubmit = async (
         event: React.FormEvent<HTMLFormElement>,
@@ -120,9 +136,7 @@ const ProductDetails = ({ product, bidInformation }: Props) => {
                         setNotification(NOTIFICATION_TYPES.HIGHEST_BIDDER),
                     );
                 } else {
-                    dispatch(
-                        setNotification(NOTIFICATION_TYPES.HIGHER_BIDS),
-                    );
+                    dispatch(setNotification(NOTIFICATION_TYPES.HIGHER_BIDS));
                 }
             } catch (error) {
                 // Handle other errors if needed

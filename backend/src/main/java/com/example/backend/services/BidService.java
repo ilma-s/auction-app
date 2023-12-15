@@ -10,6 +10,8 @@ import com.example.backend.repositories.UserRepository;
 import com.example.backend.utils.BidUtils;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.scheduling.annotation.EnableScheduling;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -17,17 +19,21 @@ import java.sql.Timestamp;
 import java.time.LocalDateTime;
 
 @Service
+@EnableScheduling
 public class BidService {
 
     private final BidRepository bidRepository;
     private final UserRepository userRepository;
     private final ProductRepository productRepository;
+    private Bid latestBid;
+    private BidUtils bidUtils;
 
     @Autowired
-    public BidService(BidRepository bidRepository, UserRepository userRepository, ProductRepository productRepository) {
+    public BidService(BidRepository bidRepository, UserRepository userRepository, ProductRepository productRepository, BidUtils bidUtils ) {
         this.bidRepository = bidRepository;
         this.userRepository = userRepository;
         this.productRepository = productRepository;
+        this.bidUtils = bidUtils;
     }
     @Transactional
     public Bid placeBid(BidRequest bidRequest) {
@@ -45,6 +51,13 @@ public class BidService {
             return null;
         }
 
+        Bid bid = constructBid(bidRequest);
+        bidRepository.save(bid);
+
+        return bid;
+    }
+
+    public Bid constructBid(BidRequest bidRequest) {
         Bid bid = new Bid();
         bid.setAmount(bidRequest.getAmount());
 
@@ -57,13 +70,27 @@ public class BidService {
         Product product = productRepository.findProduct(bidRequest.getProductId());
         bid.setProduct(product);
 
-        bidRepository.save(bid);
         return bid;
     }
 
+    @Scheduled(fixedRate = 5000)
+    public void checkWinningBidPeriodically() {
+        System.out.println("periodic check invoked...");
+        // Check if there is the latest bid to process
+        if (latestBid != null) {
+            boolean isWinningBid = bidUtils.processBid(latestBid, latestBid.getProduct());
 
-    public boolean checkIfWinningBid(Bid bid) {
-        BidUtils bidUtils = new BidUtils();
+            if (isWinningBid) {
+                System.out.println("Winning bid detected!");
+
+                // Reset latestBid to null after processing to avoid repeated checks
+                latestBid = null;
+            }
+        }
+    }
+
+    public boolean checkIfWinningBid(BidRequest bidRequest) {
+        Bid bid = constructBid(bidRequest);
         return bidUtils.processBid(bid, bid.getProduct());
     }
 

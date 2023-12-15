@@ -22,4 +22,7 @@ public interface BidRepository extends JpaRepository<Bid, Long> {
     @Lock(LockModeType.PESSIMISTIC_WRITE)
     @Query("SELECT b FROM Bid b WHERE b.product.productId = :productId AND b.amount = :bidAmount")
     List<Bid> findBidsForUpdate(@Param("productId") String productId, @Param("bidAmount") double bidAmount);
+
+    @Query("SELECT b FROM Bid b WHERE b.product.productId = :productId AND b.amount = (SELECT MAX(b2.amount) FROM Bid b2 WHERE b2.product.productId = :productId)")
+    Bid findWinningBidByProduct(@Param("productId") String productId);
 }

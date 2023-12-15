@@ -14,6 +14,7 @@ import java.util.Map;
 @RestController
 @CrossOrigin(origins = "${frontend_address}")
 public class BidController {
+
     private final BidService bidService;
 
     @Value("${frontend_address}")
@@ -31,7 +32,7 @@ public class BidController {
 
         String message;
         if (bid != null) {
-            boolean isWinningBid = bidService.checkIfWinningBid(bid);
+            boolean isWinningBid = bidService.checkIfWinningBid(bidRequest);
             message = isWinningBid ? "Winning bid" : "Bid placed successfully";
         } else {
             message = "Bid cannot be placed; multiple identical bids attempted";
@@ -45,4 +46,17 @@ public class BidController {
         return ResponseEntity.ok(response);
     }
 
+    @PostMapping("/start-winning-bid-check")
+    public ResponseEntity<Map<String, Object>> startWinningBidCheck(@RequestBody BidRequest bidRequest) {
+        bidService.checkWinningBidPeriodically();
+
+        boolean isWinning = bidService.checkIfWinningBid(bidRequest);
+
+        Map<String, Object> response = new HashMap<>();
+        response.put("status", "Check completed");
+        response.put("winningBid", isWinning);
+
+        return ResponseEntity.ok(response);
+    }
 }
+

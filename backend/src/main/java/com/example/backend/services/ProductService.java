@@ -26,6 +26,7 @@ public class ProductService {
     public ProductService(ProductRepository productRepository, BidRepository bidRepository) {
         this.productRepository = productRepository;
         this.bidRepository = bidRepository;
+        //init mapu
     }
     public ResponseEntity<List<Product>> getAllProducts() {
         List<Product> products = productRepository.findAll();
