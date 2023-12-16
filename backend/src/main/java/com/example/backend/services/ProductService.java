@@ -14,23 +14,42 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.RequestParam;
 
+import java.sql.Timestamp;
 import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentMap;
 
 @Service
 public class ProductService {
     private final ProductRepository productRepository;
     private final BidRepository bidRepository;
+    private ConcurrentMap<String, Timestamp> bidEndTimesPerProduct = new ConcurrentHashMap<>();
 
+
+    // initialize the bidEndTimesPerProduct map with data from the database
+    private void initializeBidEndTimesMap() {
+        List<Product> allProducts = productRepository.findAll();
+        for (Product product : allProducts) {
+            Timestamp endDate = product.getEndDate();
+            if (endDate != null) {
+                bidEndTimesPerProduct.put(product.getProductId(), endDate);
+            }
+        }
+    }
 
     @Autowired
     public ProductService(ProductRepository productRepository, BidRepository bidRepository) {
         this.productRepository = productRepository;
         this.bidRepository = bidRepository;
-        //init mapu
+        initializeBidEndTimesMap();
     }
     public ResponseEntity<List<Product>> getAllProducts() {
         List<Product> products = productRepository.findAll();
         return ResponseEntity.ok(products);
+    }
+
+    public ConcurrentMap<String, Timestamp> getBidTimeEndMap() {
+        return bidEndTimesPerProduct;
     }
 
     public ResponseEntity<Product> findProductWithClosestEndDate() {

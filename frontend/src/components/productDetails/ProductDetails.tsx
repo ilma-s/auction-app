@@ -132,6 +132,7 @@ const ProductDetails = ({ product, bidInformation }: Props) => {
                     setBidValue('');
                     // Update maxBid
                     setCurrentMaxBid(enteredBid);
+                    console.log("here")
                     dispatch(
                         setNotification(NOTIFICATION_TYPES.HIGHEST_BIDDER),
                     );

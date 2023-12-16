@@ -30,7 +30,7 @@ public class BidUtils {
             // Create and set the transaction for the winning bid
             Transaction transaction = new Transaction();
             transaction.setTimestamp(Timestamp.valueOf(LocalDateTime.now()));
-            transaction.setStatus("BID WON"); // You may need to define statuses based on your requirements
+            transaction.setStatus("BID WON");
             bid.setTransaction(transaction);
 
             // Save the updated bid with the transaction

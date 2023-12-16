@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.CompletableFuture;
 
 @RestController
 @CrossOrigin(origins = "${frontend_address}")
@@ -38,6 +39,8 @@ public class BidController {
             message = "Bid cannot be placed; multiple identical bids attempted";
         }
 
+        System.out.println("message: " + message);
+
         Map<String, String> response = new HashMap<>();
         String status = (bid != null) ? "Bid placed successfully" : "Bid not placed";
         response.put("status", status);
@@ -48,15 +51,24 @@ public class BidController {
 
     @PostMapping("/start-winning-bid-check")
     public ResponseEntity<Map<String, Object>> startWinningBidCheck(@RequestBody BidRequest bidRequest) {
-        bidService.checkWinningBidPeriodically();
+        String userId = getUserIdFromBidRequest(bidRequest);
+        String productId = bidRequest.getProductId();
 
-        boolean isWinning = bidService.checkIfWinningBid(bidRequest);
+        // Start bid check for the user and product
+        CompletableFuture<Boolean> future = bidService.startBidCheck(userId, productId);
+
+        // Wait for the bid check to complete (you might want to add a timeout here)
+        boolean isWinning = future.join();
 
         Map<String, Object> response = new HashMap<>();
-        response.put("status", "Check completed");
         response.put("winningBid", isWinning);
 
         return ResponseEntity.ok(response);
     }
+
+    private String getUserIdFromBidRequest(BidRequest bidRequest) {
+        return bidRequest.getBidderName();
+    }
+
 }
 
