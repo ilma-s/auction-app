@@ -24,16 +24,15 @@ const LoginPage = () => {
     const dispatch = useDispatch();
     const name = useSelector(selectName);
 
-    useEffect(() => {
-        const storedName = localStorage.getItem('firstName');
-        if (storedName) {
-            dispatch(setName(storedName));
-        }
+    const storedName = localStorage.getItem('firstName');
 
-        if (name && rememberMe) {
-            navigate('/home');
-        }
-    }, [name, rememberMe, navigate, dispatch]);
+    if (storedName) {
+        dispatch(setName(storedName));
+    }
+
+    if (name && rememberMe) {
+        navigate('/home');
+    }
 
     useEffect(() => {
         if (name !== '') {
@@ -57,14 +56,12 @@ const LoginPage = () => {
                 credentials: 'include',
             });
 
-           // console.log('RES: ', response);
-
             if (response.ok) {
                 const data = await response.json();
                 const firstName = data.firstName;
 
                 if (firstName.length > 0) {
-                    const localStorageKey = 'firstName'; 
+                    const localStorageKey = 'firstName';
                     localStorage.setItem(localStorageKey, firstName);
                     dispatch(setName(firstName));
                 }

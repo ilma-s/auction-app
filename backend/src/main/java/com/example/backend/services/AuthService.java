@@ -5,19 +5,13 @@ import com.example.backend.models.AppUser;
 import com.example.backend.models.JwtTokenRequest;
 import com.example.backend.models.JwtTokenResponse;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.AuthenticationServiceException;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
 @Service
 public class AuthService {
-
-    @Autowired
-    private AuthenticationManager authenticationManager;
 
     @Autowired
     private UserService userService;
@@ -38,13 +32,8 @@ public class AuthService {
                 throw new UsernameNotFoundException("User not found with the provided identifier");
             }
 
-            Authentication authentication = authenticationManager.authenticate(
-                    new UsernamePasswordAuthenticationToken(appUser.getUsername(), tokenRequest.getPassword()));
-
-            UserDetails userDetails = (UserDetails) authentication.getPrincipal();
-
-            String accessToken = jwtUtil.createAccessToken((AppUser) userDetails);
-            String refreshToken = jwtUtil.createRefreshToken((AppUser) userDetails);
+            String accessToken = jwtUtil.createAccessToken(appUser);
+            String refreshToken = jwtUtil.createRefreshToken(appUser);
 
             return new JwtTokenResponse(accessToken, refreshToken, firstName);
         } catch (UsernameNotFoundException e) {
@@ -73,4 +62,3 @@ public class AuthService {
         }
     }
 }
-

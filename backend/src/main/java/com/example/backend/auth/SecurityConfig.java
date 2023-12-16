@@ -15,11 +15,13 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
 import static org.springframework.security.config.Customizer.withDefaults;
+import static org.springframework.security.web.util.matcher.AntPathRequestMatcher.antMatcher;
 
 @Configuration
 @RequiredArgsConstructor
@@ -29,6 +31,8 @@ public class SecurityConfig {
     private final UserService userService;
 
     private final UserAuthenticationProvider userAuthenticationProvider;
+
+    private final JwtAuthorizationFilter jwtAuthorizationFilter;
 
     // needed so users can be authenticated using either username or email
     @Autowired
@@ -52,31 +56,27 @@ public class SecurityConfig {
         authenticationManagerBuilder.userDetailsService(userService).passwordEncoder(bCryptPasswordEncoder());
         AuthenticationManager authenticationManager = authenticationManagerBuilder.build();
 
-        httpSecurity.cors(withDefaults());
+//        httpSecurity.cors(withDefaults());
 
         return httpSecurity.csrf(AbstractHttpConfigurer::disable)
-                .authorizeHttpRequests(request -> request.requestMatchers("/all-products", "/categories", "/closest-product", "/new-arrivals")
+                .authorizeHttpRequests(request -> request
+                        .requestMatchers(antMatcher("/products"))
+                        .permitAll()
+                        .requestMatchers(antMatcher("/register"))
+                        .permitAll()
+                        .requestMatchers(antMatcher("/categories"))
+                        .permitAll()
+                        .requestMatchers(antMatcher("/api/login"))
+                        .permitAll()
+                        .requestMatchers(antMatcher("/closest-product"))
+                        .permitAll()
+                        .requestMatchers(antMatcher("/new-arrivals"))
                         .permitAll()
                         .anyRequest()
                         .authenticated())
                 .authenticationManager(authenticationManager)
-                //.httpBasic(Customizer.withDefaults())
+                .addFilterBefore(jwtAuthorizationFilter, UsernamePasswordAuthenticationFilter.class)
+                .httpBasic(withDefaults())
                 .build();
     }
-
-
-    @Bean
-    public CorsConfigurationSource corsConfigurationSource() {
-        CorsConfiguration configuration = new CorsConfiguration();
-        configuration.addAllowedOrigin("http://localhost:3500");
-        configuration.addAllowedHeader("*");
-        configuration.addAllowedMethod("*");
-        configuration.setAllowCredentials(true);
-
-        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
-        source.registerCorsConfiguration("/**", configuration);
-
-        return source;
-    }
-
 }

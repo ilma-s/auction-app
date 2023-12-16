@@ -10,7 +10,6 @@ import {
     CAPITALIZED_LOGIN_STRING,
 } from '../../utils/constants';
 
-import JwtUtils from '../../utils/entities/JwtUtils';
 import ValidationUtils from '../../utils/entities/ValidationUtils';
 import { useNavigate } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
@@ -23,7 +22,6 @@ const RegistrationPage = () => {
     const [username, setUsername] = useState('');
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
-    const [rememberMe, setRememberMe] = useState(false);
     const [errorMessage, setErrorMessage] = useState('');
     const [isRegisterButtonDisabled, setRegisterButtonDisabled] =
         useState(false);
@@ -31,7 +29,6 @@ const RegistrationPage = () => {
     const dispatch = useDispatch();
 
     const name = useSelector(selectName);
-
 
     useEffect(() => {
         if (name !== '') {
@@ -68,6 +65,7 @@ const RegistrationPage = () => {
                     firstName,
                     lastName,
                 }),
+                credentials: 'include',
             });
 
             if (response.ok) {
@@ -75,7 +73,7 @@ const RegistrationPage = () => {
                 const firstName = data.firstName;
 
                 if (firstName.length > 0) {
-                    const localStorageKey = 'firstName'; 
+                    const localStorageKey = 'firstName';
                     localStorage.setItem(localStorageKey, firstName);
                     dispatch(setName(firstName));
                 }

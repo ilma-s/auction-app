@@ -51,8 +51,6 @@ public class AuthController {
             Map<String, String> jsonResponse = new HashMap<>();
             jsonResponse.put("firstName", loginRes.getFirstName());
 
-            System.out.println("res: " + jsonResponse.toString());
-
             return ResponseEntity.ok(jsonResponse);
         } catch (Exception e) {
             System.out.println("error: " + e);

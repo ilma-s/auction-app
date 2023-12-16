@@ -61,6 +61,6 @@ public class UserAuthenticationProvider extends AbstractUserDetailsAuthenticatio
 
     @Override
     protected Authentication createSuccessAuthentication(Object principal, Authentication authentication, UserDetails user) {
-        return new UsernamePasswordAuthenticationToken(user, null, user.getAuthorities());
+        return new UsernamePasswordAuthenticationToken(user, user.getPassword(), user.getAuthorities());
     }
 }

@@ -15,7 +15,7 @@ import { selectName } from '../../app/selectors';
 
 const Header = () => {
     const [searchTerm, setSearchTerm] = useState('');
-    const name = useSelector(selectName);
+    const name = useSelector(selectName) || localStorage.getItem('firstName');
     const queryParams = new URLSearchParams(location.search);
     const searchTermValue = queryParams.get('searchTerm') || '';
 
@@ -58,7 +58,7 @@ const Header = () => {
             <div className="bg-trueGray-800">
                 <div className="w-2/3 mx-auto flex justify-between pt-3 pb-3">
                     <SocialMediaIcons />
-                    {name.length > 0 ? (
+                    {name && name.length > 0 ? (
                         <div className="font-lato-bold text-white cursor-not-allowed">
                             Hi, {name}
                         </div>

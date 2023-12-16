@@ -30,7 +30,7 @@ public class JwtUtil {
     public String createToken(AppUser user, boolean isRefreshToken) {
         long expiration = isRefreshToken ? REFRESH_TOKEN_EXPIRATION : ACCESS_TOKEN_EXPIRATION;
         return Jwts.builder()
-                .setSubject(user.getEmail())
+                .setSubject(user.getUsername())
                 .claim("firstName", user.getFirstName())
                 .claim("lastName", user.getLastName())
                 .setExpiration(new Date(System.currentTimeMillis() + expiration * 1000))
@@ -55,7 +55,6 @@ public class JwtUtil {
     }
 
     public Claims parseJwtClaims(String token) {
-        System.out.println("token: " + token.toString());
         return jwtParser.parseClaimsJws(token).getBody();
     }
 
@@ -91,14 +90,14 @@ public class JwtUtil {
         }
     }
 
-    public String extractEmail(String token) {
+    public String extractUsername(String token) {
         return parseJwtClaims(token).getSubject();
     }
 
     public boolean validateToken(String token, UserDetails userDetails) {
         Claims claims = parseJwtClaims(token);
-        String email = extractEmail(token);
-        return email.equals(userDetails.getUsername()) && validateClaims(claims);
+        String username = extractUsername(token);
+        return username.equals(userDetails.getUsername()) && validateClaims(claims);
     }
 
 }
