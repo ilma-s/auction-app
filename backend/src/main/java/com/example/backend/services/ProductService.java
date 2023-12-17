@@ -33,7 +33,6 @@ public class ProductService {
         this.bidRepository = bidRepository;
         this.transactionRepository = transactionRepository;
         this.bidEndTimesPerProduct = initializeBidEndTimesMap();
-        System.out.println("Bid end times initialized: " + bidEndTimesPerProduct);
 
     }
 
@@ -41,25 +40,18 @@ public class ProductService {
         ConcurrentMap<String, Timestamp> bidEndTimesMap = new ConcurrentHashMap<>();
 
         // Get a list of processed bid product IDs from the Transaction table
-        List<String> processedBidProductIds = transactionRepository.findProcessedBidProductIds();
-        System.out.println("processed bids: " + processedBidProductIds.toString());
+        List<String> processedBidIds = transactionRepository.findProcessedBidIds();
+        List<String> processedBidProducts = productRepository.findProcessedProductsIds(processedBidIds);
 
         // Get all products except those with processed bids or products that are already completed
-        List<Product> activeProducts = productRepository.findActiveProducts(processedBidProductIds);
-        System.out.println("active: " + activeProducts.toString());
+        List<Product> activeProducts = productRepository.findActiveProducts(processedBidProducts);
 
         for (Product product : activeProducts) {
             Timestamp endDate = product.getEndDate();
-            System.out.println("enddate: " + endDate.toString());
             if (endDate != null) {
-                System.out.println("op");
                 bidEndTimesMap.put(product.getProductId(), endDate);
-                // Add a logging statement
-                System.out.println("Product added to bid end times: " + product.getProductId() + " - " + endDate);
             }
         }
-
-        System.out.println("Bid end times map after initialization: " + bidEndTimesMap);
 
         return bidEndTimesMap;
     }

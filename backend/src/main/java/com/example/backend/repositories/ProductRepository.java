@@ -51,6 +51,9 @@ public interface ProductRepository extends JpaRepository<Product, String> {
     @Query("SELECT LOWER(c.name) FROM Product p JOIN p.categories pc JOIN pc.category c")
     List<String> getAllCategories();
 
+    @Query("SELECT p.productId FROM Product p, Bid b WHERE b.product.productId = p.productId AND b.bidId IN :processedBidProductIds")
+    List<String> findProcessedProductsIds(List<String> processedBidProductIds);
+
     @Query("SELECT p FROM Product p WHERE p.productId NOT IN :processedBidProductIds AND p.endDate > CURRENT_TIMESTAMP")
     List<Product> findActiveProducts(List<String> processedBidProductIds);
 }
