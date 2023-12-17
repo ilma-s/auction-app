@@ -24,12 +24,6 @@ const LoginPage = () => {
     const dispatch = useDispatch();
     const name = useSelector(selectName);
 
-    const storedName = localStorage.getItem('firstName');
-
-    if (storedName) {
-        dispatch(setName(storedName));
-    }
-
     if (name && rememberMe) {
         navigate('/home');
     }

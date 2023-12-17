@@ -56,24 +56,10 @@ public class SecurityConfig {
         authenticationManagerBuilder.userDetailsService(userService).passwordEncoder(bCryptPasswordEncoder());
         AuthenticationManager authenticationManager = authenticationManagerBuilder.build();
 
-//        httpSecurity.cors(withDefaults());
-
         return httpSecurity.csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(request -> request
-                        .requestMatchers(antMatcher("/products"))
-                        .permitAll()
-                        .requestMatchers(antMatcher("/register"))
-                        .permitAll()
-                        .requestMatchers(antMatcher("/categories"))
-                        .permitAll()
-                        .requestMatchers(antMatcher("/api/login"))
-                        .permitAll()
-                        .requestMatchers(antMatcher("/closest-product"))
-                        .permitAll()
-                        .requestMatchers(antMatcher("/new-arrivals"))
-                        .permitAll()
-                        .anyRequest()
-                        .authenticated())
+                        .requestMatchers(antMatcher("/**"))
+                        .permitAll())
                 .authenticationManager(authenticationManager)
                 .addFilterBefore(jwtAuthorizationFilter, UsernamePasswordAuthenticationFilter.class)
                 .httpBasic(withDefaults())

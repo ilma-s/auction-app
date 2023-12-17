@@ -5,7 +5,6 @@ import io.jsonwebtoken.*;
 import io.jsonwebtoken.security.Keys;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
-import lombok.Getter;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
@@ -15,7 +14,6 @@ import java.util.*;
 @Component
 public class JwtUtil {
 
-    @Getter
     private final byte[] secretKey = Keys.secretKeyFor(SignatureAlgorithm.HS256).getEncoded();
     private static final long ACCESS_TOKEN_EXPIRATION = 900; // 15 minutes
     private static final long REFRESH_TOKEN_EXPIRATION = 2592000; // 30 days
