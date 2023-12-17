@@ -44,13 +44,6 @@ const ProductDetails = ({ product, bidInformation }: Props) => {
         }
     }
 
-    useEffect(() => {
-        // Check if bidding is still open based on the product's end date
-        const isBiddingOpen =
-            product.endDate && new Date() < new Date(product.endDate);
-        setBiddingOpen(isBiddingOpen);
-    }, [product.endDate, currentMaxBid]);
-
     const placeBid = async (enteredBid: number): Promise<boolean> => {
         try {
             const response = await fetch('http://localhost:8080/place-bid', {
@@ -64,45 +57,94 @@ const ProductDetails = ({ product, bidInformation }: Props) => {
                     productId: product.productId,
                 }),
             });
-    
+
             if (!response.ok) {
                 console.error('Failed to place bid:', response.statusText);
                 return false;
             }
-    
+
             console.log('Bid placed successfully');
 
-    
-            // After placing a bid, start the periodic checks on the backend
-            const res = await fetch('http://localhost:8080/start-winning-bid-check', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({
-                    amount: currentMaxBid,
-                    bidderName: name,
-                    productId: product.productId,
-                }),
-            });
-
-            const data = await res.json();
-
-            console.log("data: ", data)
-
-            if (data.winningBid) {
-                dispatch(
-                    setNotification(NOTIFICATION_TYPES.OUTBID_COMPETITION),
-                );
-            }
-            
             return true;
         } catch (error) {
             console.error('Error placing bid:', error);
             return false;
         }
     };
-    
+
+    useEffect(() => {
+        let timeoutId: NodeJS.Timeout;
+
+        const startCheck = async () => {
+            // get the bidding end time from the backend
+            const res = await fetch('http://localhost:8080/get-bid-end-time', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    productId: product.productId,
+                }),
+            });
+
+            const data = await res.json();
+
+            console.log('Bid end time data:', data);
+
+            // calculate time until bidding ends
+            const biddingEndTime = new Date(data.endTime).getTime();
+            const currentTime = new Date().getTime();
+            const timeUntilEnd = biddingEndTime - currentTime;
+
+            if (timeUntilEnd > 0) {
+                // set a timeout to check for the winning bid when the bidding time is up
+                timeoutId = setTimeout(async () => {
+                    // get the winning bid from the backend
+                    const winningBidRes = await fetch(
+                        'http://localhost:8080/get-winning-bid',
+                        {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json',
+                            },
+                            body: JSON.stringify({
+                                productId: product.productId,
+                            }),
+                        },
+                    );
+
+                    const winningBidData = await winningBidRes.json();
+
+                    console.log('Winning bid data:', winningBidData);
+
+                    // check if the winning bid is the last bid placed by the user
+                    if (
+                        winningBidData.winningBid &&
+                        winningBidData.winnerName === name &&
+                        winningBidData.amount === currentMaxBid
+                    ) {
+                        dispatch(
+                            setNotification(
+                                NOTIFICATION_TYPES.OUTBID_COMPETITION,
+                            ),
+                        );
+                    }
+
+                    const isBiddingOpen =
+                        product.endDate &&
+                        new Date() < new Date(product.endDate);
+                    setBiddingOpen(isBiddingOpen);
+                }, timeUntilEnd);
+            }
+        };
+
+        startCheck();
+
+        // cleanup function to clear the timeout when the component unmounts
+        return () => {
+            clearTimeout(timeoutId);
+        };
+    }, [product.productId, name, currentMaxBid]);
 
     const handleFormSubmit = async (
         event: React.FormEvent<HTMLFormElement>,
@@ -132,7 +174,7 @@ const ProductDetails = ({ product, bidInformation }: Props) => {
                     setBidValue('');
                     // Update maxBid
                     setCurrentMaxBid(enteredBid);
-                    console.log("here")
+                    console.log('here');
                     dispatch(
                         setNotification(NOTIFICATION_TYPES.HIGHEST_BIDDER),
                     );

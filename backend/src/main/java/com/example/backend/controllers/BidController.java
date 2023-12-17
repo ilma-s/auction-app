@@ -3,27 +3,30 @@ package com.example.backend.controllers;
 import com.example.backend.models.Bid;
 import com.example.backend.models.BidRequest;
 import com.example.backend.services.BidService;
+import com.example.backend.services.ProductService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.sql.Timestamp;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.concurrent.CompletableFuture;
 
 @RestController
 @CrossOrigin(origins = "${frontend_address}")
 public class BidController {
 
     private final BidService bidService;
+    private final ProductService productService;
 
     @Value("${frontend_address}")
     private String frontend_address;
 
     @Autowired
-    public BidController(BidService bidService) {
+    public BidController(BidService bidService, ProductService productService) {
         this.bidService = bidService;
+        this.productService = productService;
     }
 
     @ResponseBody
@@ -49,25 +52,24 @@ public class BidController {
         return ResponseEntity.ok(response);
     }
 
-    @PostMapping("/start-winning-bid-check")
-    public ResponseEntity<Map<String, Object>> startWinningBidCheck(@RequestBody BidRequest bidRequest) {
-        String userId = getUserIdFromBidRequest(bidRequest);
-        String productId = bidRequest.getProductId();
-
-        // Start bid check for the user and product
-        CompletableFuture<Boolean> future = bidService.startBidCheck(userId, productId);
-
-        // Wait for the bid check to complete (you might want to add a timeout here)
-        boolean isWinning = future.join();
+    @PostMapping("/get-bid-end-time")
+    public ResponseEntity<Map<String, Object>> getBidEndTime(@RequestBody String productId) {
+        Timestamp endTime = productService.getBidEndTime(productId);
 
         Map<String, Object> response = new HashMap<>();
-        response.put("winningBid", isWinning);
+        response.put("endTime", endTime);
 
         return ResponseEntity.ok(response);
     }
 
-    private String getUserIdFromBidRequest(BidRequest bidRequest) {
-        return bidRequest.getBidderName();
+    @PostMapping("/get-winning-bid")
+    public ResponseEntity<Map<String, Bid>> getWinningBid(@RequestBody String productId) {
+        Bid winningBid = bidService.getWinningBid(productId);
+
+        Map<String, Bid> response = new HashMap<>();
+        response.put("winningBid", winningBid);
+
+        return ResponseEntity.ok(response);
     }
 
 }

@@ -84,26 +84,30 @@ public class BidService {
 
         return bid;
     }
-    @Scheduled(fixedRate = 5000)
-    public void checkWinningBidPeriodically() {
-        ConcurrentMap<String, Timestamp> bidEndTimesMap = productService.getBidTimeEndMap();
-        System.out.println("periodic check started");
+//    @Scheduled(fixedRate = 5000)
+//    public void checkWinningBidPeriodically() {
+//        ConcurrentMap<String, Timestamp> bidEndTimesMap = productService.getBidTimeEndMap();
+//        System.out.println("periodic check started");
+//
+//        Timestamp currentTimestamp = new Timestamp(System.currentTimeMillis());
+//
+//        for (Map.Entry<String, Timestamp> entry : bidEndTimesMap.entrySet()) {
+//            String productId = entry.getKey();
+//            Timestamp biddingEndTime = entry.getValue();
+//
+//            if (currentTimestamp.after(biddingEndTime)) {
+//                // bidding time has ended, process the winning bid
+//                System.out.println("winning bid found for " + productId);
+//                processWinningBid(productId);
+//
+//                // remove the entry from the map
+//                bidEndTimesMap.remove(productId);
+//            }
+//        }
+//    }
 
-        Timestamp currentTimestamp = new Timestamp(System.currentTimeMillis());
-
-        for (Map.Entry<String, Timestamp> entry : bidEndTimesMap.entrySet()) {
-            String productId = entry.getKey();
-            Timestamp biddingEndTime = entry.getValue();
-
-            if (currentTimestamp.after(biddingEndTime)) {
-                // bidding time has ended, process the winning bid
-                System.out.println("winning bid found for " + productId);
-                processWinningBid(productId);
-
-                // remove the entry from the map
-                bidEndTimesMap.remove(productId);
-            }
-        }
+    public Bid getWinningBid(String productId) {
+        return bidRepository.findWinningBidByProduct(productId);
     }
 
     private void processWinningBid(String productId) {
@@ -134,25 +138,25 @@ public class BidService {
         }
     }
 
-    // Method to start bid check for a user
-    public CompletableFuture<Boolean> startBidCheck(String userId, String productId) {
-        // Cancel the previous CompletableFuture if exists
-        cancelBidCheck(userId);
-
-        // Create a new CompletableFuture for the bid check
-        CompletableFuture<Boolean> future = new CompletableFuture<>();
-
-        // Store the CompletableFuture in the map
-        userBidFutures.put(productId, future);
-
-        return future;
-    }
-
-    // Method to cancel the bid check for a user
-    public void cancelBidCheck(String userId) {
-        // Remove the CompletableFuture for the user
-        userBidFutures.remove(userId);
-    }
+//    // Method to start bid check for a user
+//    public CompletableFuture<Boolean> startBidCheck(String userId, String productId) {
+//        // Cancel the previous CompletableFuture if exists
+//        cancelBidCheck(userId);
+//
+//        // Create a new CompletableFuture for the bid check
+//        CompletableFuture<Boolean> future = new CompletableFuture<>();
+//
+//        // Store the CompletableFuture in the map
+//        userBidFutures.put(productId, future);
+//
+//        return future;
+//    }
+//
+//    // Method to cancel the bid check for a user
+//    public void cancelBidCheck(String userId) {
+//        // Remove the CompletableFuture for the user
+//        userBidFutures.remove(userId);
+//    }
 
     public boolean checkIfWinningBid(BidRequest bidRequest) {
         Bid bid = constructBid(bidRequest);

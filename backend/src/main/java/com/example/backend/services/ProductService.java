@@ -1,5 +1,6 @@
 package com.example.backend.services;
 
+import com.example.backend.repositories.TransactionRepository;
 import com.example.backend.utils.StringUtils;
 import com.example.backend.dtos.BidInfoResponse;
 import com.example.backend.models.Product;
@@ -23,26 +24,65 @@ import java.util.concurrent.ConcurrentMap;
 public class ProductService {
     private final ProductRepository productRepository;
     private final BidRepository bidRepository;
+    private final TransactionRepository transactionRepository;
     private ConcurrentMap<String, Timestamp> bidEndTimesPerProduct = new ConcurrentHashMap<>();
 
+    @Autowired
+    public ProductService(ProductRepository productRepository, BidRepository bidRepository, TransactionRepository transactionRepository) {
+        this.productRepository = productRepository;
+        this.bidRepository = bidRepository;
+        this.transactionRepository = transactionRepository;
+        this.bidEndTimesPerProduct = initializeBidEndTimesMap();
+        System.out.println("Bid end times initialized: " + bidEndTimesPerProduct);
 
-    // initialize the bidEndTimesPerProduct map with data from the database
-    private void initializeBidEndTimesMap() {
-        List<Product> allProducts = productRepository.findAll();
-        for (Product product : allProducts) {
+    }
+
+    private ConcurrentMap<String, Timestamp> initializeBidEndTimesMap() {
+        ConcurrentMap<String, Timestamp> bidEndTimesMap = new ConcurrentHashMap<>();
+
+        // Get a list of processed bid product IDs from the Transaction table
+        List<String> processedBidProductIds = transactionRepository.findProcessedBidProductIds();
+        System.out.println("processed bids: " + processedBidProductIds.toString());
+
+        // Get all products except those with processed bids or products that are already completed
+        List<Product> activeProducts = productRepository.findActiveProducts(processedBidProductIds);
+        System.out.println("active: " + activeProducts.toString());
+
+        for (Product product : activeProducts) {
             Timestamp endDate = product.getEndDate();
+            System.out.println("enddate: " + endDate.toString());
             if (endDate != null) {
-                bidEndTimesPerProduct.put(product.getProductId(), endDate);
+                System.out.println("op");
+                bidEndTimesMap.put(product.getProductId(), endDate);
+                // Add a logging statement
+                System.out.println("Product added to bid end times: " + product.getProductId() + " - " + endDate);
             }
+        }
+
+        System.out.println("Bid end times map after initialization: " + bidEndTimesMap);
+
+        return bidEndTimesMap;
+    }
+
+    public Timestamp getBidEndTime(String productId) {
+        return bidEndTimesPerProduct.getOrDefault(productId, null);
+    }
+
+    //update the map
+    public void updateBidEndTimesForNewProduct(Product newProduct) {
+        if (newProduct.getEndDate() != null) {
+            bidEndTimesPerProduct.put(newProduct.getProductId(), newProduct.getEndDate());
         }
     }
 
-    @Autowired
-    public ProductService(ProductRepository productRepository, BidRepository bidRepository) {
-        this.productRepository = productRepository;
-        this.bidRepository = bidRepository;
-        initializeBidEndTimesMap();
+    //save the product; for now just to explain the usage of the map updating function
+    public ResponseEntity<Product> saveProduct(Product product) {
+        Product savedProduct = productRepository.save(product);
+        updateBidEndTimesForNewProduct(savedProduct);
+
+        return ResponseEntity.ok(savedProduct);
     }
+
     public ResponseEntity<List<Product>> getAllProducts() {
         List<Product> products = productRepository.findAll();
         return ResponseEntity.ok(products);

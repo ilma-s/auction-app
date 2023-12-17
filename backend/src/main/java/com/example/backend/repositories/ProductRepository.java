@@ -6,8 +6,6 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Page;
 import java.util.List;
 import java.util.Date;
 
@@ -52,4 +50,7 @@ public interface ProductRepository extends JpaRepository<Product, String> {
 
     @Query("SELECT LOWER(c.name) FROM Product p JOIN p.categories pc JOIN pc.category c")
     List<String> getAllCategories();
+
+    @Query("SELECT p FROM Product p WHERE p.productId NOT IN :processedBidProductIds AND p.endDate > CURRENT_TIMESTAMP")
+    List<Product> findActiveProducts(List<String> processedBidProductIds);
 }
