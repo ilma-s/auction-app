@@ -9,8 +9,36 @@ import ProductPage from '../pages/productPage/ProductPage';
 import ShopPage from '../pages/shopPage/LazyLoad';
 import LoginPage from '../pages/loginPage/LazyLoad';
 import RegistrationPage from '../pages/registrationPage/LazyLoad';
+import { useSelector } from 'react-redux';
+import { selectRememberMe } from './selectors';
+import { useEffect } from 'react';
 
 const App = () => {
+    const rememberMe = useSelector(selectRememberMe);
+  
+    const logout = () => {
+      console.log('logout');
+      localStorage.removeItem('firstName');
+      try {
+        navigator.sendBeacon('http://localhost:8080/api/logout', '');
+      } catch (error) {
+        console.error('Error during logout', error);
+      }
+    };
+  
+    useEffect(() => {
+      const handleUnload = () => {
+        if (!rememberMe) {
+          logout();
+        }
+      };
+  
+      window.addEventListener('unload', handleUnload);
+  
+      return () => {
+        window.removeEventListener('unload', handleUnload);
+      };
+    }, [rememberMe]);
 
     return (
         <div>

@@ -73,26 +73,6 @@ const LoginPage = () => {
         }
     };
 
-    useEffect(() => {
-        return () => {
-            if (!rememberMe) {
-                localStorage.removeItem('firstName');
-                try {
-                    fetch('http://localhost:8080/api/logout', {
-                        method: 'POST',
-                        credentials: 'include',
-                    })
-                        .then((response) => console.log(response))
-                        .catch((error) =>
-                            console.error('Error during logout', error),
-                        );
-                } catch (error) {
-                    console.error('Error during logout', error);
-                }
-            }
-        };
-    }, [rememberMe]);
-
     return (
         <div className="w-2/3 mx-auto pt-12 pb-12 flex flex-col font-lato">
             {loginError && (
