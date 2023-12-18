@@ -24,9 +24,11 @@ const LoginPage = () => {
     const dispatch = useDispatch();
     const name = useSelector(selectName);
 
-    if (name && rememberMe) {
-        navigate('/home');
-    }
+    useEffect(() => {
+        if (name && rememberMe) {
+            navigate('/home');
+        }
+    }, [name, rememberMe, navigate]);
 
     useEffect(() => {
         if (name !== '') {
@@ -57,6 +59,7 @@ const LoginPage = () => {
                 if (firstName.length > 0) {
                     const localStorageKey = 'firstName';
                     localStorage.setItem(localStorageKey, firstName);
+                    localStorage.setItem('identifier', identifier);
                     dispatch(setName(firstName));
                 }
 

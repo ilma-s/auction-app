@@ -1,5 +1,6 @@
 package com.example.backend.controllers;
 
+import com.example.backend.dtos.BidRequestDTO;
 import com.example.backend.dtos.HighestBidDTO;
 import com.example.backend.models.Bid;
 import com.example.backend.models.BidRequest;
@@ -64,15 +65,17 @@ public class BidController {
     }
 
     @PostMapping("/get-winning-bid")
-    public ResponseEntity<Map<String, HighestBidDTO>> getWinningBid(@RequestBody String productId) {
-        HighestBidDTO winningBidDTO = bidService.getWinningBid(productId);
+    public ResponseEntity<Map<String, HighestBidDTO>> getWinningBid(@RequestBody BidRequestDTO bidRequest) {
+        String productId = bidRequest.getProductId();
+        String identifier = bidRequest.getIdentifier();
+
+        HighestBidDTO winningBidDTO = bidService.getWinningBid(productId, identifier);
 
         Map<String, HighestBidDTO> response = new HashMap<>();
         response.put("winningBid", winningBidDTO);
 
         return ResponseEntity.ok(response);
     }
-
 
 }
 

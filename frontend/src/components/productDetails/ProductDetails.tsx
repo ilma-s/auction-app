@@ -53,7 +53,7 @@ const ProductDetails = ({ product, bidInformation }: Props) => {
                 },
                 body: JSON.stringify({
                     amount: enteredBid,
-                    bidderName: name,
+                    bidderName: localStorage.getItem('identifier'),
                     productId: product.productId,
                 }),
             });
@@ -83,7 +83,6 @@ const ProductDetails = ({ product, bidInformation }: Props) => {
                     'Content-Type': 'application/json',
                 },
                 body: product.productId,
-
             });
 
             const data = await res.json();
@@ -106,7 +105,10 @@ const ProductDetails = ({ product, bidInformation }: Props) => {
                             headers: {
                                 'Content-Type': 'application/json',
                             },
-                            body: product.productId,
+                            body: JSON.stringify({
+                                productId: product.productId,
+                                identifier: localStorage.getItem('identifier'),
+                            }),
                         },
                     );
 
@@ -117,8 +119,6 @@ const ProductDetails = ({ product, bidInformation }: Props) => {
                     // check if the winning bid is the last bid placed by the user
                     if (
                         winningBidData.winningBid &&
-                        winningBidData.winningBid.userId === null && //za sada posto nema usera na ovom branchu
-                        //{"winningBid":{"amount":8000.0,"userId":null}}
                         winningBidData.winningBid.amount === currentMaxBid
                     ) {
                         dispatch(

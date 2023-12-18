@@ -10,6 +10,6 @@ public class HighestBidDTO {
 
     public HighestBidDTO(Bid bid) {
         this.amount = bid.getAmount();
-        //this.userId = bid.getBidder().getUserId();
+        this.userId = bid.getBidder().getUserId();
     }
 }

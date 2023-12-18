@@ -83,7 +83,13 @@ public class BidService {
         LocalDateTime currentDateTime = LocalDateTime.now();
         bid.setTimestamp(Timestamp.valueOf(currentDateTime));
 
-        AppUser bidder = userRepository.findByUsername(bidRequest.getBidderName());
+        AppUser bidder = userRepository.findUserByUsername(bidRequest.getBidderName());
+        if (bidder == null) {
+            bidder = userRepository.findUserByEmail(bidRequest.getBidderName());
+        }
+
+        System.out.println("bidder name sent" + bidRequest.getBidderName());
+        System.out.println("bidder name set" + bidder.getUserId());
         bid.setBidder(bidder);
 
         Product product = productRepository.findProduct(bidRequest.getProductId());
@@ -113,12 +119,13 @@ public class BidService {
         }
     }
 
-    public HighestBidDTO getWinningBid(String productId) {
+    public HighestBidDTO getWinningBid(String productId, String identifier) {
         Bid winningBid = bidRepository.findWinningBidByProduct(productId);
 
         HighestBidDTO winningBidDTO = null;
 
-        if (winningBid != null) {
+        // Check if the winning bid exists and the identifier matches
+        if (winningBid != null && (winningBid.getBidder().getEmail().equals(identifier) || winningBid.getBidder().getUsername().equals(identifier))) {
             winningBidDTO = new HighestBidDTO(winningBid);
         }
 
