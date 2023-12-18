@@ -10,4 +10,5 @@ import lombok.NoArgsConstructor;
 public class JwtTokenResponse {
     private String accessToken;
     private String refreshToken;
+    private String firstName; //needed on the frontend
 }

@@ -14,7 +14,7 @@ import org.springframework.web.bind.annotation.RestController;
 import java.util.List;
 
 @RestController
-@CrossOrigin(origins = "${frontend_address}")
+@CrossOrigin(origins = "${frontend_address}", allowedHeaders = "*", allowCredentials = "true")
 public class CategoryController {
     private final CategoryService categoryService;
 

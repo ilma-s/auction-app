@@ -6,6 +6,7 @@ import io.jsonwebtoken.security.Keys;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.security.core.AuthenticationException;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 
 import java.util.*;
@@ -27,7 +28,7 @@ public class JwtUtil {
     public String createToken(AppUser user, boolean isRefreshToken) {
         long expiration = isRefreshToken ? REFRESH_TOKEN_EXPIRATION : ACCESS_TOKEN_EXPIRATION;
         return Jwts.builder()
-                .setSubject(user.getEmail())
+                .setSubject(user.getUsername())
                 .claim("firstName", user.getFirstName())
                 .claim("lastName", user.getLastName())
                 .setExpiration(new Date(System.currentTimeMillis() + expiration * 1000))
@@ -39,6 +40,7 @@ public class JwtUtil {
         Cookie cookie = new Cookie(name, value);
         cookie.setHttpOnly(httpOnly);
         cookie.setSecure(secure);
+        cookie.setPath("/");
         return cookie;
     }
 
@@ -85,4 +87,15 @@ public class JwtUtil {
             throw e;
         }
     }
+
+    public String extractUsername(String token) {
+        return parseJwtClaims(token).getSubject();
+    }
+
+    public boolean validateToken(String token, UserDetails userDetails) {
+        Claims claims = parseJwtClaims(token);
+        String username = extractUsername(token);
+        return username.equals(userDetails.getUsername()) && validateClaims(claims);
+    }
+
 }

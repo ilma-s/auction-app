@@ -5,10 +5,7 @@ import com.example.backend.models.AppUser;
 import com.example.backend.models.JwtTokenRequest;
 import com.example.backend.models.JwtTokenResponse;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.AuthenticationServiceException;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
@@ -17,33 +14,28 @@ import org.springframework.stereotype.Service;
 public class AuthService {
 
     @Autowired
-    private AuthenticationManager authenticationManager;
-
-    @Autowired
     private UserService userService;
 
     @Autowired
     private JwtUtil jwtUtil;
+
+    private String firstName;
 
     public JwtTokenResponse authenticate(JwtTokenRequest tokenRequest) {
         try {
             String identifier = tokenRequest.getIdentifier();
 
             AppUser appUser = userService.findUserByEmailOrUsername(identifier);
+            firstName = appUser.getFirstName();
 
             if (appUser == null) {
                 throw new UsernameNotFoundException("User not found with the provided identifier");
             }
 
-            Authentication authentication = authenticationManager.authenticate(
-                    new UsernamePasswordAuthenticationToken(appUser.getUsername(), tokenRequest.getPassword()));
+            String accessToken = jwtUtil.createAccessToken(appUser);
+            String refreshToken = jwtUtil.createRefreshToken(appUser);
 
-            UserDetails userDetails = (UserDetails) authentication.getPrincipal();
-
-            String accessToken = jwtUtil.createAccessToken((AppUser) userDetails);
-            String refreshToken = jwtUtil.createRefreshToken((AppUser) userDetails);
-
-            return new JwtTokenResponse(accessToken, refreshToken);
+            return new JwtTokenResponse(accessToken, refreshToken, firstName);
         } catch (UsernameNotFoundException e) {
             return new JwtTokenResponse();
         } catch (Exception e) {
@@ -61,7 +53,7 @@ public class AuthService {
                 String newAccessToken = jwtUtil.createAccessToken((AppUser) userDetails);
                 String newRefreshToken = jwtUtil.createRefreshToken((AppUser) userDetails);
 
-                return new JwtTokenResponse(newAccessToken, newRefreshToken);
+                return new JwtTokenResponse(newAccessToken, newRefreshToken, firstName);
             } else {
                 throw new AuthenticationServiceException("Invalid refresh token");
             }
@@ -70,4 +62,3 @@ public class AuthService {
         }
     }
 }
-
