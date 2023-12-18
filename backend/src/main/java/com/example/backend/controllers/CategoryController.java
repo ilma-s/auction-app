@@ -3,7 +3,6 @@ package com.example.backend.controllers;
 import com.example.backend.dtos.ProductSubcategoryResponseDTO;
 import com.example.backend.models.Category;
 import com.example.backend.services.CategoryService;
-import com.example.backend.services.ProductService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
@@ -15,7 +14,7 @@ import org.springframework.web.bind.annotation.RestController;
 import java.util.List;
 
 @RestController
-@CrossOrigin(origins = "${frontend_address}")
+@CrossOrigin(origins = "${frontend_address}", allowedHeaders = "*", allowCredentials = "true")
 public class CategoryController {
     private final CategoryService categoryService;
 

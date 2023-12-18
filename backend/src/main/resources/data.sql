@@ -1,15 +1,15 @@
-INSERT INTO app_user (user_id, username, email, first_name, last_name, is_admin)
+INSERT INTO app_user (user_id, username, email, password, first_name, last_name, is_admin)
 VALUES
-    ('1', 'john.doe', 'john.doe@example.com', 'John', 'Doe', true),
-    ('2', 'jane.smith', 'jane.smith@example.com', 'Jane', 'Smith', false),
-    ('3', 'alice.johnson', 'alice.johnson@example.com', 'Alice', 'Johnson', false),
-    ('4', 'bob.brown', 'bob.brown@example.com', 'Bob', 'Brown', true),
-    ('5', 'ella.davis', 'ella.davis@example.com', 'Ella', 'Davis', false),
-    ('6', 'frank.wilson', 'frank.wilson@example.com', 'Frank', 'Wilson', false),
-    ('7', 'grace.taylor', 'grace.taylor@example.com', 'Grace', 'Taylor', false),
-    ('8', 'henry.martin', 'henry.martin@example.com', 'Henry', 'Martin', false),
-    ('9', 'ivy.clark', 'ivy.clark@example.com', 'Ivy', 'Clark', false),
-    ('10', 'jack.hall', 'jack.hall@example.com', 'Jack', 'Hall', false)
+    ('1', 'john.doe', 'john.doe@example.com', '$2a$10$eb9WdXA1Eev00uYDwfKun.oLVwfDhYzToskdciaBMrRsZhQjTkL8G', 'John', 'Doe', true),
+    ('2', 'jane.smith', 'jane.smith@example.com', '$2a$10$eb9WdXA1Eev00uYDwfKun.oLVwfDhYzToskdciaBMrRsZhQjTkL8Gv', 'Jane', 'Smith', false),
+    ('3', 'alice.johnson', 'alice.johnson@example.com', '$2a$10$eb9WdXA1Eev00uYDwfKun.oLVwfDhYzToskdciaBMrRsZhQjTkL8G', 'Alice', 'Johnson', false),
+    ('4', 'bob.brown', 'bob.brown@example.com', '$2a$10$eb9WdXA1Eev00uYDwfKun.oLVwfDhYzToskdciaBMrRsZhQjTkL8G', 'Bob', 'Brown', true),
+    ('5', 'ella.davis', 'ella.davis@example.com', '$2a$10$eb9WdXA1Eev00uYDwfKun.oLVwfDhYzToskdciaBMrRsZhQjTkL8G', 'Ella', 'Davis', false),
+    ('6', 'frank.wilson', 'frank.wilson@example.com', '$2a$10$eb9WdXA1Eev00uYDwfKun.oLVwfDhYzToskdciaBMrRsZhQjTkL8G', 'Frank', 'Wilson', false),
+    ('7', 'grace.taylor', 'grace.taylor@example.com','$2a$10$eb9WdXA1Eev00uYDwfKun.oLVwfDhYzToskdciaBMrRsZhQjTkL8G', 'Grace', 'Taylor', false),
+    ('8', 'henry.martin', 'henry.martin@example.com','$2a$10$eb9WdXA1Eev00uYDwfKun.oLVwfDhYzToskdciaBMrRsZhQjTkL8G', 'Henry', 'Martin', false),
+    ('9', 'ivy.clark', 'ivy.clark@example.com', '$2a$10$eb9WdXA1Eev00uYDwfKun.oLVwfDhYzToskdciaBMrRsZhQjTkL8G', 'Ivy', 'Clark', false),
+    ('10', 'jack.hall', 'jack.hall@example.com','$2a$10$eb9WdXA1Eev00uYDwfKun.oLVwfDhYzToskdciaBMrRsZhQjTkL8G', 'Jack', 'Hall', false)
 ON CONFLICT (user_id) DO NOTHING;
 
 

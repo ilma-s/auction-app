@@ -3,6 +3,8 @@ import { useState, useEffect } from 'react';
 import minusSign from './assets/minus-sign.svg';
 import plusSign from './assets/plus-sign.svg';
 
+import CustomCheckbox from '../customCheckbox/CustomCheckbox';
+
 import CategoryUtils from '../../utils/entities/CategoryUtils';
 import { PRODUCT_CATEGORIES_STRING } from '../../utils/constants';
 import { Category, Subcategory } from '../../types';
@@ -150,46 +152,17 @@ const FilterCategoryList = ({ selectedCategory }: FilterCategoryListProps) => {
                                             key={`${subcategory.subcategoryId}`}
                                             className="pt-1 pb-3 pl-2 flex items-center relative"
                                         >
-                                            <input
-                                                type="checkbox"
-                                                id={subcategory.subcategoryId}
-                                                name={subcategory.subcategoryId}
-                                                checked={
-                                                    subcategory.isChecked ||
-                                                    false
-                                                }
+                                            <CustomCheckbox
                                                 onChange={() =>
                                                     handleCheckboxChange(
                                                         subcategory.subcategoryId,
                                                     )
                                                 }
-                                                className="peer hidden"
                                             />
+
                                             <label
                                                 htmlFor={
                                                     subcategory.subcategoryId
-                                                }
-                                                className="cursor-pointer relative"
-                                            >
-                                                <div className="w-4 h-4 border-2 border-trueIndigo-500 rounded-sm"></div>
-                                                {subcategory.isChecked && (
-                                                    <svg
-                                                        className="w-4 h-4 text-trueIndigo-500 absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2"
-                                                        xmlns="http://www.w3.org/2000/svg"
-                                                        viewBox="0 0 24 24"
-                                                        fill="none"
-                                                        stroke="currentColor"
-                                                        strokeWidth="4"
-                                                        strokeLinecap="round"
-                                                        strokeLinejoin="round"
-                                                    >
-                                                        <polyline points="20 6 9 17 4 12"></polyline>
-                                                    </svg>
-                                                )}
-                                            </label>
-                                            <label
-                                                htmlFor={
-                                                    subcategory.subcategoryName
                                                 }
                                                 className="ml-2 cursor-pointer"
                                             >
@@ -209,5 +182,4 @@ const FilterCategoryList = ({ selectedCategory }: FilterCategoryListProps) => {
     );
 };
 
-// Exporting the component
 export default FilterCategoryList;

@@ -8,8 +8,8 @@ import {
 } from '../constants';
 
 import { fetchData } from '../../helpers/apiFunctions';
-import { Product } from '../../types';
 import CategoryUtils from './CategoryUtils';
+import { Product } from '../../types';
 
 class ProductUtils {
     static async fetchClosestProduct() {

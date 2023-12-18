@@ -2,7 +2,7 @@ import { configureStore } from '@reduxjs/toolkit';
 import { createSlice } from '@reduxjs/toolkit';
 
 const initialNameState = {
-    name: 'Jane',
+    name: '',
 };
 
 const nameSlice = createSlice({
@@ -32,13 +32,25 @@ const notificationSlice = createSlice({
     },
 });
 
+const rememberMeSlice = createSlice({
+    name: 'rememberMe',
+    initialState: false,
+    reducers: {
+        setRememberMe: (state, action) => {
+            return action.payload;
+        },
+    },
+});
+
 export const { setName } = nameSlice.actions;
 export const { setNotification, clearNotification } = notificationSlice.actions;
+export const { setRememberMe } = rememberMeSlice.actions;
 
 export const store = configureStore({
     reducer: {
         name: nameSlice.reducer,
         notification: notificationSlice.reducer,
+        rememberMe: rememberMeSlice.reducer,
     },
 });
 
