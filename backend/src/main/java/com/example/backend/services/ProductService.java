@@ -41,10 +41,25 @@ public class ProductService {
 
         // Get a list of processed bid product IDs from the Transaction table
         List<String> processedBidIds = transactionRepository.findProcessedBidIds();
-        List<String> processedBidProducts = productRepository.findProcessedProductsIds(processedBidIds);
+
+        List<String> processedBidProducts;
+        if (processedBidIds.isEmpty()) {
+            processedBidProducts = productRepository.findProcessedProductsIds();
+        } else {
+            processedBidProducts = productRepository.findProcessedProductsIds(processedBidIds);
+        }
+
+        System.out.println("len: " + processedBidProducts.size());
 
         // Get all products except those with processed bids or products that are already completed
-        List<Product> activeProducts = productRepository.findActiveProducts(processedBidProducts);
+        List<Product> activeProducts;
+        if (processedBidIds.isEmpty()) {
+            activeProducts = productRepository.findActiveProducts();
+        } else {
+            activeProducts = productRepository.findActiveProducts(processedBidProducts);
+        }
+
+        System.out.println("active p len: " + activeProducts.size());
 
         for (Product product : activeProducts) {
             Timestamp endDate = product.getEndDate();
@@ -56,9 +71,19 @@ public class ProductService {
         return bidEndTimesMap;
     }
 
+
     public Timestamp getBidEndTime(String productId) {
-        return bidEndTimesPerProduct.getOrDefault(productId, null);
+        if (bidEndTimesPerProduct.containsKey(productId.trim())) {
+            Timestamp timestamp = bidEndTimesPerProduct.get(productId);
+            System.out.println("ts: " + timestamp);
+
+            return timestamp;
+        } else {
+            System.out.println("Key not found in the map.");
+            return null;
+        }
     }
+
 
     //update the map
     public void updateBidEndTimesForNewProduct(Product newProduct) {

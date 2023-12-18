@@ -1,5 +1,6 @@
 package com.example.backend.controllers;
 
+import com.example.backend.dtos.HighestBidDTO;
 import com.example.backend.models.Bid;
 import com.example.backend.models.BidRequest;
 import com.example.backend.services.BidService;
@@ -31,7 +32,7 @@ public class BidController {
 
     @ResponseBody
     @PostMapping("/place-bid")
-    public ResponseEntity<Map<String, String>> placeBid(@RequestBody BidRequest bidRequest) {
+    public ResponseEntity<Map<String, String>> placeBid(@RequestBody BidRequest bidRequest) throws Exception {
         Bid bid = bidService.placeBid(bidRequest);
 
         String message;
@@ -53,24 +54,25 @@ public class BidController {
     }
 
     @PostMapping("/get-bid-end-time")
-    public ResponseEntity<Map<String, Object>> getBidEndTime(@RequestBody String productId) {
+    public ResponseEntity<Map<String, Timestamp>> getBidEndTime(@RequestBody String productId) {
         Timestamp endTime = productService.getBidEndTime(productId);
 
-        Map<String, Object> response = new HashMap<>();
+        Map<String, Timestamp> response = new HashMap<>();
         response.put("endTime", endTime);
 
         return ResponseEntity.ok(response);
     }
 
     @PostMapping("/get-winning-bid")
-    public ResponseEntity<Map<String, Bid>> getWinningBid(@RequestBody String productId) {
-        Bid winningBid = bidService.getWinningBid(productId);
+    public ResponseEntity<Map<String, HighestBidDTO>> getWinningBid(@RequestBody String productId) {
+        HighestBidDTO winningBidDTO = bidService.getWinningBid(productId);
 
-        Map<String, Bid> response = new HashMap<>();
-        response.put("winningBid", winningBid);
+        Map<String, HighestBidDTO> response = new HashMap<>();
+        response.put("winningBid", winningBidDTO);
 
         return ResponseEntity.ok(response);
     }
+
 
 }
 

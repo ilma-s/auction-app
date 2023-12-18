@@ -1,5 +1,7 @@
 package com.example.backend.models;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 import java.sql.Timestamp;
 import java.util.Objects;
@@ -18,12 +20,14 @@ public class Bid {
     private Double amount;
     private Timestamp timestamp;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "bidder_id")
+    @JsonIgnoreProperties("bidder_id")
     private AppUser bidder;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "product_id")
+    @JsonIgnoreProperties("product_id")
     private Product product;
 
     @OneToOne(mappedBy = "bid", cascade = CascadeType.ALL, orphanRemoval = true)

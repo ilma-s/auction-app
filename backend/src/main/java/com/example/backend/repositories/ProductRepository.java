@@ -6,9 +6,12 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Page;
+import org.springframework.stereotype.Repository;
+
 import java.util.List;
 import java.util.Date;
 
+@Repository
 public interface ProductRepository extends JpaRepository<Product, String> {
     @Query("SELECT p FROM Product p " +
             "WHERE p.endDate >= :currentDate " +
@@ -51,9 +54,18 @@ public interface ProductRepository extends JpaRepository<Product, String> {
     @Query("SELECT LOWER(c.name) FROM Product p JOIN p.categories pc JOIN pc.category c")
     List<String> getAllCategories();
 
-    @Query("SELECT p.productId FROM Product p, Bid b WHERE b.product.productId = p.productId AND b.bidId IN :processedBidProductIds")
-    List<String> findProcessedProductsIds(List<String> processedBidProductIds);
+    @Query("SELECT DISTINCT p.productId FROM Product p JOIN Bid b ON b.product.productId = p.productId WHERE b.bidId IN :processedBidProductIds")
+    List<String> findProcessedProductsIds(@Param("processedBidProductIds") List<String> processedBidProductIds);
+
+    @Query("SELECT DISTINCT p.productId FROM Product p")
+    List<String> findProcessedProductsIds();
 
     @Query("SELECT p FROM Product p WHERE p.productId NOT IN :processedBidProductIds AND p.endDate > CURRENT_TIMESTAMP")
     List<Product> findActiveProducts(List<String> processedBidProductIds);
+
+    @Query("SELECT p FROM Product p WHERE p.endDate > CURRENT_TIMESTAMP")
+    List<Product> findActiveProducts();
+
+    @Query("SELECT p.startingPrice FROM Product p WHERE p.productId = :productId")
+    Double getPrice(@Param("productId") String productId);
 }

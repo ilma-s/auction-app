@@ -1,5 +1,6 @@
 package com.example.backend.services;
 
+import com.example.backend.dtos.HighestBidDTO;
 import com.example.backend.models.AppUser;
 import com.example.backend.models.Bid;
 import com.example.backend.models.BidRequest;
@@ -11,6 +12,7 @@ import com.example.backend.repositories.TransactionRepository;
 import com.example.backend.repositories.UserRepository;
 import com.example.backend.utils.BidUtils;
 import jakarta.transaction.Transactional;
+import org.hibernate.Hibernate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.scheduling.annotation.Scheduled;
@@ -31,8 +33,7 @@ public class BidService {
     private final BidRepository bidRepository;
     private final UserRepository userRepository;
     private final ProductRepository productRepository;
-    private Bid latestBid;
-    private BidUtils bidUtils;
+    private final BidUtils bidUtils;
     private final TransactionRepository transactionRepository;
     private final ConcurrentHashMap<String, CompletableFuture<Boolean>> userBidFutures = new ConcurrentHashMap<>();
     private final ProductService productService;
@@ -47,7 +48,12 @@ public class BidService {
         this.productService = productService;
     }
     @Transactional
-    public Bid placeBid(BidRequest bidRequest) {
+    public Bid placeBid(BidRequest bidRequest) throws Exception {
+        Timestamp currentTimestamp = new Timestamp(System.currentTimeMillis());
+
+        if (currentTimestamp.after(productService.getBidTimeEndMap().get(bidRequest.getProductId()))) {
+            throw new Exception("Time is up!");
+        }
         // check if the amount of bid placed is greater than the max value in the db
         if (!isValidBidAmount(bidRequest.getAmount(), bidRequest.getProductId())) {
             return new Bid();
@@ -60,6 +66,7 @@ public class BidService {
         // Check if an identical bid already exists
         if (existingBids != null && !existingBids.isEmpty()) {
             // do not proceed with placing the bid
+            System.out.println("no");
             return null;
         }
 
@@ -84,30 +91,38 @@ public class BidService {
 
         return bid;
     }
-//    @Scheduled(fixedRate = 5000)
-//    public void checkWinningBidPeriodically() {
-//        ConcurrentMap<String, Timestamp> bidEndTimesMap = productService.getBidTimeEndMap();
-//        System.out.println("periodic check started");
-//
-//        Timestamp currentTimestamp = new Timestamp(System.currentTimeMillis());
-//
-//        for (Map.Entry<String, Timestamp> entry : bidEndTimesMap.entrySet()) {
-//            String productId = entry.getKey();
-//            Timestamp biddingEndTime = entry.getValue();
-//
-//            if (currentTimestamp.after(biddingEndTime)) {
-//                // bidding time has ended, process the winning bid
-//                System.out.println("winning bid found for " + productId);
-//                processWinningBid(productId);
-//
-//                // remove the entry from the map
-//                bidEndTimesMap.remove(productId);
-//            }
-//        }
-//    }
+    @Scheduled(fixedRate = 1000)
+    public void checkWinningBidPeriodically() {
+        ConcurrentMap<String, Timestamp> bidEndTimesMap = productService.getBidTimeEndMap();
+        System.out.println("periodic check started");
 
-    public Bid getWinningBid(String productId) {
-        return bidRepository.findWinningBidByProduct(productId);
+        Timestamp currentTimestamp = new Timestamp(System.currentTimeMillis());
+
+        for (Map.Entry<String, Timestamp> entry : bidEndTimesMap.entrySet()) {
+            String productId = entry.getKey();
+            Timestamp biddingEndTime = entry.getValue();
+
+            if (currentTimestamp.after(biddingEndTime)) {
+                // bidding time has ended, process the winning bid
+                System.out.println("winning bid found for " + productId);
+                processWinningBid(productId);
+
+                // remove the entry from the map
+                bidEndTimesMap.remove(productId);
+            }
+        }
+    }
+
+    public HighestBidDTO getWinningBid(String productId) {
+        Bid winningBid = bidRepository.findWinningBidByProduct(productId);
+
+        HighestBidDTO winningBidDTO = null;
+
+        if (winningBid != null) {
+            winningBidDTO = new HighestBidDTO(winningBid);
+        }
+
+        return winningBidDTO;
     }
 
     private void processWinningBid(String productId) {
@@ -138,26 +153,6 @@ public class BidService {
         }
     }
 
-//    // Method to start bid check for a user
-//    public CompletableFuture<Boolean> startBidCheck(String userId, String productId) {
-//        // Cancel the previous CompletableFuture if exists
-//        cancelBidCheck(userId);
-//
-//        // Create a new CompletableFuture for the bid check
-//        CompletableFuture<Boolean> future = new CompletableFuture<>();
-//
-//        // Store the CompletableFuture in the map
-//        userBidFutures.put(productId, future);
-//
-//        return future;
-//    }
-//
-//    // Method to cancel the bid check for a user
-//    public void cancelBidCheck(String userId) {
-//        // Remove the CompletableFuture for the user
-//        userBidFutures.remove(userId);
-//    }
-
     public boolean checkIfWinningBid(BidRequest bidRequest) {
         Bid bid = constructBid(bidRequest);
         return bidUtils.processBid(bid, bid.getProduct());
@@ -165,14 +160,18 @@ public class BidService {
 
     private boolean isValidBidAmount(Double bidAmount, String productId) {
         // check if bidAmount is valid by comparing it against the maximum value in the db
-        Double maxAllowedBidAmount = bidRepository.findHighestBidByProduct(productId); // Get the max allowed bid amount from your configuration or database
+        Double maxAllowedBidAmount = bidRepository.findHighestBidByProduct(productId);
+        System.out.println("max allowed: " + maxAllowedBidAmount);
 
-        // check if maxAllowedBidAmount is not null before performing the comparison
         if (maxAllowedBidAmount != null) {
+            boolean res = bidAmount.compareTo(maxAllowedBidAmount) > 0;
+            System.out.println("bidAmount.compareTo(maxAllowedBidAmount) > 0: " + res);
             return bidAmount.compareTo(maxAllowedBidAmount) > 0;
         } else {
-            // if maxAllowedBidAmount is null, consider the bid amount as invalid
-            return false;
+            //no bids placed, check against the price + 1
+            boolean res = bidAmount.compareTo(productRepository.getPrice(productId) + 1) > 0;
+            System.out.println("res: " + res);
+            return bidAmount.compareTo(productRepository.getPrice(productId) + 1) > 0;
         }
     }
 
