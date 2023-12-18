@@ -35,13 +35,13 @@ class BidUtils {
     static getNextBidValue(
         bidInformation: BidInformation,
         product: Product,
-    ): string {
+    ): number {
         const price =
             bidInformation.numberOfBids === 0
-                ? product?.startingPrice + 1
-                : bidInformation.highestBid + 1;
+                ? product?.startingPrice
+                : bidInformation.highestBid;
 
-        return `Enter $${price} or higher`;
+        return price;
     }
 }
 

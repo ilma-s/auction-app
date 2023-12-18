@@ -1,5 +1,6 @@
 package com.example.backend.services;
 
+import com.example.backend.repositories.TransactionRepository;
 import com.example.backend.utils.StringUtils;
 import com.example.backend.dtos.BidInfoResponse;
 import com.example.backend.models.Product;
@@ -14,22 +15,98 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.RequestParam;
 
+import java.sql.Timestamp;
 import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentMap;
 
 @Service
 public class ProductService {
     private final ProductRepository productRepository;
     private final BidRepository bidRepository;
-
+    private final TransactionRepository transactionRepository;
+    private ConcurrentMap<String, Timestamp> bidEndTimesPerProduct = new ConcurrentHashMap<>();
 
     @Autowired
-    public ProductService(ProductRepository productRepository, BidRepository bidRepository) {
+    public ProductService(ProductRepository productRepository, BidRepository bidRepository, TransactionRepository transactionRepository) {
         this.productRepository = productRepository;
         this.bidRepository = bidRepository;
+        this.transactionRepository = transactionRepository;
+        this.bidEndTimesPerProduct = initializeBidEndTimesMap();
+
     }
+
+    private ConcurrentMap<String, Timestamp> initializeBidEndTimesMap() {
+        ConcurrentMap<String, Timestamp> bidEndTimesMap = new ConcurrentHashMap<>();
+
+        // Get a list of processed bid product IDs from the Transaction table
+        List<String> processedBidIds = transactionRepository.findProcessedBidIds();
+
+        List<String> processedBidProducts;
+        if (processedBidIds.isEmpty()) {
+            processedBidProducts = productRepository.findProcessedProductsIds();
+        } else {
+            processedBidProducts = productRepository.findProcessedProductsIds(processedBidIds);
+        }
+
+        System.out.println("len: " + processedBidProducts.size());
+
+        // Get all products except those with processed bids or products that are already completed
+        List<Product> activeProducts;
+        if (processedBidIds.isEmpty()) {
+            activeProducts = productRepository.findActiveProducts();
+        } else {
+            activeProducts = productRepository.findActiveProducts(processedBidProducts);
+        }
+
+        System.out.println("active p len: " + activeProducts.size());
+
+        for (Product product : activeProducts) {
+            Timestamp endDate = product.getEndDate();
+            if (endDate != null) {
+                bidEndTimesMap.put(product.getProductId(), endDate);
+            }
+        }
+
+        return bidEndTimesMap;
+    }
+
+
+    public Timestamp getBidEndTime(String productId) {
+        if (bidEndTimesPerProduct.containsKey(productId.trim())) {
+            Timestamp timestamp = bidEndTimesPerProduct.get(productId);
+            System.out.println("ts: " + timestamp);
+
+            return timestamp;
+        } else {
+            System.out.println("Key not found in the map.");
+            return null;
+        }
+    }
+
+
+    //update the map
+    public void updateBidEndTimesForNewProduct(Product newProduct) {
+        if (newProduct.getEndDate() != null) {
+            bidEndTimesPerProduct.put(newProduct.getProductId(), newProduct.getEndDate());
+        }
+    }
+
+    //save the product; for now just to explain the usage of the map updating function
+    public ResponseEntity<Product> saveProduct(Product product) {
+        Product savedProduct = productRepository.save(product);
+        updateBidEndTimesForNewProduct(savedProduct);
+
+        return ResponseEntity.ok(savedProduct);
+    }
+
     public ResponseEntity<List<Product>> getAllProducts() {
         List<Product> products = productRepository.findAll();
         return ResponseEntity.ok(products);
+    }
+
+    public ConcurrentMap<String, Timestamp> getBidTimeEndMap() {
+        return bidEndTimesPerProduct;
     }
 
     public ResponseEntity<Product> findProductWithClosestEndDate() {

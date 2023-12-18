@@ -1,16 +1,33 @@
 import { configureStore } from '@reduxjs/toolkit';
 import { createSlice } from '@reduxjs/toolkit';
 
-const initialState = {
+const initialNameState = {
     name: '',
 };
 
-const appSlice = createSlice({
-    name: 'appSlice',
-    initialState,
+const nameSlice = createSlice({
+    name: 'nameSlice',
+    initialState: initialNameState,
     reducers: {
         setName: (state, action) => {
             state.name = action.payload;
+        },
+    },
+});
+
+const initialNotificationState = {
+    notification: '',
+};
+
+const notificationSlice = createSlice({
+    name: 'notificationSlice',
+    initialState: initialNotificationState,
+    reducers: {
+        setNotification: (state, action) => {
+            state.notification = action.payload;
+        },
+        clearNotification: (state) => {
+            state.notification = '';
         },
     },
 });
@@ -25,17 +42,16 @@ const rememberMeSlice = createSlice({
     },
 });
 
-export const { setName } = appSlice.actions;
+export const { setName } = nameSlice.actions;
+export const { setNotification, clearNotification } = notificationSlice.actions;
 export const { setRememberMe } = rememberMeSlice.actions;
 
-export const rootReducer = {
-    name: appSlice.reducer,
-    rememberMe: rememberMeSlice.reducer,
-};
-
 export const store = configureStore({
-    reducer: rootReducer,
+    reducer: {
+        name: nameSlice.reducer,
+        notification: notificationSlice.reducer,
+        rememberMe: rememberMeSlice.reducer,
+    },
 });
 
 export type RootState = ReturnType<typeof store.getState>;
-export type AppDispatch = typeof store.dispatch;

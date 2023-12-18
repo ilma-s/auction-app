@@ -1,12 +1,15 @@
-import { useState } from 'react';
-import { useSelector } from 'react-redux';
+import { useState, useRef, useEffect } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
 import {
     PLACE_BID,
     DETAILS_STRING,
+    NOTIFICATION_TYPES,
 } from '../../utils/constants';
 import { Product, BidInformation } from '../../types';
-import { selectName } from '../../app/selectors';
+import { setNotification } from '../../app/store';
 import BidUtils from '../../utils/entities/BidUtils';
+import { selectName } from '../../app/selectors';
+import React from 'react';
 
 interface Props {
     product: Product;
@@ -16,26 +19,179 @@ interface Props {
 const ProductDetails = ({ product, bidInformation }: Props) => {
     const [selectedSection, setSelectedSection] =
         useState<string>(DETAILS_STRING);
+    const [bidValue, setBidValue] = useState<string>('');
+    const [currentMaxBid, setCurrentMaxBid] = useState(
+        BidUtils.getNextBidValue(bidInformation, product),
+    );
+    const [biddingOpen, setBiddingOpen] = useState(true);
+    const bidInputRef = useRef<HTMLInputElement | null>(null);
+
+    const handleBidChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+        setBidValue(event.target.value);
+    };
+
+    let userSet = false;
+    let userAllowed = false;
 
     const name = useSelector(selectName);
+    const dispatch = useDispatch();
 
-    const renderBidInput = name.trim() !== 'John Doe' && (
-        <div className="flex pt-12 gap-8 items-center">
-            <div>
-                <input
-                    type="text"
-                    className="pl-8 pr-8 pt-3 pb-3 w-72 border-2 border-trueGray-300 focus:outline-none"
-                    placeholder={BidUtils.getNextBidValue(
-                        bidInformation,
-                        product,
-                    )}
-                />
-            </div>
-            <div className="pt-2 pb-2 pl-3 pr-3 font-bold cursor-not-allowed">
-                {PLACE_BID}
-            </div>
-        </div>
-    );
+    if (name.length > 0) {
+        userSet = true;
+
+        if (product.sellerId.username !== name) {
+            userAllowed = true;
+        }
+    }
+
+    const placeBid = async (enteredBid: number): Promise<boolean> => {
+        try {
+            const response = await fetch('http://localhost:8080/place-bid', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    amount: enteredBid,
+                    bidderName: localStorage.getItem('identifier'),
+                    productId: product.productId,
+                }),
+            });
+
+            if (!response.ok) {
+                console.error('Failed to place bid:', response.statusText);
+                return false;
+            }
+
+            console.log('Bid placed successfully');
+
+            return true;
+        } catch (error) {
+            console.error('Error placing bid:', error);
+            return false;
+        }
+    };
+
+    useEffect(() => {
+        let timeoutId: NodeJS.Timeout;
+
+        const startCheck = async () => {
+            // get the bidding end time from the backend
+            const res = await fetch('http://localhost:8080/get-bid-end-time', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: product.productId,
+            });
+
+            const data = await res.json();
+
+            console.log('Bid end time data:', data);
+
+            // calculate time until bidding ends
+            const biddingEndTime = new Date(data.endTime).getTime();
+            const currentTime = new Date().getTime();
+            const timeUntilEnd = biddingEndTime - currentTime;
+
+            if (timeUntilEnd > 0) {
+                // set a timeout to check for the winning bid when the bidding time is up
+                timeoutId = setTimeout(async () => {
+                    // get the winning bid from the backend
+                    const winningBidRes = await fetch(
+                        'http://localhost:8080/get-winning-bid',
+                        {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json',
+                            },
+                            body: JSON.stringify({
+                                productId: product.productId,
+                                identifier: localStorage.getItem('identifier'),
+                            }),
+                        },
+                    );
+
+                    const winningBidData = await winningBidRes.json();
+
+                    console.log('Winning bid data:', winningBidData);
+
+                    // check if the winning bid is the last bid placed by the user
+                    if (
+                        winningBidData.winningBid &&
+                        winningBidData.winningBid.amount === currentMaxBid
+                    ) {
+                        dispatch(
+                            setNotification(
+                                NOTIFICATION_TYPES.OUTBID_COMPETITION,
+                            ),
+                        );
+                    }
+
+                    const isBiddingOpen =
+                        product.endDate &&
+                        new Date() < new Date(product.endDate);
+                    setBiddingOpen(isBiddingOpen);
+                }, timeUntilEnd);
+            }
+        };
+
+        startCheck();
+
+        // cleanup function to clear the timeout when the component unmounts
+        return () => {
+            clearTimeout(timeoutId);
+        };
+    }, [product.productId, name, currentMaxBid]);
+
+    const handleFormSubmit = async (
+        event: React.FormEvent<HTMLFormElement>,
+    ) => {
+        event.preventDefault();
+        await handleBidSubmission();
+    };
+
+    const handleKeyDown = async (
+        event: React.KeyboardEvent<HTMLFormElement>,
+    ) => {
+        if (event.key === 'Enter') {
+            event.preventDefault();
+            await handleBidSubmission();
+        }
+    };
+
+    useEffect(() => {
+        const isBiddingOpen =
+            product.endDate && new Date() < new Date(product.endDate);
+        setBiddingOpen(isBiddingOpen);
+    }, []);
+
+    const handleBidSubmission = async () => {
+        const enteredBid = parseFloat(bidValue);
+
+        if (!isNaN(enteredBid) && enteredBid > currentMaxBid) {
+            try {
+                const bidPlaced = await placeBid(enteredBid);
+
+                if (bidPlaced) {
+                    // Valid bid
+                    setBidValue('');
+                    // Update maxBid
+                    setCurrentMaxBid(enteredBid);
+                    console.log('here');
+                    dispatch(
+                        setNotification(NOTIFICATION_TYPES.HIGHEST_BIDDER),
+                    );
+                } else {
+                    dispatch(setNotification(NOTIFICATION_TYPES.HIGHER_BIDS));
+                }
+            } catch (error) {
+                // Handle other errors if needed
+            }
+        } else {
+            dispatch(setNotification(NOTIFICATION_TYPES.HIGHER_BIDS));
+        }
+    };
 
     return (
         <div className="w-1/2">
@@ -44,8 +200,29 @@ const ProductDetails = ({ product, bidInformation }: Props) => {
                 <p className="font-light">Starts from</p>
                 <p className="font-bold">${product?.startingPrice}</p>
             </div>
-           
-            {renderBidInput}
+
+            {userSet && userAllowed && biddingOpen && (
+                <form onSubmit={handleFormSubmit} onKeyDown={handleKeyDown}>
+                    <div className="flex pt-12 gap-8 items-center">
+                        <div>
+                            <input
+                                ref={bidInputRef}
+                                type="text"
+                                className="pl-8 pr-8 pt-3 pb-3 w-72 border-2 border-trueGray-300 focus:outline-none"
+                                placeholder={`Enter $${
+                                    currentMaxBid + 1
+                                } or higher`}
+                                value={bidValue}
+                                onChange={handleBidChange}
+                            />
+                        </div>
+                        <div className="pt-2 pb-2 pl-3 pr-3 font-bold">
+                            <button type="submit">{PLACE_BID}</button>
+                        </div>
+                    </div>
+                </form>
+            )}
+
             <div className="pt-16 pb-16">
                 <div className="flex gap-16 h-12 border-b-2 border-true-gray-300">
                     <button
