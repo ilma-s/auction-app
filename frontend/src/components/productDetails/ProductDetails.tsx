@@ -82,9 +82,8 @@ const ProductDetails = ({ product, bidInformation }: Props) => {
                 headers: {
                     'Content-Type': 'application/json',
                 },
-                body: JSON.stringify({
-                    productId: product.productId,
-                }),
+                body: product.productId,
+
             });
 
             const data = await res.json();
@@ -107,9 +106,7 @@ const ProductDetails = ({ product, bidInformation }: Props) => {
                             headers: {
                                 'Content-Type': 'application/json',
                             },
-                            body: JSON.stringify({
-                                productId: product.productId,
-                            }),
+                            body: product.productId,
                         },
                     );
 
@@ -120,8 +117,9 @@ const ProductDetails = ({ product, bidInformation }: Props) => {
                     // check if the winning bid is the last bid placed by the user
                     if (
                         winningBidData.winningBid &&
-                        winningBidData.winnerName === name &&
-                        winningBidData.amount === currentMaxBid
+                        winningBidData.winningBid.userId === null && //za sada posto nema usera na ovom branchu
+                        //{"winningBid":{"amount":8000.0,"userId":null}}
+                        winningBidData.winningBid.amount === currentMaxBid
                     ) {
                         dispatch(
                             setNotification(
@@ -161,6 +159,12 @@ const ProductDetails = ({ product, bidInformation }: Props) => {
             await handleBidSubmission();
         }
     };
+
+    useEffect(() => {
+        const isBiddingOpen =
+            product.endDate && new Date() < new Date(product.endDate);
+        setBiddingOpen(isBiddingOpen);
+    }, []);
 
     const handleBidSubmission = async () => {
         const enteredBid = parseFloat(bidValue);
